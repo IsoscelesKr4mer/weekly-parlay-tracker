@@ -819,6 +819,10 @@
         </div>
     </div>
     
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    
     <script>
         // Global variables
         let weeklyPicks = {};
@@ -826,6 +830,19 @@
         let currentWeek = 1;
         let currentNFLWeek = 1;
         let nflSchedule = {};
+        let database = null;
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCSen1b1IDNvRXg96CZXf9PTGURvCga3Cs",
+            authDomain: "parlay-picker.firebaseapp.com",
+            databaseURL: "https://parlay-picker-default-rtdb.firebaseio.com/",
+            projectId: "parlay-picker",
+            storageBucket: "parlay-picker.firebasestorage.app",
+            messagingSenderId: "1086482831557",
+            appId: "1:1086482831557:web:16e5f542a0d48e0dc538ac",
+            measurementId: "G-E7F4G8DEN8"
+        };
 
         // Sample NFL schedule data
         const sampleNFLSchedule = {
@@ -856,8 +873,42 @@
         // Initialize everything when page loads
         window.onload = function() {
             console.log('Page loaded, initializing...');
-            initializeData();
+            initializeFirebase();
         };
+
+        function initializeFirebase() {
+            try {
+                // Initialize Firebase
+                firebase.initializeApp(firebaseConfig);
+                database = firebase.database();
+                console.log('Firebase initialized successfully');
+                
+                // Test connection
+                testFirebaseConnection();
+                
+            } catch (error) {
+                console.error('Firebase initialization failed:', error);
+                console.log('Running in local mode without real-time sync');
+                initializeData();
+            }
+        }
+
+        async function testFirebaseConnection() {
+            try {
+                await database.ref('test').set({
+                    message: 'Connected',
+                    timestamp: Date.now()
+                });
+                console.log('Firebase connection successful - enabling real-time sync');
+                initializeData();
+                setupRealtimeListeners();
+                
+            } catch (error) {
+                console.error('Firebase connection failed:', error);
+                console.log('Running in local mode');
+                initializeData();
+            }
+        }
 
         function initializeData() {
             weeklyPicks = {};
@@ -888,6 +939,86 @@
             document.getElementById('summaryWeek').textContent = currentWeek;
             generatePickSlots();
             updateCalculations();
+        }
+
+        // Firebase Database Functions
+        async function savePicksToFirebase(week, picks) {
+            if (!database) {
+                console.log('Firebase not available - data saved locally only');
+                return;
+            }
+            
+            try {
+                await database.ref(`weeklyPicks/${week}`).set(picks);
+                console.log(`Picks synced to Firebase for week ${week}`);
+                showNotification('Picks synced to all league members!', 'success');
+            } catch (error) {
+                console.error('Error syncing picks:', error);
+                showNotification('Sync failed - picks saved locally only', 'warning');
+            }
+        }
+
+        async function loadPicksFromFirebase(week) {
+            if (!database) return [];
+            
+            try {
+                const snapshot = await database.ref(`weeklyPicks/${week}`).once('value');
+                return snapshot.exists() ? snapshot.val() : [];
+            } catch (error) {
+                console.error('Error loading picks:', error);
+                return [];
+            }
+        }
+
+        function setupRealtimeListeners() {
+            if (!database) return;
+            
+            // Listen for changes to current week
+            database.ref(`weeklyPicks/${currentWeek}`).on('value', (snapshot) => {
+                if (snapshot.exists()) {
+                    weeklyPicks[currentWeek] = snapshot.val();
+                    console.log('Real-time update received');
+                    
+                    const activeTab = document.querySelector('.tab-pane.active');
+                    if (activeTab && activeTab.id === 'picks') {
+                        generatePickSlots();
+                    }
+                    updateCalculations();
+                }
+            });
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            const colors = {
+                success: '#4CAF50',
+                warning: '#FF9800',
+                error: '#f44336',
+                info: '#2196F3'
+            };
+            
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${colors[type]};
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+                z-index: 1000;
+                font-weight: bold;
+                max-width: 300px;
+            `;
+            notification.innerHTML = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 3000);
         }
 
         function generatePickSlots() {
@@ -1013,6 +1144,9 @@
             } else {
                 weeklyPicks[currentWeek].push(pickData);
             }
+            
+            // Save to Firebase for real-time sync
+            savePicksToFirebase(currentWeek, weeklyPicks[currentWeek]);
             
             // Show success feedback
             const saveButton = document.querySelector(`#pickSlot${slotIndex} .result-btn[onclick*="saveIndividualPick"]`);
@@ -1192,6 +1326,9 @@
                     // Update result
                     weeklyPicks[currentWeek][actualPickIndex].result = result;
                 }
+                
+                // Sync changes to Firebase
+                savePicksToFirebase(currentWeek, weeklyPicks[currentWeek]);
                 
                 generatePickSlots();
                 updateLeaderboardData();
