@@ -1213,8 +1213,349 @@
         }
 
         function refreshSGPs() {
-            // For now, just regenerate slots - the full SGP logic can be added later
-            generatePickSlots();
+            console.log('refreshSGPs called');
+            const numberOfLegs = parseInt(document.getElementById('numberOfLegs').value);
+            
+            // First, capture all current values before regenerating
+            const currentValues = {};
+            for (let i = 0; i < numberOfLegs; i++) {
+                const playerEl = document.getElementById(`player${i}`);
+                const pickEl = document.getElementById(`pick${i}`);
+                const oddsEl = document.getElementById(`odds${i}`);
+                const gameEl = document.getElementById(`game${i}`);
+                const timeSlotEl = document.getElementById(`timeSlot${i}`);
+                
+                if (playerEl) {
+                    currentValues[i] = {
+                        playerName: playerEl.value || '',
+                        pick: pickEl ? pickEl.value || '' : '',
+                        odds: oddsEl ? oddsEl.value || '' : '',
+                        game: gameEl ? gameEl.value || '' : '',
+                        timeSlot: timeSlotEl ? timeSlotEl.value || '' : ''
+                    };
+                }
+            }
+            
+            const container = document.getElementById('pickSlotsContainer');
+            container.innerHTML = '';
+            
+            // Group picks by game for SGP organization
+            const gameGroups = {};
+            const individualPicks = [];
+            
+            for (let i = 0; i < numberOfLegs; i++) {
+                const values = currentValues[i];
+                if (!values) continue;
+                
+                const game = values.game;
+                
+                if (game && values.playerName && values.pick && values.odds) {
+                    // Check if there's a saved pick for this combination
+                    const savedPick = weeklyPicks[currentWeek] && weeklyPicks[currentWeek].find(p => 
+                        p.playerName === values.playerName && p.pick === values.pick && p.isSaved
+                    );
+                    
+                    if (savedPick) {
+                        // Check for other picks with same game
+                        let hasSameGame = false;
+                        for (let j = 0; j < numberOfLegs; j++) {
+                            const otherValues = currentValues[j];
+                            if (i !== j && otherValues && otherValues.game === game && 
+                                otherValues.playerName && otherValues.pick && otherValues.odds) {
+                                
+                                // Check if the other pick is also saved
+                                const otherSavedPick = weeklyPicks[currentWeek] && weeklyPicks[currentWeek].find(p => 
+                                    p.playerName === otherValues.playerName && p.pick === otherValues.pick && p.isSaved
+                                );
+                                
+                                if (otherSavedPick) {
+                                    hasSameGame = true;
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        if (hasSameGame) {
+                            if (!gameGroups[game]) {
+                                gameGroups[game] = [];
+                            }
+                            gameGroups[game].push({ index: i, values: values });
+                        } else {
+                            individualPicks.push({ index: i, values: values });
+                        }
+                    } else {
+                        individualPicks.push({ index: i, values: values });
+                    }
+                } else {
+                    individualPicks.push({ index: i, values: values });
+                }
+            }
+            
+            // First, render SGP groups at the top
+            Object.entries(gameGroups).forEach(([game, picks]) => {
+                if (picks.length > 1) {
+                    const sgpGroupDiv = document.createElement('div');
+                    sgpGroupDiv.className = 'sgp-group';
+                    
+                    // Determine overall SGP result
+                    const sgpPicks = picks.map(p => weeklyPicks[currentWeek] && weeklyPicks[currentWeek].find(wp => 
+                        wp.playerName === p.values.playerName && wp.pick === p.values.pick
+                    )).filter(p => p);
+                    
+                    let sgpResultText = '⏳ SGP PENDING';
+                    let sgpResultClass = 'pending';
+                    
+                    if (sgpPicks.length > 0) {
+                        const results = sgpPicks.map(pick => pick.result);
+                        
+                        if (results.every(result => result === true)) {
+                            sgpResultText = '✅ SGP WIN';
+                            sgpResultClass = 'win';
+                        } else if (results.some(result => result === false)) {
+                            sgpResultText = '❌ SGP LOSS';
+                            sgpResultClass = 'loss';
+                        } else if (results.some(result => result === 'draw')) {
+                            sgpResultText = '🤝 SGP DRAW';
+                            sgpResultClass = 'draw';
+                        }
+                    }
+                    
+                    // Add SGP header with overall result
+                    const sgpHeader = document.createElement('div');
+                    sgpHeader.style.cssText = `
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        margin-bottom: 15px;
+                        padding: 10px 0;
+                    `;
+                    sgpHeader.innerHTML = `
+                        <div style="font-size: 16px; font-weight: bold; color: #FF9800;">
+                            🎯 Same Game Parlay - ${game}
+                        </div>
+                        <span class="result-indicator ${sgpResultClass}" style="font-size: 14px;">
+                            ${sgpResultText}
+                        </span>
+                    `;
+                    sgpGroupDiv.appendChild(sgpHeader);
+                    
+                    // Add SGP odds field
+                    const oddsContainer = document.createElement('div');
+                    oddsContainer.className = 'sgp-odds-container';
+                    oddsContainer.innerHTML = `
+                        <div class="sgp-odds-field">
+                            <label>SGP Odds:</label>
+                            <input type="text" placeholder="-110, +200" id="sgp-odds-${game.replace(/[^a-zA-Z0-9]/g, '')}" 
+                                   onblur="formatSGPOdds('${game.replace(/[^a-zA-Z0-9]/g, '')}')">
+                        </div>
+                    `;
+                    sgpGroupDiv.appendChild(oddsContainer);
+                    
+                    // Add each pick in the SGP with preserved values
+                    picks.forEach(({ index, values }) => {
+                        const slotDiv = createPickSlotWithValues(index, values, true);
+                        sgpGroupDiv.appendChild(slotDiv);
+                    });
+                    
+                    // Add SGP action buttons
+                    const actionsDiv = document.createElement('div');
+                    actionsDiv.style.textAlign = 'center';
+                    actionsDiv.style.marginTop = '15px';
+                    actionsDiv.innerHTML = `
+                        <button class="btn" onclick="saveSGP('${game}')" style="background: #4CAF50; color: white;">
+                            💾 Save SGP
+                        </button>
+                    `;
+                    sgpGroupDiv.appendChild(actionsDiv);
+                    
+                    container.appendChild(sgpGroupDiv);
+                }
+            });
+            
+            // Then render individual picks with preserved values
+            individualPicks.forEach(({ index, values }) => {
+                const slotDiv = createPickSlotWithValues(index, values, false);
+                container.appendChild(slotDiv);
+            });
+        }
+
+        // Create a pick slot element with preserved values
+        function createPickSlotWithValues(i, values, isSGP = false) {
+            const slotDiv = document.createElement('div');
+            slotDiv.className = 'pick-slot' + (isSGP ? ' sgp-pick' : '');
+            slotDiv.id = `pickSlot${i}`;
+            
+            // Check if this pick is saved by looking at weeklyPicks data
+            const savedPick = weeklyPicks[currentWeek] && weeklyPicks[currentWeek].find(p => 
+                p.isSaved && p.playerName === values?.playerName && p.pick === values?.pick
+            );
+            
+            if (savedPick) {
+                slotDiv.className += ' permanently-saved';
+            }
+            
+            // Get result text and class for individual pick
+            let resultText = '⏳ PENDING';
+            let resultClass = 'pending';
+            
+            if (savedPick) {
+                if (savedPick.result === true) {
+                    resultText = '✅ WIN';
+                    resultClass = 'win';
+                } else if (savedPick.result === false) {
+                    resultText = '❌ LOSS';
+                    resultClass = 'loss';
+                } else if (savedPick.result === 'draw') {
+                    resultText = '🤝 DRAW';
+                    resultClass = 'draw';
+                }
+            }
+            
+            slotDiv.innerHTML = `
+                <div class="pick-slot-header">
+                    <h4>Pick ${i + 1}</h4>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <span class="result-indicator ${resultClass}">${resultText}</span>
+                    </div>
+                </div>
+                <div class="pick-slot-fields">
+                    <div class="pick-slot-field">
+                        <label>Player Name</label>
+                        <input type="text" id="player${i}" value="${values?.playerName || ''}" placeholder="Player name">
+                    </div>
+                    <div class="pick-slot-field">
+                        <label>Pick/Bet</label>
+                        <input type="text" id="pick${i}" value="${values?.pick || ''}" placeholder="Team to win, over/under, etc.">
+                    </div>
+                    <div class="pick-slot-field">
+                        <label>Odds</label>
+                        <input type="text" id="odds${i}" value="${values?.odds || ''}" placeholder="-110, +200" onblur="formatOdds(${i})" ${isSGP ? 'readonly' : ''}>
+                    </div>
+                    <div class="pick-slot-field">
+                        <label>Game</label>
+                        <select id="game${i}" onchange="updateTimeSlotFromGame(${i})">
+                            <option value="">Select Game</option>
+                            ${generateGameOptionsWithSelected(values?.game || '')}
+                        </select>
+                    </div>
+                    <div class="pick-slot-field">
+                        <label>Time Slot</label>
+                        <select id="timeSlot${i}">
+                            <option value="">Select</option>
+                            <option value="TNF" ${values?.timeSlot === 'TNF' ? 'selected' : ''}>TNF</option>
+                            <option value="Early" ${values?.timeSlot === 'Early' ? 'selected' : ''}>Early</option>
+                            <option value="Late" ${values?.timeSlot === 'Late' ? 'selected' : ''}>Late</option>
+                            <option value="SNF" ${values?.timeSlot === 'SNF' ? 'selected' : ''}>SNF</option>
+                            <option value="MNF" ${values?.timeSlot === 'MNF' ? 'selected' : ''}>MNF</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="result-buttons">
+                    <button class="result-btn" onclick="saveIndividualPick(${i})" style="background: #2196F3; color: white;">💾 Save</button>
+                    <button class="result-btn win" onclick="updateSlotResult(${i}, true)">✓ Win</button>
+                    <button class="result-btn loss" onclick="updateSlotResult(${i}, false)">✗ Loss</button>
+                    <button class="result-btn draw" onclick="updateSlotResult(${i}, 'draw')">🤝 Draw</button>
+                    <button class="result-btn reset" onclick="updateSlotResult(${i}, null)">↻ Reset</button>
+                </div>
+            `;
+            
+            return slotDiv;
+        }
+
+        // Generate game options with preserved selection
+        function generateGameOptionsWithSelected(selectedGame = '') {
+            const currentWeekSchedule = nflSchedule[currentNFLWeek] || [];
+            
+            return currentWeekSchedule.map(game => 
+                `<option value="${game.matchup}" ${selectedGame === game.matchup ? 'selected' : ''}>
+                    ${game.matchup} (${game.time})
+                </option>`
+            ).join('');
+        }
+
+        // Format SGP odds input
+        function formatSGPOdds(gameId) {
+            const oddsInput = document.getElementById(`sgp-odds-${gameId}`);
+            if (!oddsInput) return;
+            
+            let oddsValue = oddsInput.value.trim();
+            
+            if (!oddsValue) return;
+            
+            const cleanOdds = oddsValue.replace(/[+-]/g, '');
+            
+            if (isNaN(cleanOdds) || cleanOdds === '') {
+                return;
+            }
+            
+            const numericOdds = parseInt(cleanOdds);
+            
+            if (!oddsValue.includes('+') && !oddsValue.includes('-')) {
+                if (numericOdds >= 100) {
+                    oddsInput.value = '+' + numericOdds;
+                } else {
+                    oddsInput.value = '-' + numericOdds;
+                }
+            } else if (oddsValue.startsWith('+') || oddsValue.startsWith('-')) {
+                oddsInput.value = oddsValue.charAt(0) + numericOdds;
+            }
+        }
+
+        // Save SGP with validation
+        function saveSGP(game) {
+            const gameId = game.replace(/[^a-zA-Z0-9]/g, '');
+            const sgpOddsInput = document.getElementById(`sgp-odds-${gameId}`);
+            const sgpOdds = sgpOddsInput ? sgpOddsInput.value.trim() : '';
+            
+            if (!sgpOdds) {
+                alert('⚠️ Please enter the SGP odds from your sportsbook before saving.');
+                sgpOddsInput.focus();
+                return;
+            }
+            
+            // Find all picks in this SGP and validate they're complete
+            const numberOfLegs = parseInt(document.getElementById('numberOfLegs').value);
+            const sgpPicks = [];
+            
+            for (let i = 0; i < numberOfLegs; i++) {
+                const gameElement = document.getElementById(`game${i}`);
+                if (gameElement && gameElement.value === game) {
+                    const playerName = document.getElementById(`player${i}`).value.trim();
+                    const pick = document.getElementById(`pick${i}`).value.trim();
+                    const odds = document.getElementById(`odds${i}`).value.trim();
+                    
+                    if (playerName && pick && odds) {
+                        sgpPicks.push({
+                            slotIndex: i,
+                            playerName,
+                            pick,
+                            odds,
+                            game,
+                            timeSlot: document.getElementById(`timeSlot${i}`).value,
+                            sameGameGroup: gameId
+                        });
+                    }
+                }
+            }
+            
+            // Update each individual pick with SGP information
+            sgpPicks.forEach(pickData => {
+                const existingIndex = weeklyPicks[currentWeek].findIndex(p => 
+                    p.playerName === pickData.playerName && p.pick === pickData.pick
+                );
+                
+                if (existingIndex >= 0) {
+                    weeklyPicks[currentWeek][existingIndex].sgpOdds = sgpOdds;
+                    weeklyPicks[currentWeek][existingIndex].isSGP = true;
+                    weeklyPicks[currentWeek][existingIndex].sameGameGroup = gameId;
+                }
+            });
+            
+            // Save to Firebase
+            savePicksToFirebase(currentWeek, weeklyPicks[currentWeek]);
+            
+            showNotification(`SGP saved successfully for ${game}!`, 'success');
+            updateCalculations();
         }
 
         // Helper functions
