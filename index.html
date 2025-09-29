@@ -471,6 +471,10 @@
             <div id="summary" class="tab-pane">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <h2 style="color: #333; margin: 0;">Week <span id="summaryWeek">1</span> Parlay Summary</h2>
+                    <div id="parlayStatus" style="display: flex; align-items: center; gap: 10px; padding: 12px 20px; border-radius: 25px; font-size: 18px; font-weight: bold; background: linear-gradient(135deg, #4CAF50, #45a049); color: white; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+                        <span id="parlayStatusIcon">💚</span>
+                        <span id="parlayStatusText">Parlay Still Alive</span>
+                    </div>
                     <div style="display: flex; align-items: center; gap: 15px;">
                         <label for="summaryWeekSelect">Week:</label>
                         <select id="summaryWeekSelect" onchange="updateWeekFromSummary()">
@@ -1026,6 +1030,7 @@
                     weeklyPicks = data;
                     renderAllPicks();
                     updateCalculations();
+                    updateParlayStatus();
                     console.log('Loaded picks from Firebase');
                 }
             });
@@ -1075,6 +1080,7 @@
             document.getElementById('summaryWeek').textContent = currentWeek;
             renderAllPicks();
             updateCalculations();
+            updateParlayStatus();
         }
 
         function updateWeekFromSummary() {
@@ -1090,6 +1096,7 @@
             document.getElementById('summaryWeek').textContent = currentWeek;
             renderAllPicks();
             updateCalculations();
+            updateParlayStatus();
         }
 
         function renderAllPicks() {
@@ -1615,6 +1622,9 @@
             updateCalculations();
             updateLeaderboardData();
             renderAllPicks();
+            
+            // Update parlay status when results change
+            updateParlayStatus();
         }
 
         function handleSGPVoid(game) {
@@ -1804,6 +1814,37 @@
             updatePicksSummary();
         }
 
+        function updateParlayStatus() {
+            var picks = weeklyPicks[currentWeek] || [];
+            var statusElement = document.getElementById('parlayStatus');
+            var iconElement = document.getElementById('parlayStatusIcon');
+            var textElement = document.getElementById('parlayStatusText');
+            
+            if (!statusElement || !iconElement || !textElement) return;
+            
+            // Filter out null picks and draws (voided picks)
+            var activePicks = picks.filter(function(pick) {
+                return pick && pick.result !== 'draw';
+            });
+            
+            // Check if any pick has lost (result === false)
+            var hasLoss = activePicks.some(function(pick) {
+                return pick.result === false;
+            });
+            
+            if (hasLoss) {
+                // Parlay is dead
+                statusElement.style.background = 'linear-gradient(135deg, #f44336, #d32f2f)';
+                iconElement.textContent = '💀';
+                textElement.textContent = 'Parlay Dead';
+            } else {
+                // Parlay is still alive (all picks are pending, won, or voided)
+                statusElement.style.background = 'linear-gradient(135deg, #4CAF50, #45a049)';
+                iconElement.textContent = '💚';
+                textElement.textContent = 'Parlay Still Alive';
+            }
+        }
+
         function updatePicksSummary() {
             var picks = weeklyPicks[currentWeek] || [];
             var container = document.getElementById('picksSummary');
@@ -1922,6 +1963,9 @@
             });
             
             container.innerHTML = html;
+            
+            // Update parlay status after updating picks summary
+            updateParlayStatus();
         }
 
         function updateLeaderboardData() {
