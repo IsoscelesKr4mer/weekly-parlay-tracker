@@ -131,8 +131,8 @@
         }
         
         .pick-slot.filled {
-            border-color: #4CAF50;
-            background: linear-gradient(135deg, #f0f9ff, #e0f7fa);
+            border-color: #2196F3;
+            background: linear-gradient(135deg, #f0f9ff, #e3f2fd);
         }
         
         .pick-slot.win {
@@ -971,8 +971,12 @@
                 if (typeof firebase !== 'undefined') {
                     firebase.initializeApp(firebaseConfig);
                     database = firebase.database();
+                    console.log('Firebase initialized successfully');
+                    
+                    // Load data from Firebase
+                    loadDataFromFirebase();
                 } else {
-                    console.log('Firebase not available');
+                    console.log('Firebase not available - using local storage only');
                 }
             } catch (error) {
                 console.error('Firebase error:', error);
@@ -989,6 +993,52 @@
             nflSchedule = nfl2025Schedule;
             renderAllPicks();
             updateCalculations();
+        }
+
+        function loadDataFromFirebase() {
+            if (!database) return;
+            
+            // Load weekly picks
+            database.ref('weeklyPicks').on('value', function(snapshot) {
+                var data = snapshot.val();
+                if (data) {
+                    weeklyPicks = data;
+                    renderAllPicks();
+                    updateCalculations();
+                    console.log('Loaded picks from Firebase');
+                }
+            });
+            
+            // Load leaderboard data
+            database.ref('leaderboardData').on('value', function(snapshot) {
+                var data = snapshot.val();
+                if (data) {
+                    leaderboardData = data;
+                    updateLeaderboard();
+                    console.log('Loaded leaderboard from Firebase');
+                }
+            });
+        }
+
+        function saveToFirebase() {
+            if (!database) {
+                console.log('Firebase not available - data not saved');
+                return;
+            }
+            
+            try {
+                // Save weekly picks
+                database.ref('weeklyPicks').set(weeklyPicks);
+                
+                // Update leaderboard data
+                updateLeaderboardData();
+                database.ref('leaderboardData').set(leaderboardData);
+                
+                console.log('Data saved to Firebase');
+            } catch (error) {
+                console.error('Error saving to Firebase:', error);
+                showNotification('Error saving to database. Changes may not sync.', 'error');
+            }
         }
 
         function updateWeek() {
@@ -1211,10 +1261,10 @@
                 '<span class="result-indicator ' + resultClass + '">' + resultText + '</span>' +
                 '</div>' +
                 '<div class="pick-slot-fields">' +
-                '<div class="pick-slot-field"><label>Pick/Bet</label><input type="text" id="pick' + index + '" value="' + (pick ? pick.pick || '' : '') + '" placeholder="Team to win, over/under"></div>' +
-                '<div class="pick-slot-field"><label>Odds</label><input type="text" id="odds' + index + '" value="' + (pick ? pick.odds || '' : '') + '" placeholder="-110, +200" onblur="formatOdds(' + index + ')"></div>' +
-                '<div class="pick-slot-field"><label>Game</label><select id="game' + index + '" onchange="updateTimeSlotFromGame(' + index + ')"><option value="">Select Game</option>' + generateGameOptions(pick ? pick.game : '') + '</select></div>' +
-                '<div class="pick-slot-field"><label>Time Slot</label><select id="timeSlot' + index + '"><option value="">Select</option>' +
+                '<div class="pick-slot-field"><label>Pick/Bet</label><input type="text" id="pick' + index + '" value="' + (pick ? pick.pick || '' : '') + '" placeholder="Team to win, over/under" onchange="checkForChanges(' + index + ')" data-original="' + (pick ? pick.pick || '' : '') + '"></div>' +
+                '<div class="pick-slot-field"><label>Odds</label><input type="text" id="odds' + index + '" value="' + (pick ? pick.odds || '' : '') + '" placeholder="-110, +200" onblur="formatOdds(' + index + ')" onchange="checkForChanges(' + index + ')" data-original="' + (pick ? pick.odds || '' : '') + '"></div>' +
+                '<div class="pick-slot-field"><label>Game</label><select id="game' + index + '" onchange="updateTimeSlotFromGame(' + index + '); checkForChanges(' + index + ')" data-original="' + (pick ? pick.game || '' : '') + '"><option value="">Select Game</option>' + generateGameOptions(pick ? pick.game : '') + '</select></div>' +
+                '<div class="pick-slot-field"><label>Time Slot</label><select id="timeSlot' + index + '" onchange="checkForChanges(' + index + ')" data-original="' + (pick ? pick.timeSlot || '' : '') + '"><option value="">Select</option>' +
                 '<option value="TNF"' + (pick && pick.timeSlot === 'TNF' ? ' selected' : '') + '>TNF</option>' +
                 '<option value="Early"' + (pick && pick.timeSlot === 'Early' ? ' selected' : '') + '>Early</option>' +
                 '<option value="Late"' + (pick && pick.timeSlot === 'Late' ? ' selected' : '') + '>Late</option>' +
@@ -1223,7 +1273,7 @@
                 '</select></div>' +
                 '</div>' + voidWarning +
                 '<div class="result-buttons">' +
-                '<button class="result-btn" style="background: #2196F3; color: white;" onclick="savePick(' + index + ')">💾 Save</button>' +
+                '<button class="result-btn" id="saveBtn' + index + '" style="background: #757575; color: white; cursor: not-allowed;" onclick="savePick(' + index + ')" disabled>💾 Save</button>' +
                 '<button class="result-btn win ' + winActive + '" onclick="toggleResult(' + index + ', true)">✓ Win</button>' +
                 '<button class="result-btn loss ' + lossActive + '" onclick="toggleResult(' + index + ', false)">✗ Loss</button>' +
                 '<button class="result-btn draw ' + drawActive + '" onclick="toggleResult(' + index + ', \'draw\')">🤝 Draw</button>' +
@@ -1255,9 +1305,89 @@
                     
                     if (weeklyPicks[currentWeek] && weeklyPicks[currentWeek][index]) {
                         weeklyPicks[currentWeek][index].playerName = newName;
-                        updateCalculations();
                     }
+                    
+                    // Check for changes after updating player name
+                    checkForChanges(index);
+                    updateCalculations();
                 }
+            }
+        }
+
+        function checkForChanges(index) {
+            var pickInput = document.getElementById('pick' + index);
+            var oddsInput = document.getElementById('odds' + index);
+            var gameSelect = document.getElementById('game' + index);
+            var timeSlotSelect = document.getElementById('timeSlot' + index);
+            var playerNameDisplay = document.getElementById('playerNameDisplay' + index);
+            
+            if (!pickInput || !oddsInput || !gameSelect || !timeSlotSelect) return;
+            
+            // Get current values
+            var currentPick = pickInput.value.trim();
+            var currentOdds = oddsInput.value.trim();
+            var currentGame = gameSelect.value;
+            var currentTimeSlot = timeSlotSelect.value;
+            var currentPlayerName = playerNameDisplay ? playerNameDisplay.textContent.trim() : '';
+            
+            // Get original values
+            var originalPick = pickInput.getAttribute('data-original') || '';
+            var originalOdds = oddsInput.getAttribute('data-original') || '';
+            var originalGame = gameSelect.getAttribute('data-original') || '';
+            var originalTimeSlot = timeSlotSelect.getAttribute('data-original') || '';
+            var originalPlayerName = index < playerNames.length ? playerNames[index] : 'Pick ' + (index + 1);
+            
+            // Get saved player name if exists
+            if (weeklyPicks[currentWeek] && weeklyPicks[currentWeek][index] && weeklyPicks[currentWeek][index].playerName) {
+                originalPlayerName = weeklyPicks[currentWeek][index].playerName;
+            }
+            
+            // Check if any values have actually changed
+            var hasChanges = currentPick !== originalPick ||
+                           currentOdds !== originalOdds ||
+                           currentGame !== originalGame ||
+                           currentTimeSlot !== originalTimeSlot ||
+                           currentPlayerName !== originalPlayerName;
+            
+            var saveBtn = document.getElementById('saveBtn' + index);
+            if (saveBtn) {
+                if (hasChanges) {
+                    saveBtn.disabled = false;
+                    saveBtn.style.background = '#2196F3';
+                    saveBtn.style.cursor = 'pointer';
+                    saveBtn.textContent = '💾 Save Changes';
+                } else {
+                    saveBtn.disabled = true;
+                    saveBtn.style.background = '#757575';
+                    saveBtn.style.cursor = 'not-allowed';
+                    saveBtn.textContent = '💾 Save';
+                }
+            }
+        }
+
+        function enableSaveButton(index) {
+            // Deprecated - use checkForChanges instead
+            checkForChanges(index);
+        }
+
+        function disableSaveButton(index) {
+            var saveBtn = document.getElementById('saveBtn' + index);
+            if (saveBtn) {
+                saveBtn.disabled = true;
+                saveBtn.style.background = '#757575';
+                saveBtn.style.cursor = 'not-allowed';
+                saveBtn.textContent = '💾 Saved';
+                
+                // Update the data-original attributes to current values after save
+                var pickInput = document.getElementById('pick' + index);
+                var oddsInput = document.getElementById('odds' + index);
+                var gameSelect = document.getElementById('game' + index);
+                var timeSlotSelect = document.getElementById('timeSlot' + index);
+                
+                if (pickInput) pickInput.setAttribute('data-original', pickInput.value);
+                if (oddsInput) oddsInput.setAttribute('data-original', oddsInput.value);
+                if (gameSelect) gameSelect.setAttribute('data-original', gameSelect.value);
+                if (timeSlotSelect) timeSlotSelect.setAttribute('data-original', timeSlotSelect.value);
             }
         }
 
@@ -1270,7 +1400,7 @@
             var timeSlot = document.getElementById('timeSlot' + index).value;
             
             if (!playerName || !pick || !odds) {
-                alert('Please fill in Player Name, Pick, and Odds before saving.');
+                showNotification('Please fill in Player Name, Pick, and Odds before saving.', 'error');
                 return;
             }
             
@@ -1284,13 +1414,35 @@
                 odds: odds,
                 game: game,
                 timeSlot: timeSlot,
-                result: null
+                result: null,
+                timestamp: Date.now()
             };
             
             while (weeklyPicks[currentWeek].length <= index) {
                 weeklyPicks[currentWeek].push(null);
             }
             weeklyPicks[currentWeek][index] = pickData;
+            
+            // Save to Firebase
+            saveToFirebase();
+            
+            // Show prominent save confirmation
+            showNotification('Pick saved and synced to all users!', 'success');
+            
+            // Disable save button and show "Saved" state
+            disableSaveButton(index);
+            
+            // Add a temporary blue flash to the pick slot
+            var pickSlot = document.getElementById('saveBtn' + index).closest('.pick-slot');
+            if (pickSlot) {
+                pickSlot.style.transition = 'all 0.3s ease';
+                pickSlot.style.transform = 'scale(1.02)';
+                pickSlot.style.boxShadow = '0 8px 20px rgba(33, 150, 243, 0.3)';
+                setTimeout(function() {
+                    pickSlot.style.transform = 'scale(1)';
+                    pickSlot.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';
+                }, 300);
+            }
             
             checkForSGPs();
             updateCalculations();
