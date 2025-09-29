@@ -1104,6 +1104,13 @@
             container.innerHTML = '';
             
             var savedPicks = weeklyPicks[currentWeek] || [];
+            
+            // Ensure savedPicks is always an array
+            if (!Array.isArray(savedPicks)) {
+                savedPicks = [];
+                weeklyPicks[currentWeek] = savedPicks;
+            }
+            
             var numberOfLegs = parseInt(document.getElementById('numberOfLegs').value);
             
             var gameGroups = {};
@@ -1518,6 +1525,11 @@
                 weeklyPicks[currentWeek] = [];
             }
             
+            // Ensure it's an array (safety check)
+            if (!Array.isArray(weeklyPicks[currentWeek])) {
+                weeklyPicks[currentWeek] = [];
+            }
+            
             var pickData = {
                 playerName: playerName,
                 pick: pick,
@@ -1816,6 +1828,13 @@
 
         function updateParlayStatus() {
             var picks = weeklyPicks[currentWeek] || [];
+            
+            // Ensure picks is always an array
+            if (!Array.isArray(picks)) {
+                picks = [];
+                weeklyPicks[currentWeek] = picks;
+            }
+            
             var statusElement = document.getElementById('parlayStatus');
             var iconElement = document.getElementById('parlayStatusIcon');
             var textElement = document.getElementById('parlayStatusText');
@@ -1847,6 +1866,13 @@
 
         function updatePicksSummary() {
             var picks = weeklyPicks[currentWeek] || [];
+            
+            // Ensure picks is always an array
+            if (!Array.isArray(picks)) {
+                picks = [];
+                weeklyPicks[currentWeek] = picks;
+            }
+            
             var container = document.getElementById('picksSummary');
             
             if (!container) return;
