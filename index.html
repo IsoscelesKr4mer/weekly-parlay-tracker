@@ -391,29 +391,7 @@
         <div class="tab-content">
             <div id="picks" class="tab-pane active">
                 <div class="week-selector">
-                    <label for="nflWeek">NFL Week:</label>
-                    <select id="nflWeek" onchange="updateNFLWeek()">
-                        <option value="1">Week 1</option>
-                        <option value="2">Week 2</option>
-                        <option value="3">Week 3</option>
-                        <option value="4">Week 4</option>
-                        <option value="5">Week 5</option>
-                        <option value="6">Week 6</option>
-                        <option value="7">Week 7</option>
-                        <option value="8">Week 8</option>
-                        <option value="9">Week 9</option>
-                        <option value="10">Week 10</option>
-                        <option value="11">Week 11</option>
-                        <option value="12">Week 12</option>
-                        <option value="13">Week 13</option>
-                        <option value="14">Week 14</option>
-                        <option value="15">Week 15</option>
-                        <option value="16">Week 16</option>
-                        <option value="17">Week 17</option>
-                        <option value="18">Week 18</option>
-                    </select>
-                    
-                    <label for="currentWeek" style="margin-left: 30px;">Parlay Week:</label>
+                    <label for="currentWeek">Week:</label>
                     <select id="currentWeek" onchange="updateWeek()">
                         <option value="1">Week 1</option>
                         <option value="2">Week 2</option>
@@ -434,7 +412,6 @@
                         <option value="17">Week 17</option>
                         <option value="18">Week 18</option>
                     </select>
-                    <div class="current-week">Parlay Week <span id="weekDisplay">1</span></div>
                     
                     <div style="margin-left: 40px; display: flex; align-items: center; gap: 15px;">
                         <label for="numberOfLegs">Parlay Legs:</label>
@@ -471,7 +448,32 @@
             </div>
             
             <div id="summary" class="tab-pane">
-                <h2 style="margin-bottom: 20px; color: #333;">Week <span id="summaryWeek">1</span> Parlay Summary</h2>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="color: #333; margin: 0;">Week <span id="summaryWeek">1</span> Parlay Summary</h2>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <label for="summaryWeekSelect">Week:</label>
+                        <select id="summaryWeekSelect" onchange="updateWeekFromSummary()">
+                            <option value="1">Week 1</option>
+                            <option value="2">Week 2</option>
+                            <option value="3">Week 3</option>
+                            <option value="4">Week 4</option>
+                            <option value="5">Week 5</option>
+                            <option value="6">Week 6</option>
+                            <option value="7">Week 7</option>
+                            <option value="8">Week 8</option>
+                            <option value="9">Week 9</option>
+                            <option value="10">Week 10</option>
+                            <option value="11">Week 11</option>
+                            <option value="12">Week 12</option>
+                            <option value="13">Week 13</option>
+                            <option value="14">Week 14</option>
+                            <option value="15">Week 15</option>
+                            <option value="16">Week 16</option>
+                            <option value="17">Week 17</option>
+                            <option value="18">Week 18</option>
+                        </select>
+                    </div>
+                </div>
                 
                 <div style="background: white; border-radius: 15px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
                     <h3 style="margin-bottom: 15px; color: #333;">Your Picks</h3>
@@ -562,8 +564,64 @@
     <script>
         var weeklyPicks = {};
         var leaderboardData = {};
-        var currentWeek = 1;
-        var currentNFLWeek = 1;
+        function getCurrentNFLWeek() {
+            // 2025 NFL Season started September 4, 2025 (Week 1)
+            var seasonStart = new Date('2025-09-04');
+            var today = new Date();
+            
+            // Calculate days since season start
+            var daysSinceStart = Math.floor((today - seasonStart) / (1000 * 60 * 60 * 24));
+            
+            // NFL weeks run Tuesday to Monday, but Week 1 started on Thursday
+            // Adjust for the Thursday start of Week 1
+            var adjustedDays = daysSinceStart + 2; // Thursday = 2 days into the week
+            
+            // Calculate current week (each week is 7 days)
+            var calculatedWeek = Math.floor(adjustedDays / 7) + 1;
+            
+            // Ensure we don't go beyond Week 18
+            return Math.min(Math.max(calculatedWeek, 1), 18);
+        }
+
+        function updateCurrentWeekDropdown() {
+            var currentNFLWeek = getCurrentNFLWeek();
+            var mainSelect = document.getElementById('currentWeek');
+            var summarySelect = document.getElementById('summaryWeekSelect');
+            
+            // Update main dropdown
+            if (mainSelect) {
+                // Clear existing "(Current Week)" labels
+                for (var i = 0; i < mainSelect.options.length; i++) {
+                    var option = mainSelect.options[i];
+                    option.text = option.text.replace(' (Current Week)', '');
+                }
+                
+                // Add "(Current Week)" to the current week
+                var currentOption = mainSelect.options[currentNFLWeek - 1];
+                if (currentOption) {
+                    currentOption.text += ' (Current Week)';
+                    currentOption.selected = true;
+                }
+            }
+            
+            // Update summary dropdown
+            if (summarySelect) {
+                // Clear existing "(Current Week)" labels
+                for (var i = 0; i < summarySelect.options.length; i++) {
+                    var option = summarySelect.options[i];
+                    option.text = option.text.replace(' (Current Week)', '');
+                }
+                
+                // Add "(Current Week)" to the current week
+                var currentSummaryOption = summarySelect.options[currentNFLWeek - 1];
+                if (currentSummaryOption) {
+                    currentSummaryOption.text += ' (Current Week)';
+                    currentSummaryOption.selected = true;
+                }
+            }
+            
+            return currentNFLWeek;
+        }
         var nflSchedule = {};
         var database = null;
         
@@ -920,28 +978,44 @@
                 console.error('Firebase error:', error);
             }
             
+            // Set current week dynamically
+            var calculatedCurrentWeek = updateCurrentWeekDropdown();
+            currentWeek = calculatedCurrentWeek;
+            currentNFLWeek = calculatedCurrentWeek;
+            
+            // Update the summary week display text
+            document.getElementById('summaryWeek').textContent = calculatedCurrentWeek;
+            
             nflSchedule = nfl2025Schedule;
-            renderAllPicks();
-            updateCalculations();
-        }
-
-        function updateNFLWeek() {
-            currentNFLWeek = parseInt(document.getElementById('nflWeek').value);
-            // Sync the parlay week to match NFL week
-            currentWeek = currentNFLWeek;
-            document.getElementById('currentWeek').value = currentWeek;
-            document.getElementById('weekDisplay').textContent = currentWeek;
-            document.getElementById('summaryWeek').textContent = currentWeek;
             renderAllPicks();
             updateCalculations();
         }
 
         function updateWeek() {
             currentWeek = parseInt(document.getElementById('currentWeek').value);
-            // Sync the NFL week to match parlay week
-            currentNFLWeek = currentWeek;
-            document.getElementById('nflWeek').value = currentNFLWeek;
-            document.getElementById('weekDisplay').textContent = currentWeek;
+            currentNFLWeek = currentWeek; // Keep them synced
+            
+            // Sync the summary week selector
+            var summarySelect = document.getElementById('summaryWeekSelect');
+            if (summarySelect) {
+                summarySelect.value = currentWeek;
+            }
+            
+            document.getElementById('summaryWeek').textContent = currentWeek;
+            renderAllPicks();
+            updateCalculations();
+        }
+
+        function updateWeekFromSummary() {
+            currentWeek = parseInt(document.getElementById('summaryWeekSelect').value);
+            currentNFLWeek = currentWeek; // Keep them synced
+            
+            // Sync the main week selector
+            var mainSelect = document.getElementById('currentWeek');
+            if (mainSelect) {
+                mainSelect.value = currentWeek;
+            }
+            
             document.getElementById('summaryWeek').textContent = currentWeek;
             renderAllPicks();
             updateCalculations();
