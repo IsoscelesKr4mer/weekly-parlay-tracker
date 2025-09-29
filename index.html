@@ -373,20 +373,6 @@
             font-weight: 600;
             color: #4CAF50;
         }
-        
-        .odds-converter {
-            background: #f9f9f9;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-        
-        .odds-converter-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            align-items: end;
-        }
     </style>
 </head>
 <body>
@@ -473,24 +459,6 @@
                             <option value="19">19 Legs</option>
                             <option value="20">20 Legs</option>
                         </select>
-                    </div>
-                </div>
-                
-                <div class="odds-converter">
-                    <h3>Odds Converter</h3>
-                    <div class="odds-converter-grid">
-                        <div class="form-group">
-                            <label>American Odds</label>
-                            <input type="text" id="americanOdds" placeholder="-110" onchange="convertOdds()">
-                        </div>
-                        <div class="form-group">
-                            <label>Decimal Odds</label>
-                            <input type="text" id="decimalOdds" placeholder="1.91" onchange="convertFromDecimal()">
-                        </div>
-                        <div class="form-group">
-                            <label>Implied Probability</label>
-                            <input type="text" id="impliedProb" readonly>
-                        </div>
                     </div>
                 </div>
                 
@@ -625,24 +593,314 @@
             measurementId: "G-E7F4G8DEN8"
         };
 
-        var sampleNFLSchedule = {
+        var nfl2025Schedule = {
             1: [
-                { matchup: 'Kansas City Chiefs @ Detroit Lions', time: 'TNF' },
-                { matchup: 'Buffalo Bills @ Arizona Cardinals', time: 'Early' },
-                { matchup: 'Pittsburgh Steelers @ Atlanta Falcons', time: 'Early' },
-                { matchup: 'Houston Texans @ Indianapolis Colts', time: 'Early' },
-                { matchup: 'Miami Dolphins @ Jacksonville Jaguars', time: 'Early' },
+                { matchup: 'Dallas Cowboys @ Philadelphia Eagles', time: 'TNF' },
+                { matchup: 'Kansas City Chiefs @ Los Angeles Chargers', time: 'Early' },
+                { matchup: 'Las Vegas Raiders @ New England Patriots', time: 'Early' },
+                { matchup: 'Pittsburgh Steelers @ New York Jets', time: 'Early' },
+                { matchup: 'Miami Dolphins @ Indianapolis Colts', time: 'Early' },
+                { matchup: 'Arizona Cardinals @ New Orleans Saints', time: 'Early' },
+                { matchup: 'New York Giants @ Washington Commanders', time: 'Early' },
+                { matchup: 'Carolina Panthers @ Jacksonville Jaguars', time: 'Early' },
+                { matchup: 'Cincinnati Bengals @ Cleveland Browns', time: 'Early' },
+                { matchup: 'Tampa Bay Buccaneers @ Atlanta Falcons', time: 'Early' },
+                { matchup: 'Tennessee Titans @ Denver Broncos', time: 'Late' },
+                { matchup: 'San Francisco 49ers @ Seattle Seahawks', time: 'Late' },
+                { matchup: 'Detroit Lions @ Green Bay Packers', time: 'Late' },
+                { matchup: 'Houston Texans @ Los Angeles Rams', time: 'Late' },
+                { matchup: 'Baltimore Ravens @ Buffalo Bills', time: 'SNF' },
+                { matchup: 'Minnesota Vikings @ Chicago Bears', time: 'MNF' }
+            ],
+            2: [
+                { matchup: 'Washington Commanders @ Green Bay Packers', time: 'TNF' },
+                { matchup: 'Jacksonville Jaguars @ Cincinnati Bengals', time: 'Early' },
+                { matchup: 'Buffalo Bills @ New York Jets', time: 'Early' },
+                { matchup: 'New England Patriots @ Miami Dolphins', time: 'Early' },
+                { matchup: 'Los Angeles Rams @ Tennessee Titans', time: 'Early' },
+                { matchup: 'Cleveland Browns @ Baltimore Ravens', time: 'Early' },
+                { matchup: 'San Francisco 49ers @ New Orleans Saints', time: 'Early' },
+                { matchup: 'New York Giants @ Dallas Cowboys', time: 'Early' },
+                { matchup: 'Seattle Seahawks @ Pittsburgh Steelers', time: 'Early' },
+                { matchup: 'Chicago Bears @ Detroit Lions', time: 'Early' },
+                { matchup: 'Denver Broncos @ Indianapolis Colts', time: 'Late' },
+                { matchup: 'Carolina Panthers @ Arizona Cardinals', time: 'Late' },
+                { matchup: 'Philadelphia Eagles @ Kansas City Chiefs', time: 'Late' },
+                { matchup: 'Atlanta Falcons @ Minnesota Vikings', time: 'SNF' },
+                { matchup: 'Tampa Bay Buccaneers @ Houston Texans', time: 'MNF' },
+                { matchup: 'Los Angeles Chargers @ Las Vegas Raiders', time: 'MNF' }
+            ],
+            3: [
+                { matchup: 'Miami Dolphins @ Buffalo Bills', time: 'TNF' },
+                { matchup: 'Pittsburgh Steelers @ New England Patriots', time: 'Early' },
+                { matchup: 'Houston Texans @ Jacksonville Jaguars', time: 'Early' },
+                { matchup: 'Indianapolis Colts @ Tennessee Titans', time: 'Early' },
+                { matchup: 'Cincinnati Bengals @ Minnesota Vikings', time: 'Early' },
+                { matchup: 'New York Jets @ Tampa Bay Buccaneers', time: 'Early' },
+                { matchup: 'Green Bay Packers @ Cleveland Browns', time: 'Early' },
+                { matchup: 'Las Vegas Raiders @ Washington Commanders', time: 'Early' },
+                { matchup: 'Atlanta Falcons @ Carolina Panthers', time: 'Early' },
+                { matchup: 'Los Angeles Rams @ Philadelphia Eagles', time: 'Early' },
+                { matchup: 'New Orleans Saints @ Seattle Seahawks', time: 'Late' },
+                { matchup: 'Denver Broncos @ Los Angeles Chargers', time: 'Late' },
+                { matchup: 'Dallas Cowboys @ Chicago Bears', time: 'Late' },
+                { matchup: 'Arizona Cardinals @ San Francisco 49ers', time: 'Late' },
+                { matchup: 'Kansas City Chiefs @ New York Giants', time: 'SNF' },
+                { matchup: 'Detroit Lions @ Baltimore Ravens', time: 'MNF' }
+            ],
+            4: [
+                { matchup: 'Seattle Seahawks @ Arizona Cardinals', time: 'TNF' },
+                { matchup: 'Minnesota Vikings @ Pittsburgh Steelers', time: 'Early' },
+                { matchup: 'New Orleans Saints @ Buffalo Bills', time: 'Early' },
+                { matchup: 'Washington Commanders @ Atlanta Falcons', time: 'Early' },
+                { matchup: 'Los Angeles Chargers @ New York Giants', time: 'Early' },
+                { matchup: 'Tennessee Titans @ Houston Texans', time: 'Early' },
+                { matchup: 'Cleveland Browns @ Detroit Lions', time: 'Early' },
+                { matchup: 'Carolina Panthers @ New England Patriots', time: 'Early' },
+                { matchup: 'Philadelphia Eagles @ Tampa Bay Buccaneers', time: 'Early' },
+                { matchup: 'Jacksonville Jaguars @ San Francisco 49ers', time: 'Late' },
+                { matchup: 'Indianapolis Colts @ Los Angeles Rams', time: 'Late' },
+                { matchup: 'Baltimore Ravens @ Kansas City Chiefs', time: 'Late' },
+                { matchup: 'Chicago Bears @ Las Vegas Raiders', time: 'Late' },
+                { matchup: 'Green Bay Packers @ Dallas Cowboys', time: 'SNF' },
+                { matchup: 'New York Jets @ Miami Dolphins', time: 'MNF' },
+                { matchup: 'Cincinnati Bengals @ Denver Broncos', time: 'MNF' }
+            ],
+            5: [
+                { matchup: 'San Francisco 49ers @ Los Angeles Rams', time: 'TNF' },
+                { matchup: 'Minnesota Vikings @ Cleveland Browns', time: 'Early' },
+                { matchup: 'New York Giants @ New Orleans Saints', time: 'Early' },
+                { matchup: 'Denver Broncos @ Philadelphia Eagles', time: 'Early' },
+                { matchup: 'Houston Texans @ Baltimore Ravens', time: 'Early' },
+                { matchup: 'Dallas Cowboys @ New York Jets', time: 'Early' },
+                { matchup: 'Las Vegas Raiders @ Indianapolis Colts', time: 'Early' },
+                { matchup: 'Miami Dolphins @ Carolina Panthers', time: 'Early' },
+                { matchup: 'Tennessee Titans @ Arizona Cardinals', time: 'Late' },
+                { matchup: 'Tampa Bay Buccaneers @ Seattle Seahawks', time: 'Late' },
+                { matchup: 'Washington Commanders @ Los Angeles Chargers', time: 'Late' },
+                { matchup: 'Detroit Lions @ Cincinnati Bengals', time: 'Late' },
+                { matchup: 'New England Patriots @ Buffalo Bills', time: 'SNF' },
+                { matchup: 'Kansas City Chiefs @ Jacksonville Jaguars', time: 'MNF' }
+            ],
+            6: [
+                { matchup: 'Philadelphia Eagles @ New York Giants', time: 'TNF' },
+                { matchup: 'Denver Broncos @ New York Jets', time: 'Early' },
+                { matchup: 'Cleveland Browns @ Pittsburgh Steelers', time: 'Early' },
+                { matchup: 'Los Angeles Chargers @ Miami Dolphins', time: 'Early' },
+                { matchup: 'San Francisco 49ers @ Tampa Bay Buccaneers', time: 'Early' },
+                { matchup: 'Seattle Seahawks @ Jacksonville Jaguars', time: 'Early' },
+                { matchup: 'Dallas Cowboys @ Carolina Panthers', time: 'Early' },
+                { matchup: 'Los Angeles Rams @ Baltimore Ravens', time: 'Early' },
+                { matchup: 'Arizona Cardinals @ Indianapolis Colts', time: 'Early' },
+                { matchup: 'Tennessee Titans @ Las Vegas Raiders', time: 'Late' },
+                { matchup: 'Cincinnati Bengals @ Green Bay Packers', time: 'Late' },
+                { matchup: 'New England Patriots @ New Orleans Saints', time: 'Late' },
+                { matchup: 'Detroit Lions @ Kansas City Chiefs', time: 'SNF' },
+                { matchup: 'Chicago Bears @ Washington Commanders', time: 'MNF' },
+                { matchup: 'Buffalo Bills @ Atlanta Falcons', time: 'MNF' }
+            ],
+            7: [
+                { matchup: 'Pittsburgh Steelers @ Cincinnati Bengals', time: 'TNF' },
+                { matchup: 'Los Angeles Rams @ Jacksonville Jaguars', time: 'Early' },
+                { matchup: 'New England Patriots @ Tennessee Titans', time: 'Early' },
+                { matchup: 'Miami Dolphins @ Cleveland Browns', time: 'Early' },
+                { matchup: 'Las Vegas Raiders @ Kansas City Chiefs', time: 'Early' },
+                { matchup: 'Carolina Panthers @ New York Jets', time: 'Early' },
+                { matchup: 'New Orleans Saints @ Chicago Bears', time: 'Early' },
+                { matchup: 'Philadelphia Eagles @ Minnesota Vikings', time: 'Early' },
+                { matchup: 'New York Giants @ Denver Broncos', time: 'Late' },
+                { matchup: 'Indianapolis Colts @ Los Angeles Chargers', time: 'Late' },
+                { matchup: 'Washington Commanders @ Dallas Cowboys', time: 'Late' },
+                { matchup: 'Green Bay Packers @ Arizona Cardinals', time: 'Late' },
+                { matchup: 'Atlanta Falcons @ San Francisco 49ers', time: 'SNF' },
+                { matchup: 'Tampa Bay Buccaneers @ Detroit Lions', time: 'MNF' },
+                { matchup: 'Houston Texans @ Seattle Seahawks', time: 'MNF' }
+            ],
+            8: [
+                { matchup: 'Minnesota Vikings @ Los Angeles Chargers', time: 'TNF' },
+                { matchup: 'New York Jets @ Cincinnati Bengals', time: 'Early' },
+                { matchup: 'Chicago Bears @ Baltimore Ravens', time: 'Early' },
+                { matchup: 'Miami Dolphins @ Atlanta Falcons', time: 'Early' },
+                { matchup: 'Cleveland Browns @ New England Patriots', time: 'Early' },
+                { matchup: 'New York Giants @ Philadelphia Eagles', time: 'Early' },
+                { matchup: 'Buffalo Bills @ Carolina Panthers', time: 'Early' },
+                { matchup: 'San Francisco 49ers @ Houston Texans', time: 'Early' },
+                { matchup: 'Tampa Bay Buccaneers @ New Orleans Saints', time: 'Late' },
+                { matchup: 'Dallas Cowboys @ Denver Broncos', time: 'Late' },
+                { matchup: 'Tennessee Titans @ Indianapolis Colts', time: 'Late' },
+                { matchup: 'Green Bay Packers @ Pittsburgh Steelers', time: 'SNF' },
+                { matchup: 'Washington Commanders @ Kansas City Chiefs', time: 'MNF' }
+            ],
+            9: [
+                { matchup: 'Baltimore Ravens @ Miami Dolphins', time: 'TNF' },
+                { matchup: 'Indianapolis Colts @ Pittsburgh Steelers', time: 'Early' },
+                { matchup: 'Atlanta Falcons @ New England Patriots', time: 'Early' },
+                { matchup: 'Chicago Bears @ Cincinnati Bengals', time: 'Early' },
+                { matchup: 'Los Angeles Chargers @ Tennessee Titans', time: 'Early' },
+                { matchup: 'San Francisco 49ers @ New York Giants', time: 'Early' },
+                { matchup: 'Carolina Panthers @ Green Bay Packers', time: 'Early' },
+                { matchup: 'Denver Broncos @ Houston Texans', time: 'Early' },
+                { matchup: 'Minnesota Vikings @ Detroit Lions', time: 'Early' },
+                { matchup: 'Jacksonville Jaguars @ Las Vegas Raiders', time: 'Late' },
+                { matchup: 'New Orleans Saints @ Los Angeles Rams', time: 'Late' },
+                { matchup: 'Kansas City Chiefs @ Buffalo Bills', time: 'Late' },
+                { matchup: 'Seattle Seahawks @ Washington Commanders', time: 'SNF' },
+                { matchup: 'Arizona Cardinals @ Dallas Cowboys', time: 'MNF' }
+            ],
+            10: [
+                { matchup: 'Las Vegas Raiders @ Denver Broncos', time: 'TNF' },
+                { matchup: 'Atlanta Falcons @ Indianapolis Colts', time: 'Early' },
+                { matchup: 'Jacksonville Jaguars @ Houston Texans', time: 'Early' },
+                { matchup: 'Buffalo Bills @ Miami Dolphins', time: 'Early' },
+                { matchup: 'New England Patriots @ Tampa Bay Buccaneers', time: 'Early' },
+                { matchup: 'Cleveland Browns @ New York Jets', time: 'Early' },
+                { matchup: 'New York Giants @ Chicago Bears', time: 'Early' },
+                { matchup: 'New Orleans Saints @ Carolina Panthers', time: 'Early' },
+                { matchup: 'Baltimore Ravens @ Minnesota Vikings', time: 'Early' },
+                { matchup: 'Arizona Cardinals @ Seattle Seahawks', time: 'Late' },
+                { matchup: 'Los Angeles Rams @ San Francisco 49ers', time: 'Late' },
+                { matchup: 'Detroit Lions @ Washington Commanders', time: 'Late' },
+                { matchup: 'Pittsburgh Steelers @ Los Angeles Chargers', time: 'SNF' },
+                { matchup: 'Philadelphia Eagles @ Green Bay Packers', time: 'MNF' }
+            ],
+            11: [
+                { matchup: 'New York Jets @ New England Patriots', time: 'TNF' },
+                { matchup: 'Washington Commanders @ Miami Dolphins', time: 'Early' },
+                { matchup: 'Tampa Bay Buccaneers @ Buffalo Bills', time: 'Early' },
+                { matchup: 'Los Angeles Chargers @ Jacksonville Jaguars', time: 'Early' },
+                { matchup: 'Cincinnati Bengals @ Pittsburgh Steelers', time: 'Early' },
+                { matchup: 'Carolina Panthers @ Atlanta Falcons', time: 'Early' },
+                { matchup: 'Green Bay Packers @ New York Giants', time: 'Early' },
+                { matchup: 'Chicago Bears @ Minnesota Vikings', time: 'Early' },
+                { matchup: 'Houston Texans @ Tennessee Titans', time: 'Early' },
+                { matchup: 'San Francisco 49ers @ Arizona Cardinals', time: 'Late' },
+                { matchup: 'Seattle Seahawks @ Los Angeles Rams', time: 'Late' },
+                { matchup: 'Kansas City Chiefs @ Denver Broncos', time: 'Late' },
+                { matchup: 'Baltimore Ravens @ Cleveland Browns', time: 'Late' },
+                { matchup: 'Detroit Lions @ Philadelphia Eagles', time: 'SNF' },
+                { matchup: 'Dallas Cowboys @ Las Vegas Raiders', time: 'MNF' }
+            ],
+            12: [
+                { matchup: 'Buffalo Bills @ Houston Texans', time: 'TNF' },
                 { matchup: 'New England Patriots @ Cincinnati Bengals', time: 'Early' },
-                { matchup: 'Carolina Panthers @ New Orleans Saints', time: 'Early' },
+                { matchup: 'Pittsburgh Steelers @ Chicago Bears', time: 'Early' },
+                { matchup: 'Indianapolis Colts @ Kansas City Chiefs', time: 'Early' },
+                { matchup: 'New York Jets @ Baltimore Ravens', time: 'Early' },
+                { matchup: 'New York Giants @ Detroit Lions', time: 'Early' },
+                { matchup: 'Seattle Seahawks @ Tennessee Titans', time: 'Early' },
+                { matchup: 'Minnesota Vikings @ Green Bay Packers', time: 'Early' },
+                { matchup: 'Cleveland Browns @ Las Vegas Raiders', time: 'Late' },
+                { matchup: 'Jacksonville Jaguars @ Arizona Cardinals', time: 'Late' },
+                { matchup: 'Atlanta Falcons @ New Orleans Saints', time: 'Late' },
+                { matchup: 'Philadelphia Eagles @ Dallas Cowboys', time: 'Late' },
+                { matchup: 'Tampa Bay Buccaneers @ Los Angeles Rams', time: 'SNF' },
+                { matchup: 'Carolina Panthers @ San Francisco 49ers', time: 'MNF' }
+            ],
+            13: [
+                { matchup: 'Green Bay Packers @ Detroit Lions', time: 'TNF' },
+                { matchup: 'Kansas City Chiefs @ Dallas Cowboys', time: 'Early' },
+                { matchup: 'Cincinnati Bengals @ Baltimore Ravens', time: 'Late' },
+                { matchup: 'Chicago Bears @ Philadelphia Eagles', time: 'Early' },
+                { matchup: 'San Francisco 49ers @ Cleveland Browns', time: 'Early' },
+                { matchup: 'Jacksonville Jaguars @ Tennessee Titans', time: 'Early' },
+                { matchup: 'Houston Texans @ Indianapolis Colts', time: 'Early' },
+                { matchup: 'Arizona Cardinals @ Tampa Bay Buccaneers', time: 'Early' },
+                { matchup: 'New Orleans Saints @ Miami Dolphins', time: 'Early' },
+                { matchup: 'Atlanta Falcons @ New York Jets', time: 'Early' },
+                { matchup: 'Los Angeles Rams @ Carolina Panthers', time: 'Early' },
+                { matchup: 'Minnesota Vikings @ Seattle Seahawks', time: 'Late' },
+                { matchup: 'Buffalo Bills @ Pittsburgh Steelers', time: 'Late' },
+                { matchup: 'Las Vegas Raiders @ Los Angeles Chargers', time: 'Late' },
+                { matchup: 'Denver Broncos @ Washington Commanders', time: 'SNF' },
+                { matchup: 'New York Giants @ New England Patriots', time: 'MNF' }
+            ],
+            14: [
+                { matchup: 'Dallas Cowboys @ Detroit Lions', time: 'TNF' },
+                { matchup: 'Indianapolis Colts @ Jacksonville Jaguars', time: 'Early' },
+                { matchup: 'New Orleans Saints @ Tampa Bay Buccaneers', time: 'Early' },
+                { matchup: 'Miami Dolphins @ New York Jets', time: 'Early' },
+                { matchup: 'Pittsburgh Steelers @ Baltimore Ravens', time: 'Early' },
+                { matchup: 'Seattle Seahawks @ Atlanta Falcons', time: 'Early' },
+                { matchup: 'Tennessee Titans @ Cleveland Browns', time: 'Early' },
+                { matchup: 'Washington Commanders @ Minnesota Vikings', time: 'Early' },
+                { matchup: 'Chicago Bears @ Green Bay Packers', time: 'Early' },
+                { matchup: 'Denver Broncos @ Las Vegas Raiders', time: 'Late' },
+                { matchup: 'Los Angeles Rams @ Arizona Cardinals', time: 'Late' },
+                { matchup: 'Cincinnati Bengals @ Buffalo Bills', time: 'Late' },
+                { matchup: 'Houston Texans @ Kansas City Chiefs', time: 'SNF' },
+                { matchup: 'Philadelphia Eagles @ Los Angeles Chargers', time: 'MNF' }
+            ],
+            15: [
+                { matchup: 'Atlanta Falcons @ Tampa Bay Buccaneers', time: 'TNF' },
+                { matchup: 'Los Angeles Chargers @ Kansas City Chiefs', time: 'Early' },
+                { matchup: 'Buffalo Bills @ New England Patriots', time: 'Early' },
+                { matchup: 'New York Jets @ Jacksonville Jaguars', time: 'Early' },
+                { matchup: 'Baltimore Ravens @ Cincinnati Bengals', time: 'Early' },
+                { matchup: 'Las Vegas Raiders @ Philadelphia Eagles', time: 'Early' },
+                { matchup: 'Arizona Cardinals @ Houston Texans', time: 'Early' },
+                { matchup: 'Washington Commanders @ New York Giants', time: 'Early' },
+                { matchup: 'Cleveland Browns @ Chicago Bears', time: 'Early' },
+                { matchup: 'Detroit Lions @ Los Angeles Rams', time: 'Late' },
+                { matchup: 'Tennessee Titans @ San Francisco 49ers', time: 'Late' },
+                { matchup: 'Carolina Panthers @ New Orleans Saints', time: 'Late' },
+                { matchup: 'Green Bay Packers @ Denver Broncos', time: 'Late' },
+                { matchup: 'Indianapolis Colts @ Seattle Seahawks', time: 'Late' },
+                { matchup: 'Minnesota Vikings @ Dallas Cowboys', time: 'SNF' },
+                { matchup: 'Miami Dolphins @ Pittsburgh Steelers', time: 'MNF' }
+            ],
+            16: [
+                { matchup: 'Los Angeles Rams @ Seattle Seahawks', time: 'TNF' },
+                { matchup: 'Green Bay Packers @ Chicago Bears', time: 'Early' },
+                { matchup: 'Philadelphia Eagles @ Washington Commanders', time: 'Early' },
+                { matchup: 'Kansas City Chiefs @ Tennessee Titans', time: 'Early' },
+                { matchup: 'New York Jets @ New Orleans Saints', time: 'Early' },
+                { matchup: 'New England Patriots @ Baltimore Ravens', time: 'Early' },
+                { matchup: 'Buffalo Bills @ Cleveland Browns', time: 'Early' },
+                { matchup: 'Tampa Bay Buccaneers @ Carolina Panthers', time: 'Early' },
                 { matchup: 'Minnesota Vikings @ New York Giants', time: 'Early' },
-                { matchup: 'Tennessee Titans @ Chicago Bears', time: 'Early' },
-                { matchup: 'Los Angeles Chargers @ Las Vegas Raiders', time: 'Late' },
-                { matchup: 'Denver Broncos @ Seattle Seahawks', time: 'Late' },
-                { matchup: 'Green Bay Packers @ Philadelphia Eagles', time: 'Late' },
-                { matchup: 'Tampa Bay Buccaneers @ Washington Commanders', time: 'Late' },
-                { matchup: 'Cleveland Browns @ Dallas Cowboys', time: 'Late' },
-                { matchup: 'San Francisco 49ers @ Los Angeles Rams', time: 'SNF' },
-                { matchup: 'New York Jets @ Baltimore Ravens', time: 'MNF' }
+                { matchup: 'Los Angeles Chargers @ Dallas Cowboys', time: 'Early' },
+                { matchup: 'Atlanta Falcons @ Arizona Cardinals', time: 'Late' },
+                { matchup: 'Jacksonville Jaguars @ Denver Broncos', time: 'Late' },
+                { matchup: 'Pittsburgh Steelers @ Detroit Lions', time: 'Late' },
+                { matchup: 'Las Vegas Raiders @ Houston Texans', time: 'Late' },
+                { matchup: 'Cincinnati Bengals @ Miami Dolphins', time: 'SNF' },
+                { matchup: 'San Francisco 49ers @ Indianapolis Colts', time: 'MNF' }
+            ],
+            17: [
+                { matchup: 'Dallas Cowboys @ Washington Commanders', time: 'Early' },
+                { matchup: 'Detroit Lions @ Minnesota Vikings', time: 'Early' },
+                { matchup: 'Denver Broncos @ Kansas City Chiefs', time: 'Late' },
+                { matchup: 'New York Giants @ Las Vegas Raiders', time: 'Early' },
+                { matchup: 'Houston Texans @ Los Angeles Chargers', time: 'Early' },
+                { matchup: 'Arizona Cardinals @ Cincinnati Bengals', time: 'Early' },
+                { matchup: 'Baltimore Ravens @ Green Bay Packers', time: 'Early' },
+                { matchup: 'Seattle Seahawks @ Carolina Panthers', time: 'Early' },
+                { matchup: 'New Orleans Saints @ Tennessee Titans', time: 'Early' },
+                { matchup: 'Pittsburgh Steelers @ Cleveland Browns', time: 'Early' },
+                { matchup: 'New England Patriots @ New York Jets', time: 'Early' },
+                { matchup: 'Jacksonville Jaguars @ Indianapolis Colts', time: 'Early' },
+                { matchup: 'Tampa Bay Buccaneers @ Miami Dolphins', time: 'Early' },
+                { matchup: 'Philadelphia Eagles @ Buffalo Bills', time: 'Late' },
+                { matchup: 'Chicago Bears @ San Francisco 49ers', time: 'SNF' },
+                { matchup: 'Los Angeles Rams @ Atlanta Falcons', time: 'MNF' }
+            ],
+            18: [
+                { matchup: 'New York Jets @ Buffalo Bills', time: 'Early' },
+                { matchup: 'Kansas City Chiefs @ Las Vegas Raiders', time: 'Early' },
+                { matchup: 'Baltimore Ravens @ Pittsburgh Steelers', time: 'Early' },
+                { matchup: 'Cleveland Browns @ Cincinnati Bengals', time: 'Early' },
+                { matchup: 'Miami Dolphins @ New England Patriots', time: 'Early' },
+                { matchup: 'Tennessee Titans @ Jacksonville Jaguars', time: 'Early' },
+                { matchup: 'Los Angeles Chargers @ Denver Broncos', time: 'Early' },
+                { matchup: 'Indianapolis Colts @ Houston Texans', time: 'Early' },
+                { matchup: 'Detroit Lions @ Chicago Bears', time: 'Early' },
+                { matchup: 'Green Bay Packers @ Minnesota Vikings', time: 'Early' },
+                { matchup: 'New Orleans Saints @ Atlanta Falcons', time: 'Early' },
+                { matchup: 'Seattle Seahawks @ San Francisco 49ers', time: 'Early' },
+                { matchup: 'Washington Commanders @ Philadelphia Eagles', time: 'Early' },
+                { matchup: 'Dallas Cowboys @ New York Giants', time: 'Early' },
+                { matchup: 'Carolina Panthers @ Tampa Bay Buccaneers', time: 'Early' },
+                { matchup: 'Arizona Cardinals @ Los Angeles Rams', time: 'Early' }
             ]
         };
 
@@ -662,18 +920,27 @@
                 console.error('Firebase error:', error);
             }
             
-            nflSchedule = sampleNFLSchedule;
+            nflSchedule = nfl2025Schedule;
             renderAllPicks();
             updateCalculations();
         }
 
         function updateNFLWeek() {
             currentNFLWeek = parseInt(document.getElementById('nflWeek').value);
+            // Sync the parlay week to match NFL week
+            currentWeek = currentNFLWeek;
+            document.getElementById('currentWeek').value = currentWeek;
+            document.getElementById('weekDisplay').textContent = currentWeek;
+            document.getElementById('summaryWeek').textContent = currentWeek;
             renderAllPicks();
+            updateCalculations();
         }
 
         function updateWeek() {
             currentWeek = parseInt(document.getElementById('currentWeek').value);
+            // Sync the NFL week to match parlay week
+            currentNFLWeek = currentWeek;
+            document.getElementById('nflWeek').value = currentNFLWeek;
             document.getElementById('weekDisplay').textContent = currentWeek;
             document.getElementById('summaryWeek').textContent = currentWeek;
             renderAllPicks();
