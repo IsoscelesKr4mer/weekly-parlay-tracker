@@ -252,6 +252,20 @@
             justify-content: center;
         }
         
+        .button-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        .button-group-left {
+            justify-content: flex-start;
+        }
+        
+        .button-group-right {
+            justify-content: flex-end;
+        }
+        
         .result-btn {
             padding: 10px 16px;
             font-size: 14px;
@@ -1331,12 +1345,17 @@
                 '<option value="MNF"' + (pick && pick.timeSlot === 'MNF' ? ' selected' : '') + '>MNF</option>' +
                 '</select></div>' +
                 '</div>' + voidWarning +
-                '<div class="result-buttons">' +
+                '<div style="display: flex; gap: 8px; margin-top: 15px; align-items: center; flex-wrap: wrap; justify-content: space-between;">' +
+                '<div style="display: flex; gap: 8px;">' +
                 '<button class="result-btn" id="saveBtn' + index + '" style="background: #757575; color: white; cursor: not-allowed;" onclick="savePick(' + index + ')" disabled>💾 Save</button>' +
+                '<button class="result-btn" style="background: #f44336; color: white;" onclick="clearIndividualPick(' + index + ')">🗑️ Clear Pick</button>' +
+                '</div>' +
+                '<div style="display: flex; gap: 8px;">' +
                 '<button class="result-btn win ' + winActive + '" onclick="toggleResult(' + index + ', true)">✓ Win</button>' +
                 '<button class="result-btn loss ' + lossActive + '" onclick="toggleResult(' + index + ', false)">✗ Loss</button>' +
                 '<button class="result-btn draw ' + drawActive + '" onclick="toggleResult(' + index + ', \'draw\')">🤝 Draw</button>' +
                 '<button class="result-btn reset" onclick="toggleResult(' + index + ', null)">↻ Reset</button>' +
+                '</div>' +
                 '</div>';
             
             div.innerHTML = html;
@@ -2024,6 +2043,24 @@
                 
                 var impliedProb = (1 / decimal) * 100;
                 document.getElementById('impliedProb').value = impliedProb.toFixed(1) + '%';
+            }
+        }
+
+        function clearIndividualPick(index) {
+            if (confirm('Are you sure you want to clear this pick?')) {
+                if (weeklyPicks[currentWeek] && weeklyPicks[currentWeek][index]) {
+                    // Clear the pick completely
+                    weeklyPicks[currentWeek][index] = null;
+                    
+                    // Save to Firebase
+                    saveToFirebase();
+                    
+                    showNotification('Pick cleared successfully!', 'success');
+                    updateCalculations();
+                    renderAllPicks();
+                } else {
+                    showNotification('No pick to clear at this position.', 'info');
+                }
             }
         }
 
