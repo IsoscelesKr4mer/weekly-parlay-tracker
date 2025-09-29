@@ -131,8 +131,8 @@
         }
         
         .pick-slot.filled {
-            border-color: #2196F3;
-            background: linear-gradient(135deg, #f0f9ff, #e3f2fd);
+            border-color: #e0e0e0;
+            background: white;
         }
         
         .pick-slot.win {
@@ -232,6 +232,13 @@
             color: white;
         }
         
+        .result-indicator.submitted {
+            background: #4CAF50;
+            color: white;
+            font-weight: bold;
+            border: 2px solid #45a049;
+        }
+
         .result-indicator.pending {
             background: #757575;
             color: white;
@@ -1119,6 +1126,7 @@
             var activeLegs = picks.filter(function(p) { return p.result !== 'draw'; });
             var hasOnlyOneLeg = activeLegs.length === 1;
             
+            // Determine SGP status
             var status = 'PENDING';
             var statusClass = 'pending';
             var results = picks.map(function(p) { return p.result; });
@@ -1132,11 +1140,24 @@
             } else if (results.some(function(r) { return r === 'draw'; })) {
                 status = 'DRAW';
                 statusClass = 'draw';
+            } else if (picks[0].sgpOdds && picks[0].sgpOdds.trim() !== '') {
+                status = '✓ SUBMITTED';
+                statusClass = 'submitted';
             }
             
             var sgpOddsStyle = hasOnlyOneLeg ? 
                 'width: 120px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; text-decoration: line-through; color: #999; background: #f5f5f5;' :
                 'width: 120px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;';
+            
+            var sgpOddsValue = picks[0].sgpOdds || '';
+            var saveButtonStyle = (sgpOddsValue && sgpOddsValue.trim() !== '') ? 
+                'background: #757575; cursor: not-allowed;' : 
+                'background: #4CAF50; cursor: pointer;';
+            var saveButtonText = (sgpOddsValue && sgpOddsValue.trim() !== '') ? 
+                '💾 SGP Saved' : 
+                '💾 Save SGP';
+            var saveButtonDisabled = (sgpOddsValue && sgpOddsValue.trim() !== '') ? 
+                'disabled' : '';
             
             var html = '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">' +
                 '<div style="font-size: 16px; font-weight: bold; color: #FF9800;">' + game + (hasOnlyOneLeg ? ' (Single Bet)' : '') + '</div>' +
@@ -1145,7 +1166,7 @@
                 '<div style="display: flex; justify-content: flex-end; margin-bottom: 15px;">' +
                 '<div style="display: flex; align-items: center; gap: 10px; background: white; border: 2px solid #FF9800; border-radius: 8px; padding: 8px 12px;">' +
                 '<label style="font-size: 14px; font-weight: bold; color: #FF9800; margin: 0;">SGP Odds' + (hasOnlyOneLeg ? ' (not used)' : '') + ':</label>' +
-                '<input type="text" value="' + (picks[0].sgpOdds || '') + '" placeholder="-110, +200" data-game="' + game + '" class="sgp-odds-input" style="' + sgpOddsStyle + '" onblur="formatSGPOddsInput(this)" ' + (hasOnlyOneLeg ? 'readonly' : '') + '>' +
+                '<input type="text" value="' + sgpOddsValue + '" placeholder="-110, +200" data-game="' + game + '" class="sgp-odds-input" style="' + sgpOddsStyle + '" onblur="formatSGPOddsInput(this)" onchange="enableSGPSaveButton(\'' + game + '\')" data-original="' + sgpOddsValue + '" ' + (hasOnlyOneLeg ? 'readonly' : '') + '>' +
                 '</div>' +
                 '</div>';
             
@@ -1161,8 +1182,10 @@
             btnDiv.style.cssText = 'text-align: center; margin-top: 15px;';
             var saveBtn = document.createElement('button');
             saveBtn.className = 'btn';
-            saveBtn.style.background = '#4CAF50';
-            saveBtn.textContent = '💾 Save SGP';
+            saveBtn.style.cssText = saveButtonStyle + '; color: white;';
+            saveBtn.textContent = saveButtonText;
+            saveBtn.id = 'sgpSaveBtn_' + gameId;
+            if (saveButtonDisabled) saveBtn.disabled = true;
             saveBtn.onclick = function() {
                 saveSGPOdds(game);
             };
@@ -1177,8 +1200,26 @@
             div.className = 'pick-slot';
             div.style.cssText = 'background: rgba(255, 152, 0, 0.05); border-color: #FFB74D; margin-bottom: 15px;';
             
-            var resultClass = pick.result === true ? 'win' : pick.result === false ? 'loss' : pick.result === 'draw' ? 'draw' : 'pending';
-            var resultText = pick.result === true ? 'WIN' : pick.result === false ? 'LOSS' : pick.result === 'draw' ? 'DRAW' : 'PENDING';
+            // Determine result status and styling  
+            var resultClass, resultText;
+            var isSubmitted = pick && pick.playerName && pick.pick && pick.odds;
+            
+            if (pick.result === true) {
+                resultClass = 'win';
+                resultText = 'WIN';
+            } else if (pick.result === false) {
+                resultClass = 'loss';
+                resultText = 'LOSS';
+            } else if (pick.result === 'draw') {
+                resultClass = 'draw';
+                resultText = 'DRAW';
+            } else if (isSubmitted) {
+                resultClass = 'submitted';
+                resultText = '✓ SUBMITTED';
+            } else {
+                resultClass = 'pending';
+                resultText = 'PENDING';
+            }
             
             var winActive = pick.result === true ? 'active' : '';
             var lossActive = pick.result === false ? 'active' : '';
@@ -1237,8 +1278,26 @@
             }
             div.className = className;
             
-            var resultClass = pick && pick.result === true ? 'win' : pick && pick.result === false ? 'loss' : pick && pick.result === 'draw' ? 'draw' : 'pending';
-            var resultText = pick && pick.result === true ? 'WIN' : pick && pick.result === false ? 'LOSS' : pick && pick.result === 'draw' ? 'DRAW' : 'PENDING';
+            // Determine result status and styling
+            var resultClass, resultText;
+            var isSubmitted = pick && pick.playerName && pick.pick && pick.odds;
+            
+            if (pick && pick.result === true) {
+                resultClass = 'win';
+                resultText = 'WIN';
+            } else if (pick && pick.result === false) {
+                resultClass = 'loss'; 
+                resultText = 'LOSS';
+            } else if (pick && pick.result === 'draw') {
+                resultClass = 'draw';
+                resultText = 'DRAW';
+            } else if (isSubmitted) {
+                resultClass = 'submitted';
+                resultText = '✓ SUBMITTED';
+            } else {
+                resultClass = 'pending';
+                resultText = 'PENDING';
+            }
             
             var winActive = pick && pick.result === true ? 'active' : '';
             var lossActive = pick && pick.result === false ? 'active' : '';
@@ -1362,6 +1421,31 @@
                     saveBtn.style.cursor = 'not-allowed';
                     saveBtn.textContent = '💾 Save';
                 }
+            }
+        }
+
+        function enableSGPSaveButton(game) {
+            var input = document.querySelector('.sgp-odds-input[data-game="' + game + '"]');
+            var gameId = game.replace(/[^a-zA-Z0-9]/g, '');
+            var saveBtn = document.getElementById('sgpSaveBtn_' + gameId);
+            
+            if (!input || !saveBtn) return;
+            
+            var currentValue = input.value.trim();
+            var originalValue = input.getAttribute('data-original') || '';
+            
+            var hasChanges = currentValue !== originalValue;
+            
+            if (hasChanges) {
+                saveBtn.disabled = false;
+                saveBtn.style.background = '#4CAF50';
+                saveBtn.style.cursor = 'pointer';
+                saveBtn.textContent = '💾 Save SGP Changes';
+            } else {
+                saveBtn.disabled = true;
+                saveBtn.style.background = '#757575';
+                saveBtn.style.cursor = 'not-allowed';
+                saveBtn.textContent = '💾 Save SGP';
             }
         }
 
