@@ -1085,11 +1085,17 @@
                 '<div class="pick-slot-field"><label>Game</label><input type="text" value="' + (pick.game || '') + '" readonly style="background: #f5f5f5;"></div>' +
                 '<div class="pick-slot-field"><label>Time Slot</label><input type="text" value="' + (pick.timeSlot || '') + '" readonly style="background: #f5f5f5;"></div>' +
                 '</div>' + voidWarning +
-                '<div class="result-buttons">' +
+                '<div style="display: flex; gap: 8px; margin-top: 15px; align-items: center; flex-wrap: wrap;">' +
+                '<div style="display: flex; gap: 8px;">' +
                 '<button class="result-btn win ' + winActive + '" onclick="toggleResult(' + index + ', true)">✓ Win</button>' +
                 '<button class="result-btn loss ' + lossActive + '" onclick="toggleResult(' + index + ', false)">✗ Loss</button>' +
                 '<button class="result-btn draw ' + drawActive + '" onclick="toggleResult(' + index + ', \'draw\')">🤝 Draw</button>' +
                 '<button class="result-btn reset" onclick="toggleResult(' + index + ', null)">↻ Reset</button>' +
+                '</div>' +
+                '<div style="border-left: 2px solid #ddd; padding-left: 8px; margin-left: 8px; display: flex; gap: 8px;">' +
+                '<button class="result-btn" style="background: #2196F3; color: white;" onclick="editSGPPick(' + index + ')">✏️ Edit Pick</button>' +
+                '<button class="result-btn" style="background: #f44336; color: white;" onclick="removeSGPPick(' + index + ')">🗑️ Remove</button>' +
+                '</div>' +
                 '</div>';
             
             div.innerHTML = html;
@@ -1753,6 +1759,136 @@
             checkForSGPs();
             renderAllPicks();
             updateCalculations();
+        }
+
+        function editSGPPick(index) {
+            if (!weeklyPicks[currentWeek] || !weeklyPicks[currentWeek][index]) return;
+            
+            var pick = weeklyPicks[currentWeek][index];
+            
+            // Create a temporary editable form
+            var container = document.querySelector('.sgp-group');
+            var editForm = document.createElement('div');
+            editForm.style.cssText = 'background: #fff3e0; border: 2px solid #FF9800; border-radius: 8px; padding: 15px; margin: 10px 0;';
+            
+            var playerName = pick.playerName || ('Pick ' + (index + 1));
+            
+            editForm.innerHTML = 
+                '<h4 style="color: #FF9800; margin-bottom: 10px;">Edit Pick: ' + playerName + '</h4>' +
+                '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 15px;">' +
+                '<div><label style="font-size: 12px; font-weight: bold; margin-bottom: 5px; display: block;">Pick/Bet</label>' +
+                '<input type="text" id="editPick' + index + '" value="' + (pick.pick || '') + '" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;"></div>' +
+                '<div><label style="font-size: 12px; font-weight: bold; margin-bottom: 5px; display: block;">Odds</label>' +
+                '<input type="text" id="editOdds' + index + '" value="' + (pick.odds || '') + '" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" onblur="formatEditOdds(' + index + ')"></div>' +
+                '<div><label style="font-size: 12px; font-weight: bold; margin-bottom: 5px; display: block;">Game</label>' +
+                '<select id="editGame' + index + '" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" onchange="updateEditTimeSlot(' + index + ')">' +
+                '<option value="">Select Game</option>' + generateGameOptions(pick.game) + '</select></div>' +
+                '<div><label style="font-size: 12px; font-weight: bold; margin-bottom: 5px; display: block;">Time Slot</label>' +
+                '<select id="editTimeSlot' + index + '" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">' +
+                '<option value="">Select</option>' +
+                '<option value="TNF"' + (pick.timeSlot === 'TNF' ? ' selected' : '') + '>TNF</option>' +
+                '<option value="Early"' + (pick.timeSlot === 'Early' ? ' selected' : '') + '>Early</option>' +
+                '<option value="Late"' + (pick.timeSlot === 'Late' ? ' selected' : '') + '>Late</option>' +
+                '<option value="SNF"' + (pick.timeSlot === 'SNF' ? ' selected' : '') + '>SNF</option>' +
+                '<option value="MNF"' + (pick.timeSlot === 'MNF' ? ' selected' : '') + '>MNF</option>' +
+                '</select></div>' +
+                '</div>' +
+                '<div style="display: flex; gap: 10px;">' +
+                '<button onclick="saveEditedSGPPick(' + index + ')" style="background: #4CAF50; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer;">💾 Save Changes</button>' +
+                '<button onclick="cancelEditSGPPick(' + index + ')" style="background: #757575; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer;">❌ Cancel</button>' +
+                '</div>';
+            
+            // Insert after the SGP header
+            var sgpHeader = container.querySelector('div');
+            sgpHeader.parentNode.insertBefore(editForm, sgpHeader.nextSibling);
+        }
+
+        function formatEditOdds(index) {
+            var oddsInput = document.getElementById('editOdds' + index);
+            if (!oddsInput) return;
+            
+            var oddsValue = oddsInput.value.trim();
+            if (!oddsValue) return;
+            
+            var cleanOdds = oddsValue.replace(/[+-]/g, '');
+            if (isNaN(cleanOdds) || cleanOdds === '') return;
+            
+            var numericOdds = parseInt(cleanOdds);
+            
+            if (!oddsValue.includes('+') && !oddsValue.includes('-')) {
+                if (numericOdds >= 100) {
+                    oddsInput.value = '+' + numericOdds;
+                } else {
+                    oddsInput.value = '-' + numericOdds;
+                }
+            } else if (oddsValue.startsWith('+') || oddsValue.startsWith('-')) {
+                oddsInput.value = oddsValue.charAt(0) + numericOdds;
+            }
+        }
+
+        function updateEditTimeSlot(index) {
+            var gameSelect = document.getElementById('editGame' + index);
+            var timeSlotSelect = document.getElementById('editTimeSlot' + index);
+            
+            if (!gameSelect || !timeSlotSelect) return;
+            
+            var selectedGame = gameSelect.value;
+            if (!selectedGame) return;
+            
+            var schedule = nflSchedule[currentNFLWeek] || [];
+            var game = schedule.find(function(g) {
+                return g.matchup === selectedGame;
+            });
+            
+            if (game) {
+                timeSlotSelect.value = game.time;
+            }
+        }
+
+        function saveEditedSGPPick(index) {
+            var pick = document.getElementById('editPick' + index).value.trim();
+            var odds = document.getElementById('editOdds' + index).value.trim();
+            var game = document.getElementById('editGame' + index).value;
+            var timeSlot = document.getElementById('editTimeSlot' + index).value;
+            
+            if (!pick || !odds) {
+                alert('Please fill in Pick and Odds before saving.');
+                return;
+            }
+            
+            // Update the pick
+            weeklyPicks[currentWeek][index].pick = pick;
+            weeklyPicks[currentWeek][index].odds = odds;
+            weeklyPicks[currentWeek][index].game = game;
+            weeklyPicks[currentWeek][index].timeSlot = timeSlot;
+            weeklyPicks[currentWeek][index].isSGP = false; // Remove from SGP first
+            weeklyPicks[currentWeek][index].sgpOdds = null;
+            
+            showNotification('✓ Pick updated successfully!', 'success');
+            checkForSGPs();
+            updateCalculations();
+            renderAllPicks();
+        }
+
+        function cancelEditSGPPick(index) {
+            renderAllPicks();
+        }
+
+        function removeSGPPick(index) {
+            console.log('removeSGPPick called with index:', index);
+            
+            if (weeklyPicks[currentWeek] && weeklyPicks[currentWeek][index]) {
+                console.log('Pick exists, clearing...');
+                // Clear the pick completely
+                weeklyPicks[currentWeek][index] = null;
+                
+                console.log('Pick cleared, showing notification and refreshing...');
+                showNotification('Pick removed successfully!', 'success');
+                updateCalculations();
+                renderAllPicks();
+            } else {
+                console.log('Pick does not exist or is already null');
+            }
         }
 
         function resetLeaderboard() {
