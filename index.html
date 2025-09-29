@@ -844,6 +844,14 @@
                     padding: 3px 0 !important;
                     font-size: 13px !important;
                 }
+                
+                /* Lock controls mobile layout */
+                .lock-controls button {
+                    padding: 10px 20px;
+                    font-size: 16px;
+                    width: 100%;
+                    max-width: 200px;
+                }
             }
             
             /* Extra small screens */
@@ -1069,6 +1077,27 @@
         .bet-result-value.success {
             color: #10b981;
         }
+        
+        .lock-controls {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        
+        .lock-controls button {
+            transition: all 0.2s ease;
+        }
+        
+        .lock-controls button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .picks-locked .pick-slot,
+        .picks-locked .sgp-group,
+        .picks-locked .bet-info-card {
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
@@ -1076,6 +1105,11 @@
         <div class="header">
             <h1>🏈 Fantasy Football Parlay Tracker</h1>
             <p>Collective Hive Mind Betting</p>
+            <div class="lock-controls">
+                <button id="lockBtn" onclick="togglePicksLock()" style="background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; margin-top: 10px;">
+                    🔒 Lock Week 1
+                </button>
+            </div>
         </div>
         
         <div class="tabs">
@@ -1089,7 +1123,7 @@
                 <div class="bet-info-card">
                     <div class="bet-input-section">
                         <label for="betAmount">Bet Amount ($):</label>
-                        <input type="number" id="betAmount" value="100" min="1" step="1" placeholder="Enter bet amount">
+                        <input type="number" id="betAmount" value="24" min="1" step="1" placeholder="Enter bet amount">
                         <button id="updateBetBtn" onclick="confirmBetAmountUpdate()" style="background: #3b82f6; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; margin-left: 8px;">Update</button>
                     </div>
                     <div class="bet-results-section">
@@ -1199,7 +1233,7 @@
                     <div class="summary-bet-info" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #e2e8f0;">
                         <div class="summary-bet-display">
                             <label>Bet Amount:</label>
-                            <span id="summaryBetAmountDisplay" style="font-weight: 600; color: #374151; margin-left: 8px;">$100</span>
+                            <span id="summaryBetAmountDisplay" style="font-weight: 600; color: #374151; margin-left: 8px;">$24</span>
                         </div>
                         <div class="summary-bet-results" style="display: flex; gap: 24px;">
                             <div style="text-align: center;">
@@ -1227,7 +1261,7 @@
                     </div>
                     <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-left: 4px solid #FF9800;">
                         <div style="color: #666; font-size: 14px; margin-bottom: 5px;">Bet Amount</div>
-                        <div id="betAmount" style="font-size: 28px; font-weight: bold; color: #FF9800;">$10</div>
+                        <div id="summaryBetAmountCard" style="font-size: 28px; font-weight: bold; color: #FF9800;">$24</div>
                     </div>
                     <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-left: 4px solid #9C27B0;">
                         <div style="color: #666; font-size: 14px; margin-bottom: 5px;">Potential Winnings</div>
@@ -1240,10 +1274,6 @@
                     <h3 style="margin-bottom: 20px; color: #333;">Payout Breakdown</h3>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
                         <div style="padding: 15px; background: #f5f5f5; border-radius: 8px;">
-                            <div style="color: #666; font-size: 14px; margin-bottom: 5px;">Gross Winnings</div>
-                            <div id="grossWinnings" style="font-size: 24px; font-weight: bold; color: #333;">$0</div>
-                        </div>
-                        <div style="padding: 15px; background: #f5f5f5; border-radius: 8px;">
                             <div style="color: #666; font-size: 14px; margin-bottom: 5px;">Taxes (30%)</div>
                             <div id="taxes" style="font-size: 24px; font-weight: bold; color: #f44336;">$0</div>
                         </div>
@@ -1252,7 +1282,7 @@
                             <div id="netWinnings" style="font-size: 24px; font-weight: bold; color: #4CAF50;">$0</div>
                         </div>
                         <div style="padding: 15px; background: #f5f5f5; border-radius: 8px;">
-                            <div style="color: #666; font-size: 14px; margin-bottom: 5px;">Per Person (Net)</div>
+                            <div style="color: #666; font-size: 14px; margin-bottom: 5px;">Per Person (Total)</div>
                             <div id="perPerson" style="font-size: 24px; font-weight: bold; color: #2196F3;">$0</div>
                         </div>
                     </div>
@@ -1298,6 +1328,8 @@
         var leaderboardData = {};
         var isSavingToFirebase = false; // Flag to prevent Firebase listener from overriding our saves
         var betAmounts = {}; // Store bet amounts per week
+        var lockedWeeks = {}; // Track which weeks are locked
+        var lockPassword = "BigDumperis110%sexy"; // Password to unlock picks
         function getCurrentNFLWeek() {
             // 2025 NFL Season started September 4, 2025 (Week 1)
             var seasonStart = new Date('2025-09-04');
@@ -1728,6 +1760,8 @@
             nflSchedule = nfl2025Schedule;
             renderAllPicks();
             updateCalculations();
+            updateLockButtonState();
+            updatePicksLockState();
         }
 
         function loadDataFromFirebase() {
@@ -1803,12 +1837,14 @@
             document.getElementById('summaryWeek').textContent = currentWeek;
             
             // Load bet amount for this week
-            var currentBetAmount = betAmounts[currentWeek] || 100;
+            var currentBetAmount = betAmounts[currentWeek] || 24;
             document.getElementById('betAmount').value = currentBetAmount;
             
             renderAllPicks();
             updateCalculations();
             updateParlayStatus();
+            updateLockButtonState();
+            updatePicksLockState();
         }
 
         function updateWeekFromSummary() {
@@ -1824,7 +1860,7 @@
             document.getElementById('summaryWeek').textContent = currentWeek;
             
             // Load bet amount for this week
-            var currentBetAmount = betAmounts[currentWeek] || 100;
+            var currentBetAmount = betAmounts[currentWeek] || 24;
             var picksBetAmount = document.getElementById('betAmount');
             if (picksBetAmount) {
                 picksBetAmount.value = currentBetAmount;
@@ -1834,6 +1870,8 @@
             updateCalculations();
             updateParlayStatus();
             updateSummaryBetInfo();
+            updateLockButtonState();
+            updatePicksLockState();
         }
 
         function renderAllPicks() {
@@ -2647,7 +2685,7 @@
                 return;
             }
             
-            var currentBetAmount = betAmounts[currentWeek] || 100;
+            var currentBetAmount = betAmounts[currentWeek] || 24;
             
             if (newBetAmount === currentBetAmount) {
                 showNotification('Bet amount is already set to $' + newBetAmount.toFixed(0), 'info');
@@ -2666,9 +2704,70 @@
                 document.getElementById('betAmount').value = currentBetAmount;
             }
         }
+        
+        function togglePicksLock() {
+            if (lockedWeeks[currentWeek]) {
+                // Try to unlock this week
+                var password = prompt('Enter password to unlock Week ' + currentWeek + ' picks:');
+                if (password === lockPassword) {
+                    unlockPicks();
+                } else if (password !== null) {
+                    showNotification('Incorrect password', 'error');
+                }
+            } else {
+                // Lock this week
+                lockPicks();
+            }
+        }
+        
+        function lockPicks() {
+            lockedWeeks[currentWeek] = true;
+            var lockBtn = document.getElementById('lockBtn');
+            lockBtn.innerHTML = '🔓 Unlock Week ' + currentWeek;
+            lockBtn.style.background = '#10b981';
+            
+            // Apply lock styling to picks tab content
+            var picksContent = document.getElementById('picks');
+            picksContent.classList.add('picks-locked');
+            
+            showNotification('Week ' + currentWeek + ' picks locked', 'info');
+        }
+        
+        function unlockPicks() {
+            lockedWeeks[currentWeek] = false;
+            var lockBtn = document.getElementById('lockBtn');
+            lockBtn.innerHTML = '🔒 Lock Week ' + currentWeek;
+            lockBtn.style.background = '#ef4444';
+            
+            // Remove lock styling from picks tab content
+            var picksContent = document.getElementById('picks');
+            picksContent.classList.remove('picks-locked');
+            
+            showNotification('Week ' + currentWeek + ' picks unlocked', 'success');
+        }
+        
+        function updateLockButtonState() {
+            var lockBtn = document.getElementById('lockBtn');
+            if (lockedWeeks[currentWeek]) {
+                lockBtn.innerHTML = '🔓 Unlock Week ' + currentWeek;
+                lockBtn.style.background = '#10b981';
+            } else {
+                lockBtn.innerHTML = '🔒 Lock Week ' + currentWeek;
+                lockBtn.style.background = '#ef4444';
+            }
+        }
+        
+        function updatePicksLockState() {
+            var picksContent = document.getElementById('picks');
+            if (lockedWeeks[currentWeek]) {
+                picksContent.classList.add('picks-locked');
+            } else {
+                picksContent.classList.remove('picks-locked');
+            }
+        }
 
         function updateBetCalculations() {
-            var betAmount = betAmounts[currentWeek] || 100;
+            var betAmount = betAmounts[currentWeek] || 24;
             
             // Update the input field to show current bet amount
             document.getElementById('betAmount').value = betAmount;
@@ -2728,10 +2827,13 @@
         }
 
         function updateSummaryBetInfo() {
-            var betAmount = betAmounts[currentWeek] || 100;
+            var betAmount = betAmounts[currentWeek] || 24;
             
             // Update summary bet amount display (read-only)
             document.getElementById('summaryBetAmountDisplay').textContent = '$' + betAmount.toFixed(0);
+            
+            // Update the bet amount card in the summary stats
+            document.getElementById('summaryBetAmountCard').textContent = '$' + betAmount.toFixed(0);
             
             var picks = weeklyPicks[currentWeek] || [];
             var activePicks = picks.filter(function(p) { return p && p.result !== 'draw'; });
@@ -2790,7 +2892,7 @@
             updateBetCalculations();
             
             var picks = weeklyPicks[currentWeek] || [];
-            var betAmount = parseFloat(document.getElementById('betAmount') ? document.getElementById('betAmount').value : 100) || 100;
+            var betAmount = parseFloat(document.getElementById('betAmount') ? document.getElementById('betAmount').value : 24) || 24;
             
             var activePicks = picks.filter(function(p) { return p && p.result !== 'draw'; });
             
@@ -2828,16 +2930,14 @@
             
             var americanOdds = decimalToAmerican(totalOdds);
             var potentialWinnings = betAmount * totalOdds;
-            var grossWinnings = potentialWinnings - betAmount;
-            var taxes = grossWinnings * 0.3;
-            var netWinnings = grossWinnings - taxes;
+            var taxes = potentialWinnings * 0.3;
+            var netWinnings = potentialWinnings - taxes;
             var perPerson = activePicks.length > 0 ? netWinnings / activePicks.length : 0;
             
             document.getElementById('totalOdds').textContent = americanOdds;
             document.getElementById('totalPicks').textContent = picks.filter(function(p) { return p; }).length;
             document.getElementById('betAmount').textContent = '$' + betAmount.toFixed(2);
             document.getElementById('potentialWinnings').textContent = '$' + potentialWinnings.toFixed(2);
-            document.getElementById('grossWinnings').textContent = '$' + grossWinnings.toFixed(2);
             document.getElementById('taxes').textContent = '$' + taxes.toFixed(2);
             document.getElementById('netWinnings').textContent = '$' + netWinnings.toFixed(2);
             document.getElementById('perPerson').textContent = '$' + perPerson.toFixed(2);
