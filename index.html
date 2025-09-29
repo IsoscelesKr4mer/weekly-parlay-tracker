@@ -619,6 +619,17 @@
                 font-size: 14px;
             }
             
+            .tab.active {
+                background: #3b82f6 !important;
+                color: white !important;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+            }
+            
+            .tab.active:hover {
+                background: #2563eb !important;
+                color: white !important;
+            }
+            
             /* Week selector mobile */
             .week-selector {
                 flex-direction: column;
@@ -663,6 +674,188 @@
                 .result-btn {
                     flex: 1;
                     min-width: 70px;
+                }
+            }
+            
+            /* Summary page mobile optimizations */
+            @media (max-width: 768px) {
+                /* Summary header mobile layout */
+                .summary-header {
+                    flex-direction: column !important;
+                    gap: 16px !important;
+                    align-items: stretch !important;
+                }
+                
+                .summary-title-section {
+                    align-items: center !important;
+                    text-align: center !important;
+                }
+                
+                .summary-title-section h2 {
+                    font-size: 20px !important;
+                    margin-bottom: 8px !important;
+                }
+                
+                #parlayStatus {
+                    justify-content: center !important;
+                    font-size: 16px !important;
+                    padding: 10px 16px !important;
+                    align-self: center !important;
+                }
+                
+                /* Week selector mobile layout */
+                .summary-week-selector {
+                    justify-content: center !important;
+                    align-items: center !important;
+                }
+                
+                .summary-week-selector select {
+                    min-width: 120px !important;
+                }
+                
+                /* Stats grid mobile optimization */
+                .stats-grid {
+                    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) !important;
+                    gap: 12px !important;
+                }
+                
+                .stat-card {
+                    padding: 16px !important;
+                }
+                
+                .stat-card .stat-label {
+                    font-size: 12px !important;
+                }
+                
+                .stat-card .stat-value {
+                    font-size: 20px !important;
+                }
+                
+                /* Summary cards mobile optimization */
+                .summary-card {
+                    padding: 16px !important;
+                    margin-bottom: 12px !important;
+                }
+                
+                .summary-card h3 {
+                    font-size: 16px !important;
+                    margin-bottom: 12px !important;
+                }
+                
+                /* SGP and individual pick cards mobile layout */
+                #picksSummary > div[style*="margin-bottom: 16px"] {
+                    margin-bottom: 12px !important;
+                }
+                
+                #picksSummary h4 {
+                    font-size: 13px !important;
+                    padding: 6px 10px !important;
+                }
+                
+                /* SGP cards mobile layout */
+                #picksSummary div[style*="border: 2px solid #FF9800"] {
+                    padding: 10px !important;
+                    margin-bottom: 6px !important;
+                }
+                
+                #picksSummary div[style*="border: 2px solid #FF9800"] > div[style*="justify-content: space-between"] {
+                    flex-direction: column !important;
+                    gap: 8px !important;
+                    align-items: flex-start !important;
+                }
+                
+                #picksSummary div[style*="border: 2px solid #FF9800"] strong {
+                    font-size: 14px !important;
+                }
+                
+                #picksSummary div[style*="border: 2px solid #FF9800"] span[style*="background:"] {
+                    font-size: 11px !important;
+                    padding: 3px 6px !important;
+                }
+                
+                /* Individual pick cards mobile layout */
+                #picksSummary div[style*="border: 2px solid #e0e0e0"] {
+                    padding: 10px !important;
+                    margin-bottom: 6px !important;
+                }
+                
+                #picksSummary div[style*="border: 2px solid #e0e0e0"] > div[style*="justify-content: space-between"] {
+                    flex-direction: column !important;
+                    gap: 8px !important;
+                    align-items: flex-start !important;
+                }
+                
+                #picksSummary div[style*="border: 2px solid #e0e0e0"] strong {
+                    font-size: 14px !important;
+                }
+                
+                #picksSummary div[style*="border: 2px solid #e0e0e0"] span[style*="background:"] {
+                    font-size: 11px !important;
+                    padding: 3px 6px !important;
+                }
+                
+                /* Text content mobile optimization */
+                #picksSummary div[style*="color: #666"] {
+                    font-size: 12px !important;
+                    margin-top: 3px !important;
+                }
+                
+                #picksSummary div[style*="padding: 4px 0"] {
+                    padding: 3px 0 !important;
+                    font-size: 13px !important;
+                }
+            }
+            
+            /* Extra small screens */
+            @media (max-width: 480px) {
+                .summary-title-section h2 {
+                    font-size: 18px !important;
+                }
+                
+                #parlayStatus {
+                    font-size: 14px !important;
+                    padding: 8px 12px !important;
+                }
+                
+                .summary-week-selector {
+                    flex-direction: column !important;
+                    gap: 6px !important;
+                }
+                
+                .summary-week-selector select {
+                    min-width: 100px !important;
+                }
+                
+                .stats-grid {
+                    grid-template-columns: 1fr !important;
+                    gap: 8px !important;
+                }
+                
+                .summary-card {
+                    padding: 12px !important;
+                }
+                
+                #picksSummary h4 {
+                    font-size: 12px !important;
+                    padding: 4px 8px !important;
+                }
+                
+                #picksSummary div[style*="border: 2px solid #FF9800"],
+                #picksSummary div[style*="border: 2px solid #e0e0e0"] {
+                    padding: 8px !important;
+                }
+                
+                #picksSummary div[style*="border: 2px solid #FF9800"] strong,
+                #picksSummary div[style*="border: 2px solid #e0e0e0"] strong {
+                    font-size: 13px !important;
+                }
+                
+                #picksSummary div[style*="color: #666"] {
+                    font-size: 11px !important;
+                }
+                
+                #picksSummary div[style*="padding: 4px 0"] {
+                    font-size: 12px !important;
                 }
             }
         }
@@ -731,6 +924,43 @@
             font-size: 1.2em;
             font-weight: 600;
             color: #4CAF50;
+        }
+        
+        .summary-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            gap: 16px;
+        }
+        
+        .summary-title-section {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex: 1;
+        }
+        
+        .summary-week-selector {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        
+        .summary-week-selector label {
+            font-weight: 500;
+            color: #374151;
+            white-space: nowrap;
+        }
+        
+        .summary-week-selector select {
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background: white;
+            font-size: 14px;
+            min-width: 100px;
         }
     </style>
 </head>
@@ -807,13 +1037,15 @@
             </div>
             
             <div id="summary" class="tab-pane">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div class="summary-header">
+                    <div class="summary-title-section">
                     <h2 style="color: #333; margin: 0;">Week <span id="summaryWeek">1</span> Parlay Summary</h2>
-                    <div id="parlayStatus" style="display: flex; align-items: center; gap: 10px; padding: 12px 20px; border-radius: 25px; font-size: 18px; font-weight: bold; background: linear-gradient(135deg, #4CAF50, #45a049); color: white; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
-                        <span id="parlayStatusIcon">💚</span>
-                        <span id="parlayStatusText">Parlay Still Alive</span>
+                        <div id="parlayStatus" style="display: flex; align-items: center; gap: 10px; padding: 12px 20px; border-radius: 25px; font-size: 18px; font-weight: bold; background: linear-gradient(135deg, #4CAF50, #45a049); color: white; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+                            <span id="parlayStatusIcon">💚</span>
+                            <span id="parlayStatusText">Parlay Still Alive</span>
+                        </div>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 15px;">
+                    <div class="summary-week-selector">
                         <label for="summaryWeekSelect">Week:</label>
                         <select id="summaryWeekSelect" onchange="updateWeekFromSummary()">
                             <option value="1">Week 1</option>
@@ -1616,32 +1848,75 @@
             
             var playerName = pick.playerName || ('Pick ' + (index + 1));
             
-            var html = '<div style="background: linear-gradient(135deg, #FF9800, #F57C00); color: white; padding: 8px 16px; margin: -16px -16px 10px -16px; border-radius: 8px 8px 0 0; display: flex; justify-content: space-between; align-items: center;">' +
-                '<div style="display: flex; align-items: center; gap: 8px;">' +
-                '<span id="playerNameDisplay' + index + '" style="font-size: 16px; font-weight: bold;">' + playerName + '</span>' +
-                '<input type="text" id="playerNameEdit' + index + '" value="' + playerName + '" style="display: none; padding: 4px 8px; border: 2px solid white; border-radius: 4px; font-size: 14px; font-weight: bold;">' +
-                '<button onclick="toggleEditPlayerName(' + index + ')" id="editBtn' + index + '" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 12px;">✏️ Edit</button>' +
+            var html;
+            var isEditing = pick && pick.isEditing;
+            
+            if (isSubmitted && !isEditing) {
+                // Truncated view for submitted SGP picks (similar to summary page)
+                var textStyle = pick.result === 'draw' ? 'text-decoration: line-through; opacity: 0.5;' : '';
+                
+                html = '<div style="background: linear-gradient(135deg, #FF9800, #F57C00); color: white; padding: 8px 16px; margin: -16px -16px 10px -16px; border-radius: 8px 8px 0 0; display: flex; justify-content: space-between; align-items: center;">' +
+                    '<div style="display: flex; align-items: center; gap: 8px;">' +
+                    '<span id="playerNameDisplay' + index + '" style="font-size: 16px; font-weight: bold;">' + playerName + '</span>' +
+                    '<input type="text" id="playerNameEdit' + index + '" value="' + playerName + '" style="display: none; padding: 4px 8px; border: 2px solid white; border-radius: 4px; font-size: 14px; font-weight: bold;">' +
+                    '<button onclick="toggleEditPlayerName(' + index + ')" id="editBtn' + index + '" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 12px;">✏️ Edit</button>' +
                 '</div>' +
-                '<span class="result-indicator ' + resultClass + '" style="font-size: 12px;">' + resultText + '</span>' +
+                    '<span class="result-indicator ' + resultClass + '" style="font-size: 12px;">' + resultText + '</span>' +
                 '</div>' +
-                '<div class="pick-slot-fields" style="gap: 8px; margin-bottom: 8px;">' +
-                '<div class="pick-slot-field"><label style="font-size: 11px;">Pick/Bet</label><input type="text" value="' + (pick.pick || '') + '" readonly style="background: #f5f5f5; padding: 6px 8px; font-size: 13px;"></div>' +
-                '<div class="pick-slot-field"><label style="font-size: 11px;">' + oddsLabel + '</label><input type="text" value="' + oddsValue + '" readonly style="' + oddsStyle + '; padding: 6px 8px; font-size: 13px;"></div>' +
-                '<div class="pick-slot-field"><label style="font-size: 11px;">Game</label><input type="text" value="' + (pick.game || '') + '" readonly style="background: #f5f5f5; padding: 6px 8px; font-size: 13px;"></div>' +
-                '<div class="pick-slot-field"><label style="font-size: 11px;">Time Slot</label><input type="text" value="' + (pick.timeSlot || '') + '" readonly style="background: #f5f5f5; padding: 6px 8px; font-size: 13px;"></div>' +
+                    '<div style="padding: 12px; ' + textStyle + '">' +
+                    '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">' +
+                    '<div>' +
+                    '<strong>' + playerName + ':</strong> ' + pick.pick +
+                    '<div style="color: #666; font-size: 12px; margin-top: 3px;">' +
+                    (pick.game ? pick.game : 'No game selected') +
+                    ' • <strong>' + pick.odds + '</strong>' +
+                    (pick.timeSlot ? ' • <span style="color: #FF9800; font-weight: 500;">' + pick.timeSlot + '</span>' : '') +
+                    '</div>' +
+                    '</div>' +
+                    '<span style="background: ' + (resultClass === 'win' ? '#4CAF50' : resultClass === 'loss' ? '#f44336' : resultClass === 'draw' ? '#FF9800' : '#757575') + '; color: white; padding: 3px 6px; border-radius: 4px; font-size: 11px; font-weight: bold;">' + resultText + '</span>' +
+                    '</div>' +
+                    '</div>' +
+                    '<div style="display: flex; gap: 6px; margin-top: 8px; align-items: center; flex-wrap: wrap; justify-content: space-between;">' +
+                    '<div style="display: flex; gap: 6px;">' +
+                    '<button class="result-btn win ' + winActive + '" onclick="toggleResult(' + index + ', true)" style="padding: 6px 12px; font-size: 12px;">✓ Win</button>' +
+                    '<button class="result-btn loss ' + lossActive + '" onclick="toggleResult(' + index + ', false)" style="padding: 6px 12px; font-size: 12px;">✗ Loss</button>' +
+                    '<button class="result-btn draw ' + drawActive + '" onclick="toggleResult(' + index + ', \'draw\')" style="padding: 6px 12px; font-size: 12px;">🤝 Draw</button>' +
+                    '<button class="result-btn reset" onclick="toggleResult(' + index + ', null)" style="padding: 6px 12px; font-size: 12px;">↻ Reset</button>' +
+                    '</div>' +
+                    '<div style="display: flex; gap: 6px;">' +
+                    '<button class="result-btn" style="background: #2196F3; color: white; padding: 6px 12px; font-size: 12px;" onclick="expandSGPPickSlot(' + index + ')">✏️ Edit Pick</button>' +
+                    '<button class="result-btn" style="background: #f44336; color: white; padding: 6px 12px; font-size: 12px;" onclick="removeSGPPick(' + index + ')">🗑️ Remove</button>' +
+                    '</div>' +
+                    '</div>';
+            } else {
+                // Full form view for unsaved SGP picks or when editing
+                html = '<div style="background: linear-gradient(135deg, #FF9800, #F57C00); color: white; padding: 8px 16px; margin: -16px -16px 10px -16px; border-radius: 8px 8px 0 0; display: flex; justify-content: space-between; align-items: center;">' +
+                    '<div style="display: flex; align-items: center; gap: 8px;">' +
+                    '<span id="playerNameDisplay' + index + '" style="font-size: 16px; font-weight: bold;">' + playerName + '</span>' +
+                    '<input type="text" id="playerNameEdit' + index + '" value="' + playerName + '" style="display: none; padding: 4px 8px; border: 2px solid white; border-radius: 4px; font-size: 14px; font-weight: bold;">' +
+                    '<button onclick="toggleEditPlayerName(' + index + ')" id="editBtn' + index + '" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 12px;">✏️ Edit</button>' +
+                    '</div>' +
+                    '<span class="result-indicator ' + resultClass + '" style="font-size: 12px;">' + resultText + '</span>' +
+                    '</div>' +
+                    '<div class="pick-slot-fields" style="gap: 8px; margin-bottom: 8px;">' +
+                    '<div class="pick-slot-field"><label style="font-size: 11px;">Pick/Bet</label><input type="text" id="pick' + index + '" value="' + (pick.pick || '') + '" ' + (isEditing ? 'onchange="checkForChanges(' + index + ')" data-original="' + (pick.pick || '') + '"' : 'readonly style="background: #f5f5f5; padding: 6px 8px; font-size: 13px;"') + '></div>' +
+                    '<div class="pick-slot-field"><label style="font-size: 11px;">' + oddsLabel + '</label><input type="text" id="odds' + index + '" value="' + oddsValue + '" ' + (isEditing ? 'onblur="formatOdds(' + index + ')" onchange="checkForChanges(' + index + ')" data-original="' + oddsValue + '"' : 'readonly style="' + oddsStyle + '; padding: 6px 8px; font-size: 13px;"') + '></div>' +
+                    '<div class="pick-slot-field"><label style="font-size: 11px;">Game</label>' + (isEditing ? '<select id="game' + index + '" onchange="updateTimeSlotFromGame(' + index + '); checkForChanges(' + index + ')" data-original="' + (pick.game || '') + '"><option value="">Select Game</option>' + generateGameOptions(pick.game) + '</select>' : '<input type="text" value="' + (pick.game || '') + '" readonly style="background: #f5f5f5; padding: 6px 8px; font-size: 13px;">') + '</div>' +
+                    '<div class="pick-slot-field"><label style="font-size: 11px;">Time Slot</label>' + (isEditing ? '<select id="timeSlot' + index + '" onchange="checkForChanges(' + index + ')" data-original="' + (pick.timeSlot || '') + '"><option value="">Select</option><option value="TNF"' + (pick.timeSlot === 'TNF' ? ' selected' : '') + '>TNF</option><option value="Early"' + (pick.timeSlot === 'Early' ? ' selected' : '') + '>Early</option><option value="Late"' + (pick.timeSlot === 'Late' ? ' selected' : '') + '>Late</option><option value="SNF"' + (pick.timeSlot === 'SNF' ? ' selected' : '') + '>SNF</option><option value="MNF"' + (pick.timeSlot === 'MNF' ? ' selected' : '') + '>MNF</option></select>' : '<input type="text" value="' + (pick.timeSlot || '') + '" readonly style="background: #f5f5f5; padding: 6px 8px; font-size: 13px;">') + '</div>' +
                 '</div>' + voidWarning +
-                '<div style="display: flex; gap: 6px; margin-top: 8px; align-items: center; flex-wrap: wrap; justify-content: space-between;">' +
-                '<div style="display: flex; gap: 6px;">' +
-                '<button class="result-btn win ' + winActive + '" onclick="toggleResult(' + index + ', true)" style="padding: 6px 12px; font-size: 12px;">✓ Win</button>' +
-                '<button class="result-btn loss ' + lossActive + '" onclick="toggleResult(' + index + ', false)" style="padding: 6px 12px; font-size: 12px;">✗ Loss</button>' +
-                '<button class="result-btn draw ' + drawActive + '" onclick="toggleResult(' + index + ', \'draw\')" style="padding: 6px 12px; font-size: 12px;">🤝 Draw</button>' +
-                '<button class="result-btn reset" onclick="toggleResult(' + index + ', null)" style="padding: 6px 12px; font-size: 12px;">↻ Reset</button>' +
+                    '<div style="display: flex; gap: 6px; margin-top: 8px; align-items: center; flex-wrap: wrap; justify-content: space-between;">' +
+                    '<div style="display: flex; gap: 6px;">' +
+                    '<button class="result-btn win ' + winActive + '" onclick="toggleResult(' + index + ', true)" style="padding: 6px 12px; font-size: 12px;">✓ Win</button>' +
+                    '<button class="result-btn loss ' + lossActive + '" onclick="toggleResult(' + index + ', false)" style="padding: 6px 12px; font-size: 12px;">✗ Loss</button>' +
+                    '<button class="result-btn draw ' + drawActive + '" onclick="toggleResult(' + index + ', \'draw\')" style="padding: 6px 12px; font-size: 12px;">🤝 Draw</button>' +
+                    '<button class="result-btn reset" onclick="toggleResult(' + index + ', null)" style="padding: 6px 12px; font-size: 12px;">↻ Reset</button>' +
                 '</div>' +
-                '<div style="border-left: 1px solid #ddd; padding-left: 6px; margin-left: 6px; display: flex; gap: 6px;">' +
-                '<button class="result-btn" style="background: #2196F3; color: white; padding: 6px 12px; font-size: 12px;" onclick="editSGPPick(' + index + ')">✏️ Edit Pick</button>' +
-                '<button class="result-btn" style="background: #f44336; color: white; padding: 6px 12px; font-size: 12px;" onclick="removeSGPPick(' + index + ')">🗑️ Remove</button>' +
+                    '<div style="border-left: 1px solid #ddd; padding-left: 6px; margin-left: 6px; display: flex; gap: 6px;">' +
+                    (isEditing ? '<button class="result-btn" id="saveBtn' + index + '" style="background: #757575; color: white; cursor: not-allowed;" onclick="savePick(' + index + ')" disabled>💾 Save</button><button class="result-btn" style="background: #6b7280; color: white; padding: 6px 12px; font-size: 12px;" onclick="cancelEditSGPPick(' + index + ')">❌ Cancel</button>' : '<button class="result-btn" style="background: #2196F3; color: white; padding: 6px 12px; font-size: 12px;" onclick="expandSGPPickSlot(' + index + ')">✏️ Edit Pick</button>') +
+                    '<button class="result-btn" style="background: #f44336; color: white; padding: 6px 12px; font-size: 12px;" onclick="removeSGPPick(' + index + ')">🗑️ Remove</button>' +
                 '</div>' +
                 '</div>';
+            }
             
             div.innerHTML = html;
             return div;
@@ -1661,6 +1936,7 @@
             // Determine result status and styling
             var resultClass, resultText;
             var isSubmitted = pick && pick.playerName && pick.pick && pick.odds;
+            var isEditing = pick && pick.isEditing;
             
             if (pick && pick.result === true) {
                 resultClass = 'win';
@@ -1691,7 +1967,48 @@
             var defaultName = index < playerNames.length ? playerNames[index] : 'Pick ' + (index + 1);
             var playerName = pick && pick.playerName ? pick.playerName : defaultName;
             
-            var html = '<div style="background: linear-gradient(135deg, #4CAF50, #45a049); color: white; padding: 12px 20px; margin: -20px -20px 15px -20px; border-radius: 12px 12px 0 0; display: flex; justify-content: space-between; align-items: center;">' +
+            var html;
+            
+            if (isSubmitted && !isEditing) {
+                // Truncated view for submitted picks (similar to summary page)
+                var textStyle = pick.result === 'draw' ? 'text-decoration: line-through; opacity: 0.5;' : '';
+                
+                html = '<div style="background: linear-gradient(135deg, #4CAF50, #45a049); color: white; padding: 12px 20px; margin: -20px -20px 15px -20px; border-radius: 12px 12px 0 0; display: flex; justify-content: space-between; align-items: center;">' +
+                    '<div style="display: flex; align-items: center; gap: 10px;">' +
+                    '<span id="playerNameDisplay' + index + '" style="font-size: 18px; font-weight: bold;">' + playerName + '</span>' +
+                    '<input type="text" id="playerNameEdit' + index + '" value="' + playerName + '" style="display: none; padding: 6px 10px; border: 2px solid white; border-radius: 4px; font-size: 16px; font-weight: bold;">' +
+                    '<button onclick="toggleEditPlayerName(' + index + ')" id="editBtn' + index + '" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 14px;">✏️ Edit</button>' +
+                    '</div>' +
+                    '<span class="result-indicator ' + resultClass + '">' + resultText + '</span>' +
+                    '</div>' +
+                    '<div style="padding: 16px; ' + textStyle + '">' +
+                    '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">' +
+                    '<div>' +
+                    '<strong>' + playerName + ':</strong> ' + pick.pick +
+                    '<div style="color: #666; font-size: 13px; margin-top: 4px;">' +
+                    (pick.game ? pick.game : 'No game selected') +
+                    ' • <strong>' + pick.odds + '</strong>' +
+                    (pick.timeSlot ? ' • <span style="color: #3b82f6; font-weight: 500;">' + pick.timeSlot + '</span>' : '') +
+                    '</div>' +
+                    '</div>' +
+                    '<span style="background: ' + (resultClass === 'win' ? '#4CAF50' : resultClass === 'loss' ? '#f44336' : resultClass === 'draw' ? '#FF9800' : '#757575') + '; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">' + resultText + '</span>' +
+                    '</div>' +
+                    '</div>' +
+                    '<div style="display: flex; gap: 8px; margin-top: 15px; align-items: center; flex-wrap: wrap; justify-content: space-between;">' +
+                    '<div style="display: flex; gap: 8px;">' +
+                    '<button class="result-btn win ' + winActive + '" onclick="toggleResult(' + index + ', true)">✓ Win</button>' +
+                    '<button class="result-btn loss ' + lossActive + '" onclick="toggleResult(' + index + ', false)">✗ Loss</button>' +
+                    '<button class="result-btn draw ' + drawActive + '" onclick="toggleResult(' + index + ', \'draw\')">🤝 Draw</button>' +
+                    '<button class="result-btn reset" onclick="toggleResult(' + index + ', null)">↻ Reset</button>' +
+                    '</div>' +
+                    '<div style="display: flex; gap: 8px;">' +
+                    '<button class="result-btn" style="background: #2196F3; color: white;" onclick="expandPickSlot(' + index + ')">✏️ Edit Pick</button>' +
+                    '<button class="result-btn" style="background: #f44336; color: white;" onclick="clearIndividualPick(' + index + ')">🗑️ Clear Pick</button>' +
+                    '</div>' +
+                    '</div>';
+            } else {
+                // Full form view for unsaved picks
+                html = '<div style="background: linear-gradient(135deg, #4CAF50, #45a049); color: white; padding: 12px 20px; margin: -20px -20px 15px -20px; border-radius: 12px 12px 0 0; display: flex; justify-content: space-between; align-items: center;">' +
                 '<div style="display: flex; align-items: center; gap: 10px;">' +
                 '<span id="playerNameDisplay' + index + '" style="font-size: 18px; font-weight: bold;">' + playerName + '</span>' +
                 '<input type="text" id="playerNameEdit' + index + '" value="' + playerName + '" style="display: none; padding: 6px 10px; border: 2px solid white; border-radius: 4px; font-size: 16px; font-weight: bold;">' +
@@ -1711,21 +2028,59 @@
                 '<option value="MNF"' + (pick && pick.timeSlot === 'MNF' ? ' selected' : '') + '>MNF</option>' +
                 '</select></div>' +
                 '</div>' + voidWarning +
-                '<div style="display: flex; gap: 8px; margin-top: 15px; align-items: center; flex-wrap: wrap; justify-content: space-between;">' +
-                '<div style="display: flex; gap: 8px;">' +
+                    '<div style="display: flex; gap: 8px; margin-top: 15px; align-items: center; flex-wrap: wrap; justify-content: space-between;">' +
+                    '<div style="display: flex; gap: 8px;">' +
                 '<button class="result-btn win ' + winActive + '" onclick="toggleResult(' + index + ', true)">✓ Win</button>' +
                 '<button class="result-btn loss ' + lossActive + '" onclick="toggleResult(' + index + ', false)">✗ Loss</button>' +
                 '<button class="result-btn draw ' + drawActive + '" onclick="toggleResult(' + index + ', \'draw\')">🤝 Draw</button>' +
                 '<button class="result-btn reset" onclick="toggleResult(' + index + ', null)">↻ Reset</button>' +
-                '</div>' +
-                '<div style="display: flex; gap: 8px;">' +
-                '<button class="result-btn" id="saveBtn' + index + '" style="background: #757575; color: white; cursor: not-allowed;" onclick="savePick(' + index + ')" disabled>💾 Save</button>' +
-                '<button class="result-btn" style="background: #f44336; color: white;" onclick="clearIndividualPick(' + index + ')">🗑️ Clear Pick</button>' +
-                '</div>' +
+                    '</div>' +
+                    '<div style="display: flex; gap: 8px;">' +
+                    '<button class="result-btn" id="saveBtn' + index + '" style="background: #757575; color: white; cursor: not-allowed;" onclick="savePick(' + index + ')" disabled>💾 Save</button>' +
+                    '<button class="result-btn" style="background: #6b7280; color: white;" onclick="cancelEditPick(' + index + ')">❌ Cancel</button>' +
+                    '<button class="result-btn" style="background: #f44336; color: white;" onclick="clearIndividualPick(' + index + ')">🗑️ Clear Pick</button>' +
+                    '</div>' +
                 '</div>';
+            }
             
             div.innerHTML = html;
             return div;
+        }
+
+        function expandPickSlot(index) {
+            // Mark the pick as being edited so it shows the full form
+            if (weeklyPicks[currentWeek] && weeklyPicks[currentWeek][index]) {
+                weeklyPicks[currentWeek][index].isEditing = true;
+                renderAllPicks();
+            }
+        }
+
+        function expandSGPPickSlot(index) {
+            // Mark the SGP pick as being edited so it shows the full form
+            if (weeklyPicks[currentWeek] && weeklyPicks[currentWeek][index]) {
+                weeklyPicks[currentWeek][index].isEditing = true;
+                renderAllPicks();
+            }
+        }
+
+        function cancelEditPick(index) {
+            // Cancel editing mode and return to truncated view
+            console.log('cancelEditPick called with index:', index);
+            if (weeklyPicks[currentWeek] && weeklyPicks[currentWeek][index]) {
+                console.log('Setting isEditing to false for pick:', index);
+                weeklyPicks[currentWeek][index].isEditing = false;
+                renderAllPicks();
+            }
+        }
+
+        function cancelEditSGPPick(index) {
+            // Cancel editing mode for SGP pick and return to truncated view
+            console.log('cancelEditSGPPick called with index:', index);
+            if (weeklyPicks[currentWeek] && weeklyPicks[currentWeek][index]) {
+                console.log('Setting isEditing to false for SGP pick:', index);
+                weeklyPicks[currentWeek][index].isEditing = false;
+                renderAllPicks();
+            }
         }
 
         function toggleEditPlayerName(index) {
@@ -1888,8 +2243,9 @@
                 odds: odds,
                 game: game,
                 timeSlot: timeSlot,
-                result: null,
-                timestamp: Date.now()
+                result: weeklyPicks[currentWeek][index] ? weeklyPicks[currentWeek][index].result : null,
+                timestamp: Date.now(),
+                isEditing: false // Clear editing flag when saving
             };
             
             while (weeklyPicks[currentWeek].length <= index) {
@@ -2401,9 +2757,9 @@
                     html += '<span style="background: ' + statusColor + '; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">' + status + '</span>';
                     html += '</div>';
                     
-                        if (!hasOnlyOneLeg) {
-                            html += '<div style="font-weight: bold; color: #FF9800; margin-bottom: 8px;">Odds: ' + sgpOdds + '</div>';
-                        }
+                    if (!hasOnlyOneLeg) {
+                        html += '<div style="font-weight: bold; color: #FF9800; margin-bottom: 8px;">Odds: ' + sgpOdds + '</div>';
+                    }
                     
                     gamePicks.forEach(function(pick) {
                         var isVoided = pick.result === 'draw';
@@ -2422,37 +2778,37 @@
                     });
                     
                     html += '</div>';
-                    }
+                }
                     } else if (item.type === 'individual') {
                         var pick = item.pick;
-                        var status = 'Pending';
-                        var statusColor = '#757575';
-                        
-                        if (pick.result === true) {
-                            status = 'Win';
-                            statusColor = '#4CAF50';
-                        } else if (pick.result === false) {
-                            status = 'Loss';
-                            statusColor = '#f44336';
-                        } else if (pick.result === 'draw') {
-                            status = 'Voided';
-                            statusColor = '#FF9800';
-                        }
-                        
-                        var textStyle = pick.result === 'draw' ? 'text-decoration: line-through; opacity: 0.5;' : '';
-                        
+                var status = 'Pending';
+                var statusColor = '#757575';
+                
+                if (pick.result === true) {
+                    status = 'Win';
+                    statusColor = '#4CAF50';
+                } else if (pick.result === false) {
+                    status = 'Loss';
+                    statusColor = '#f44336';
+                } else if (pick.result === 'draw') {
+                    status = 'Voided';
+                    statusColor = '#FF9800';
+                }
+                
+                var textStyle = pick.result === 'draw' ? 'text-decoration: line-through; opacity: 0.5;' : '';
+                
                         html += '<div style="border: 2px solid #e0e0e0; border-radius: 8px; padding: 12px; background: white; margin-bottom: 8px; ' + textStyle + '">';
-                        html += '<div style="display: flex; justify-content: space-between; align-items: center;">';
-                        html += '<div>';
-                        html += '<strong>' + pick.playerName + ':</strong> ' + pick.pick;
-                        html += '<div style="color: #666; font-size: 13px; margin-top: 4px;">';
-                        html += pick.game ? pick.game : 'No game selected';
-                        html += ' • <strong>' + pick.odds + '</strong>';
-                        html += '</div>';
-                        html += '</div>';
-                        html += '<span style="background: ' + statusColor + '; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">' + status + '</span>';
-                        html += '</div>';
-                        html += '</div>';
+                html += '<div style="display: flex; justify-content: space-between; align-items: center;">';
+                html += '<div>';
+                html += '<strong>' + pick.playerName + ':</strong> ' + pick.pick;
+                html += '<div style="color: #666; font-size: 13px; margin-top: 4px;">';
+                html += pick.game ? pick.game : 'No game selected';
+                html += ' • <strong>' + pick.odds + '</strong>';
+                html += '</div>';
+                html += '</div>';
+                html += '<span style="background: ' + statusColor + '; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">' + status + '</span>';
+                html += '</div>';
+                html += '</div>';
                     }
                 });
                 
@@ -2659,45 +3015,11 @@
         }
 
         function editSGPPick(index) {
-            if (!weeklyPicks[currentWeek] || !weeklyPicks[currentWeek][index]) return;
-            
-            var pick = weeklyPicks[currentWeek][index];
-            
-            // Create a temporary editable form
-            var container = document.querySelector('.sgp-group');
-            var editForm = document.createElement('div');
-            editForm.style.cssText = 'background: #fff3e0; border: 2px solid #FF9800; border-radius: 8px; padding: 15px; margin: 10px 0;';
-            
-            var playerName = pick.playerName || ('Pick ' + (index + 1));
-            
-            editForm.innerHTML = 
-                '<h4 style="color: #FF9800; margin-bottom: 10px;">Edit Pick: ' + playerName + '</h4>' +
-                '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 15px;">' +
-                '<div><label style="font-size: 12px; font-weight: bold; margin-bottom: 5px; display: block;">Pick/Bet</label>' +
-                '<input type="text" id="editPick' + index + '" value="' + (pick.pick || '') + '" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;"></div>' +
-                '<div><label style="font-size: 12px; font-weight: bold; margin-bottom: 5px; display: block;">Odds</label>' +
-                '<input type="text" id="editOdds' + index + '" value="' + (pick.odds || '') + '" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" onblur="formatEditOdds(' + index + ')"></div>' +
-                '<div><label style="font-size: 12px; font-weight: bold; margin-bottom: 5px; display: block;">Game</label>' +
-                '<select id="editGame' + index + '" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" onchange="updateEditTimeSlot(' + index + ')">' +
-                '<option value="">Select Game</option>' + generateGameOptions(pick.game) + '</select></div>' +
-                '<div><label style="font-size: 12px; font-weight: bold; margin-bottom: 5px; display: block;">Time Slot</label>' +
-                '<select id="editTimeSlot' + index + '" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">' +
-                '<option value="">Select</option>' +
-                '<option value="TNF"' + (pick.timeSlot === 'TNF' ? ' selected' : '') + '>TNF</option>' +
-                '<option value="Early"' + (pick.timeSlot === 'Early' ? ' selected' : '') + '>Early</option>' +
-                '<option value="Late"' + (pick.timeSlot === 'Late' ? ' selected' : '') + '>Late</option>' +
-                '<option value="SNF"' + (pick.timeSlot === 'SNF' ? ' selected' : '') + '>SNF</option>' +
-                '<option value="MNF"' + (pick.timeSlot === 'MNF' ? ' selected' : '') + '>MNF</option>' +
-                '</select></div>' +
-                '</div>' +
-                '<div style="display: flex; gap: 10px;">' +
-                '<button onclick="saveEditedSGPPick(' + index + ')" style="background: #4CAF50; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer;">💾 Save Changes</button>' +
-                '<button onclick="cancelEditSGPPick(' + index + ')" style="background: #757575; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer;">❌ Cancel</button>' +
-                '</div>';
-            
-            // Insert after the SGP header
-            var sgpHeader = container.querySelector('div');
-            sgpHeader.parentNode.insertBefore(editForm, sgpHeader.nextSibling);
+            // Use the new editing system - mark as editing and re-render
+            if (weeklyPicks[currentWeek] && weeklyPicks[currentWeek][index]) {
+                weeklyPicks[currentWeek][index].isEditing = true;
+                renderAllPicks();
+            }
         }
 
         function formatEditOdds(index) {
@@ -2764,10 +3086,6 @@
             showNotification('✓ Pick updated successfully!', 'success');
             checkForSGPs();
             updateCalculations();
-            renderAllPicks();
-        }
-
-        function cancelEditSGPPick(index) {
             renderAllPicks();
         }
 
