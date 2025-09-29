@@ -12,57 +12,103 @@
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            background: #f1f5f9;
+            color: #1e293b;
+            line-height: 1.6;
+            font-size: 16px;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(245, 158, 11, 0.05) 0%, transparent 50%);
+            z-index: -1;
         }
         
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
+            padding: 24px;
         }
         
         .header {
-            background: linear-gradient(135deg, #4CAF50, #45a049);
-            color: white;
-            padding: 30px;
+            background: white;
+            border-radius: 16px;
+            padding: 48px 32px;
             text-align: center;
+            margin-bottom: 32px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #10b981, #f59e0b);
         }
         
         .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 8px;
+            letter-spacing: -0.025em;
+        }
+        
+        .header p {
+            font-size: 1.125rem;
+            color: #64748b;
+            font-weight: 400;
         }
         
         .tabs {
             display: flex;
-            background: #f5f5f5;
+            background: white;
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
         }
         
         .tab {
             flex: 1;
-            padding: 15px;
-            background: #e0e0e0;
+            padding: 16px 24px;
+            background: transparent;
             border: none;
             cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-        
-        .tab.active {
-            background: white;
-            color: #4CAF50;
+            font-size: 15px;
+            font-weight: 500;
+            color: #64748b;
+            transition: all 0.2s ease;
+            border-radius: 8px;
+            position: relative;
         }
         
         .tab:hover {
-            background: #d5d5d5;
+            color: #334155;
+            background: #f1f5f9;
+        }
+        
+        .tab.active {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
         
         .tab.active:hover {
@@ -70,7 +116,11 @@
         }
         
         .tab-content {
-            padding: 30px;
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
         }
         
         .tab-pane {
@@ -84,92 +134,135 @@
         .form-group {
             display: flex;
             flex-direction: column;
+            margin-bottom: 24px;
         }
         
         .form-group label {
-            font-weight: 600;
+            font-weight: 500;
             margin-bottom: 8px;
-            color: #333;
+            color: #374151;
+            font-size: 14px;
         }
         
         .form-group input, .form-group select {
-            padding: 12px;
-            border: 2px solid #ddd;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
             border-radius: 8px;
             font-size: 16px;
-            transition: border-color 0.3s ease;
+            transition: all 0.2s ease;
+            background: white;
         }
         
         .form-group input:focus, .form-group select:focus {
             outline: none;
-            border-color: #4CAF50;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
         
         .btn {
-            background: linear-gradient(135deg, #4CAF50, #45a049);
+            background: #3b82f6;
             color: white;
             padding: 12px 24px;
             border: none;
             border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
+            font-size: 15px;
+            font-weight: 500;
             cursor: pointer;
-            transition: transform 0.2s ease;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
         
         .btn:hover {
-            transform: translateY(-2px);
+            background: #2563eb;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+        }
+        
+        .btn-secondary:hover {
+            background: #4b5563;
+            box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+        }
+        
+        .btn-danger {
+            background: #ef4444;
+        }
+        
+        .btn-danger:hover {
+            background: #dc2626;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
         }
         
         .pick-slot {
             background: white;
-            border: 2px solid #e0e0e0;
+            border: 1px solid #e2e8f0;
             border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 15px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+            margin-bottom: 16px;
+            transition: all 0.2s ease;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .pick-slot:hover {
+            border-color: #cbd5e1;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.05);
+            transform: translateY(-1px);
         }
         
         .pick-slot.filled {
-            border-color: #e0e0e0;
-            background: white;
+            border-color: #10b981;
+            background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
+            box-shadow: 0 2px 4px rgba(16, 185, 129, 0.1);
         }
         
         .pick-slot.win {
-            background: linear-gradient(135deg, #e8f5e8, #d4edda);
-            border-color: #4CAF50;
+            border-color: #10b981;
+            background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
+            box-shadow: 0 2px 4px rgba(16, 185, 129, 0.1);
         }
         
         .pick-slot.loss {
-            background: linear-gradient(135deg, #fdeaea, #f8d7da);
-            border-color: #f44336;
+            border-color: #ef4444;
+            background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%);
+            box-shadow: 0 2px 4px rgba(239, 68, 68, 0.1);
         }
         
         .pick-slot.draw {
-            background: linear-gradient(135deg, #fff3e0, #ffe0b3);
-            border-color: #FF9800;
+            border-color: #f59e0b;
+            background: linear-gradient(135deg, #fffbeb 0%, #ffffff 100%);
+            box-shadow: 0 2px 4px rgba(245, 158, 11, 0.1);
         }
         
         .sgp-group {
-            border: 3px solid #FF9800;
-            border-radius: 15px;
-            background: linear-gradient(135deg, rgba(255, 152, 0, 0.1), rgba(255, 224, 179, 0.1));
-            padding: 15px;
-            padding-top: 35px;
-            margin-bottom: 25px;
+            border: 2px solid #FF9800;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(255, 152, 0, 0.08), rgba(255, 224, 179, 0.08));
+            padding: 12px;
+            padding-top: 28px;
+            margin-bottom: 16px;
             position: relative;
         }
         
         .sgp-group::before {
             content: "🎯 Same Game Parlay";
             position: absolute;
-            top: -12px;
-            left: 20px;
+            top: -10px;
+            left: 16px;
             background: #FF9800;
             color: white;
-            padding: 4px 12px;
+            padding: 3px 10px;
             border-radius: 6px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: bold;
         }
         
@@ -184,9 +277,9 @@
         
         .pick-slot-fields {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 15px;
-            margin-bottom: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
         }
         
         .pick-slot-field {
@@ -196,60 +289,64 @@
         
         .pick-slot-field label {
             font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 5px;
-            color: #666;
+            font-weight: 500;
+            color: #6b7280;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
         
         .pick-slot-field input,
         .pick-slot-field select {
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
             font-size: 14px;
             width: 100%;
+            background: white;
+        }
+        
+        .pick-slot-field input:focus,
+        .pick-slot-field select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
         }
         
         .result-indicator {
-            font-weight: bold;
-            font-size: 20px;
-            padding: 8px 16px;
-            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
         
         .result-indicator.win {
-            background: #4CAF50;
-            color: white;
+            background: #dcfce7;
+            color: #166534;
         }
         
         .result-indicator.loss {
-            background: #f44336;
-            color: white;
+            background: #fee2e2;
+            color: #991b1b;
         }
         
         .result-indicator.draw {
-            background: #FF9800;
-            color: white;
+            background: #fef3c7;
+            color: #92400e;
         }
         
         .result-indicator.submitted {
-            background: #4CAF50;
-            color: white;
-            font-weight: bold;
-            border: 2px solid #45a049;
+            background: #dbeafe;
+            color: #1e40af;
         }
 
         .result-indicator.pending {
-            background: #757575;
-            color: white;
-        }
-        
-        .result-buttons {
-            display: flex;
-            gap: 8px;
-            margin-top: 15px;
-            flex-wrap: wrap;
-            justify-content: center;
+            background: #f3f4f6;
+            color: #374151;
         }
         
         .button-group {
@@ -266,67 +363,250 @@
             justify-content: flex-end;
         }
         
+        .result-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
         .result-btn {
-            padding: 10px 16px;
-            font-size: 14px;
-            font-weight: 600;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 500;
             border: none;
             border-radius: 6px;
             cursor: pointer;
             transition: all 0.2s ease;
-            min-width: 80px;
+            min-width: 70px;
         }
         
         .result-btn:hover {
             transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         
         .result-btn.win {
-            background: #81C784;
+            background: #10b981;
             color: white;
         }
         
         .result-btn.win.active {
-            background: #4CAF50;
-            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.3);
-            transform: scale(1.05);
+            background: #059669;
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
         }
         
         .result-btn.loss {
-            background: #E57373;
+            background: #ef4444;
             color: white;
         }
         
         .result-btn.loss.active {
-            background: #f44336;
-            box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.3);
-            transform: scale(1.05);
+            background: #dc2626;
+            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
         }
         
         .result-btn.draw {
-            background: #FFB74D;
+            background: #f59e0b;
             color: white;
         }
         
         .result-btn.draw.active {
-            background: #FF9800;
-            box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.3);
-            transform: scale(1.05);
+            background: #d97706;
+            box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
         }
         
         .result-btn.reset {
-            background: #757575;
+            background: #6b7280;
             color: white;
         }
         
         .summary-card {
-            background: linear-gradient(135deg, #2196F3, #1976D2);
-            color: white;
-            padding: 25px;
-            border-radius: 15px;
-            margin-bottom: 20px;
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+        
+        .summary-card h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 16px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
             text-align: center;
+            transition: all 0.2s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .stat-card .stat-label {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .stat-card .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        
+        .stat-card.primary .stat-value {
+            color: #3b82f6;
+        }
+        
+        .stat-card.success .stat-value {
+            color: #10b981;
+        }
+        
+        .stat-card.warning .stat-value {
+            color: #f59e0b;
+        }
+        
+        .stat-card.danger .stat-value {
+            color: #ef4444;
+        }
+        
+        .week-selector {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+        
+        .week-selector label {
+            font-weight: 500;
+            color: #374151;
+        }
+        
+        .week-selector select {
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background: white;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+        
+        .leaderboard-table th {
+            background: #f8fafc;
+            padding: 16px;
+            text-align: left;
+            font-weight: 600;
+            color: #374151;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .leaderboard-table td {
+            padding: 16px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .leaderboard-table tr:hover {
+            background: #f8fafc;
+        }
+        
+        .leaderboard-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            padding: 16px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            background: #10b981;
+        }
+        
+        .notification.error {
+            background: #ef4444;
+        }
+        
+        .notification.info {
+            background: #3b82f6;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 16px;
+            }
+            
+            .header {
+                padding: 32px 24px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .tab-content {
+                padding: 24px;
+            }
+            
+            .pick-slot-fields {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
         }
         
         .summary-grid {
@@ -1188,8 +1468,8 @@
             }
             
             var sgpOddsStyle = hasOnlyOneLeg ? 
-                'width: 120px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; text-decoration: line-through; color: #999; background: #f5f5f5;' :
-                'width: 120px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;';
+                'width: 100px; padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; text-decoration: line-through; color: #999; background: #f5f5f5;' :
+                'width: 100px; padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px;';
             
             var sgpOddsValue = picks[0].sgpOdds || '';
             var saveButtonStyle = (sgpOddsValue && sgpOddsValue.trim() !== '') ? 
@@ -1201,13 +1481,13 @@
             var saveButtonDisabled = (sgpOddsValue && sgpOddsValue.trim() !== '') ? 
                 'disabled' : '';
             
-            var html = '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">' +
-                '<div style="font-size: 16px; font-weight: bold; color: #FF9800;">' + game + (hasOnlyOneLeg ? ' (Single Bet)' : '') + '</div>' +
-                '<span class="result-indicator ' + statusClass + '" style="font-size: 14px;">' + (hasOnlyOneLeg ? '' : 'SGP ') + status + '</span>' +
+            var html = '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">' +
+                '<div style="font-size: 15px; font-weight: bold; color: #FF9800;">' + game + (hasOnlyOneLeg ? ' (Single Bet)' : '') + '</div>' +
+                '<span class="result-indicator ' + statusClass + '" style="font-size: 13px;">' + (hasOnlyOneLeg ? '' : 'SGP ') + status + '</span>' +
                 '</div>' +
-                '<div style="display: flex; justify-content: flex-end; margin-bottom: 15px;">' +
-                '<div style="display: flex; align-items: center; gap: 10px; background: white; border: 2px solid #FF9800; border-radius: 8px; padding: 8px 12px;">' +
-                '<label style="font-size: 14px; font-weight: bold; color: #FF9800; margin: 0;">SGP Odds' + (hasOnlyOneLeg ? ' (not used)' : '') + ':</label>' +
+                '<div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">' +
+                '<div style="display: flex; align-items: center; gap: 8px; background: white; border: 1px solid #FF9800; border-radius: 6px; padding: 6px 10px;">' +
+                '<label style="font-size: 13px; font-weight: bold; color: #FF9800; margin: 0;">SGP Odds' + (hasOnlyOneLeg ? ' (not used)' : '') + ':</label>' +
                 '<input type="text" value="' + sgpOddsValue + '" placeholder="-110, +200" data-game="' + game + '" class="sgp-odds-input" style="' + sgpOddsStyle + '" onblur="formatSGPOddsInput(this)" onchange="enableSGPSaveButton(\'' + game + '\')" data-original="' + sgpOddsValue + '" ' + (hasOnlyOneLeg ? 'readonly' : '') + '>' +
                 '</div>' +
                 '</div>';
@@ -1221,10 +1501,10 @@
             });
             
             var btnDiv = document.createElement('div');
-            btnDiv.style.cssText = 'text-align: center; margin-top: 15px;';
+            btnDiv.style.cssText = 'text-align: center; margin-top: 10px;';
             var saveBtn = document.createElement('button');
             saveBtn.className = 'btn';
-            saveBtn.style.cssText = saveButtonStyle + '; color: white;';
+            saveBtn.style.cssText = saveButtonStyle + '; color: white; padding: 8px 16px; font-size: 13px;';
             saveBtn.textContent = saveButtonText;
             saveBtn.id = 'sgpSaveBtn_' + gameId;
             if (saveButtonDisabled) saveBtn.disabled = true;
@@ -1240,7 +1520,7 @@
         function createSGPPickSlot(index, pick, hasOnlyOneLeg) {
             var div = document.createElement('div');
             div.className = 'pick-slot';
-            div.style.cssText = 'background: rgba(255, 152, 0, 0.05); border-color: #FFB74D; margin-bottom: 15px;';
+            div.style.cssText = 'background: rgba(255, 152, 0, 0.05); border-color: #FFB74D; margin-bottom: 8px; padding: 16px;';
             
             // Determine result status and styling  
             var resultClass, resultText;
@@ -1269,7 +1549,7 @@
             
             var voidWarning = '';
             if (pick.result === 'draw') {
-                voidWarning = '<div style="background: #FF9800; color: white; padding: 8px; border-radius: 4px; margin-top: 10px; font-size: 12px; font-weight: bold;">⚠️ VOIDED LEG - Removed from SGP calculation</div>';
+                voidWarning = '<div style="background: #FF9800; color: white; padding: 6px; border-radius: 4px; margin-top: 6px; font-size: 11px; font-weight: bold;">⚠️ VOIDED LEG - Removed from SGP calculation</div>';
             }
             
             var oddsLabel = hasOnlyOneLeg ? 'Odds' : 'Odds <span style="font-size: 10px; color: #999;">(not used in SGP)</span>';
@@ -1278,30 +1558,30 @@
             
             var playerName = pick.playerName || ('Pick ' + (index + 1));
             
-            var html = '<div style="background: linear-gradient(135deg, #FF9800, #F57C00); color: white; padding: 12px 20px; margin: -20px -20px 15px -20px; border-radius: 12px 12px 0 0; display: flex; justify-content: space-between; align-items: center;">' +
-                '<div style="display: flex; align-items: center; gap: 10px;">' +
-                '<span id="playerNameDisplay' + index + '" style="font-size: 18px; font-weight: bold;">' + playerName + '</span>' +
-                '<input type="text" id="playerNameEdit' + index + '" value="' + playerName + '" style="display: none; padding: 6px 10px; border: 2px solid white; border-radius: 4px; font-size: 16px; font-weight: bold;">' +
-                '<button onclick="toggleEditPlayerName(' + index + ')" id="editBtn' + index + '" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 14px;">✏️ Edit</button>' +
+            var html = '<div style="background: linear-gradient(135deg, #FF9800, #F57C00); color: white; padding: 8px 16px; margin: -16px -16px 10px -16px; border-radius: 8px 8px 0 0; display: flex; justify-content: space-between; align-items: center;">' +
+                '<div style="display: flex; align-items: center; gap: 8px;">' +
+                '<span id="playerNameDisplay' + index + '" style="font-size: 16px; font-weight: bold;">' + playerName + '</span>' +
+                '<input type="text" id="playerNameEdit' + index + '" value="' + playerName + '" style="display: none; padding: 4px 8px; border: 2px solid white; border-radius: 4px; font-size: 14px; font-weight: bold;">' +
+                '<button onclick="toggleEditPlayerName(' + index + ')" id="editBtn' + index + '" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 12px;">✏️ Edit</button>' +
                 '</div>' +
-                '<span class="result-indicator ' + resultClass + '">' + resultText + '</span>' +
+                '<span class="result-indicator ' + resultClass + '" style="font-size: 12px;">' + resultText + '</span>' +
                 '</div>' +
-                '<div class="pick-slot-fields">' +
-                '<div class="pick-slot-field"><label>Pick/Bet</label><input type="text" value="' + (pick.pick || '') + '" readonly style="background: #f5f5f5;"></div>' +
-                '<div class="pick-slot-field"><label>' + oddsLabel + '</label><input type="text" value="' + oddsValue + '" readonly style="' + oddsStyle + '"></div>' +
-                '<div class="pick-slot-field"><label>Game</label><input type="text" value="' + (pick.game || '') + '" readonly style="background: #f5f5f5;"></div>' +
-                '<div class="pick-slot-field"><label>Time Slot</label><input type="text" value="' + (pick.timeSlot || '') + '" readonly style="background: #f5f5f5;"></div>' +
+                '<div class="pick-slot-fields" style="gap: 8px; margin-bottom: 8px;">' +
+                '<div class="pick-slot-field"><label style="font-size: 11px;">Pick/Bet</label><input type="text" value="' + (pick.pick || '') + '" readonly style="background: #f5f5f5; padding: 6px 8px; font-size: 13px;"></div>' +
+                '<div class="pick-slot-field"><label style="font-size: 11px;">' + oddsLabel + '</label><input type="text" value="' + oddsValue + '" readonly style="' + oddsStyle + '; padding: 6px 8px; font-size: 13px;"></div>' +
+                '<div class="pick-slot-field"><label style="font-size: 11px;">Game</label><input type="text" value="' + (pick.game || '') + '" readonly style="background: #f5f5f5; padding: 6px 8px; font-size: 13px;"></div>' +
+                '<div class="pick-slot-field"><label style="font-size: 11px;">Time Slot</label><input type="text" value="' + (pick.timeSlot || '') + '" readonly style="background: #f5f5f5; padding: 6px 8px; font-size: 13px;"></div>' +
                 '</div>' + voidWarning +
-                '<div style="display: flex; gap: 8px; margin-top: 15px; align-items: center; flex-wrap: wrap;">' +
-                '<div style="display: flex; gap: 8px;">' +
-                '<button class="result-btn win ' + winActive + '" onclick="toggleResult(' + index + ', true)">✓ Win</button>' +
-                '<button class="result-btn loss ' + lossActive + '" onclick="toggleResult(' + index + ', false)">✗ Loss</button>' +
-                '<button class="result-btn draw ' + drawActive + '" onclick="toggleResult(' + index + ', \'draw\')">🤝 Draw</button>' +
-                '<button class="result-btn reset" onclick="toggleResult(' + index + ', null)">↻ Reset</button>' +
+                '<div style="display: flex; gap: 6px; margin-top: 8px; align-items: center; flex-wrap: wrap; justify-content: space-between;">' +
+                '<div style="display: flex; gap: 6px;">' +
+                '<button class="result-btn win ' + winActive + '" onclick="toggleResult(' + index + ', true)" style="padding: 6px 12px; font-size: 12px;">✓ Win</button>' +
+                '<button class="result-btn loss ' + lossActive + '" onclick="toggleResult(' + index + ', false)" style="padding: 6px 12px; font-size: 12px;">✗ Loss</button>' +
+                '<button class="result-btn draw ' + drawActive + '" onclick="toggleResult(' + index + ', \'draw\')" style="padding: 6px 12px; font-size: 12px;">🤝 Draw</button>' +
+                '<button class="result-btn reset" onclick="toggleResult(' + index + ', null)" style="padding: 6px 12px; font-size: 12px;">↻ Reset</button>' +
                 '</div>' +
-                '<div style="border-left: 2px solid #ddd; padding-left: 8px; margin-left: 8px; display: flex; gap: 8px;">' +
-                '<button class="result-btn" style="background: #2196F3; color: white;" onclick="editSGPPick(' + index + ')">✏️ Edit Pick</button>' +
-                '<button class="result-btn" style="background: #f44336; color: white;" onclick="removeSGPPick(' + index + ')">🗑️ Remove</button>' +
+                '<div style="border-left: 1px solid #ddd; padding-left: 6px; margin-left: 6px; display: flex; gap: 6px;">' +
+                '<button class="result-btn" style="background: #2196F3; color: white; padding: 6px 12px; font-size: 12px;" onclick="editSGPPick(' + index + ')">✏️ Edit Pick</button>' +
+                '<button class="result-btn" style="background: #f44336; color: white; padding: 6px 12px; font-size: 12px;" onclick="removeSGPPick(' + index + ')">🗑️ Remove</button>' +
                 '</div>' +
                 '</div>';
             
@@ -1630,6 +1910,7 @@
                 }
             });
             
+            saveToFirebase();
             showNotification('✓ SGP saved successfully for ' + game + '!', 'success');
             updateCalculations();
             renderAllPicks();
@@ -1883,6 +2164,29 @@
             }
         }
 
+        function getTimeSlotOrder(timeSlot) {
+            // Define chronological order of time slots
+            var timeOrder = {
+                'TNF': 1,    // Thursday Night Football
+                'Early': 2,   // Early Sunday games
+                'Late': 3,    // Late Sunday games  
+                'SNF': 4,     // Sunday Night Football
+                'MNF': 5      // Monday Night Football
+            };
+            return timeOrder[timeSlot] || 999; // Unknown time slots go to end
+        }
+
+        function getTimeSlotDisplayName(timeSlot) {
+            var displayNames = {
+                'TNF': 'Thursday Night Football',
+                'Early': 'Early Sunday Games (1:00 PM ET)',
+                'Late': 'Late Sunday Games (4:25 PM ET)',
+                'SNF': 'Sunday Night Football (8:20 PM ET)',
+                'MNF': 'Monday Night Football (8:15 PM ET)'
+            };
+            return displayNames[timeSlot] || 'Unknown Time Slot';
+        }
+
         function updatePicksSummary() {
             var picks = weeklyPicks[currentWeek] || [];
             
@@ -1917,11 +2221,99 @@
                 }
             });
             
+            // Sort game groups by time slot (earliest first)
+            var sortedGames = Object.keys(gameGroups).sort(function(a, b) {
+                var gameA = gameGroups[a][0]; // Get first pick from group to determine time slot
+                var gameB = gameGroups[b][0];
+                var timeOrderA = getTimeSlotOrder(gameA.timeSlot);
+                var timeOrderB = getTimeSlotOrder(gameB.timeSlot);
+                
+                if (timeOrderA !== timeOrderB) {
+                    return timeOrderA - timeOrderB;
+                }
+                
+                // If same time slot, sort alphabetically by game name
+                return a.localeCompare(b);
+            });
+            
+            // Sort individual picks by time slot
+            individualPicks.sort(function(a, b) {
+                var timeOrderA = getTimeSlotOrder(a.timeSlot);
+                var timeOrderB = getTimeSlotOrder(b.timeSlot);
+                
+                if (timeOrderA !== timeOrderB) {
+                    return timeOrderA - timeOrderB;
+                }
+                
+                // If same time slot, sort by player name
+                return (a.playerName || '').localeCompare(b.playerName || '');
+            });
+            
             var html = '';
             
+            // Combine all picks (SGP groups and individual) and sort by time slot
+            var allPicksByTimeSlot = {};
+            
+            // Process all game groups - SGP groups (2+ picks) and individual picks (1 pick)
             for (var game in gameGroups) {
                 var gamePicks = gameGroups[game];
+                var firstPick = gamePicks[0];
+                var timeSlot = firstPick.timeSlot || 'Unknown';
                 
+                if (!allPicksByTimeSlot[timeSlot]) {
+                    allPicksByTimeSlot[timeSlot] = [];
+                }
+                
+                if (gamePicks.length >= 2) {
+                    // This is an SGP group
+                    allPicksByTimeSlot[timeSlot].push({
+                        type: 'sgp',
+                        game: game,
+                        picks: gamePicks
+                    });
+                } else {
+                    // This is a single pick - treat as individual
+                    allPicksByTimeSlot[timeSlot].push({
+                        type: 'individual',
+                        pick: firstPick
+                    });
+                }
+            }
+            
+            // Add individual picks that don't have a game assigned
+            individualPicks.forEach(function(pick) {
+                var timeSlot = pick.timeSlot || 'Unknown';
+                if (!allPicksByTimeSlot[timeSlot]) {
+                    allPicksByTimeSlot[timeSlot] = [];
+                }
+                allPicksByTimeSlot[timeSlot].push({
+                    type: 'individual',
+                    pick: pick
+                });
+            });
+            
+            // Sort time slots chronologically
+            var sortedTimeSlots = Object.keys(allPicksByTimeSlot).sort(function(a, b) {
+                return getTimeSlotOrder(a) - getTimeSlotOrder(b);
+            });
+            
+            var html = '';
+            
+            // Display picks grouped by time slot
+            sortedTimeSlots.forEach(function(timeSlot) {
+                var picksInSlot = allPicksByTimeSlot[timeSlot];
+                
+                // Add time slot header
+                html += '<div style="margin-bottom: 16px;">';
+                html += '<h4 style="color: #666; font-size: 14px; font-weight: 600; margin: 0 0 8px 0; padding: 8px 12px; background: #f8f9fa; border-radius: 6px; border-left: 4px solid #3b82f6;">' + 
+                        getTimeSlotDisplayName(timeSlot) + '</h4>';
+                
+                // Display all picks in this time slot
+                picksInSlot.forEach(function(item) {
+                    if (item.type === 'sgp') {
+                        var game = item.game;
+                        var gamePicks = item.picks;
+                        var firstPick = gamePicks[0];
                 if (gamePicks.length >= 2) {
                     var activeLegs = gamePicks.filter(function(p) { return p.result !== 'draw'; });
                     var hasOnlyOneLeg = activeLegs.length === 1;
@@ -1948,9 +2340,9 @@
                     html += '<span style="background: ' + statusColor + '; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">' + status + '</span>';
                     html += '</div>';
                     
-                    if (!hasOnlyOneLeg) {
-                        html += '<div style="font-weight: bold; color: #FF9800; margin-bottom: 8px;">Odds: ' + sgpOdds + '</div>';
-                    }
+                        if (!hasOnlyOneLeg) {
+                            html += '<div style="font-weight: bold; color: #FF9800; margin-bottom: 8px;">Odds: ' + sgpOdds + '</div>';
+                        }
                     
                     gamePicks.forEach(function(pick) {
                         var isVoided = pick.result === 'draw';
@@ -1969,42 +2361,41 @@
                     });
                     
                     html += '</div>';
-                } else {
-                    gamePicks.forEach(function(pick) {
-                        individualPicks.push(pick);
-                    });
-                }
-            }
-            
-            individualPicks.forEach(function(pick) {
-                var status = 'Pending';
-                var statusColor = '#757575';
+                    }
+                    } else if (item.type === 'individual') {
+                        var pick = item.pick;
+                        var status = 'Pending';
+                        var statusColor = '#757575';
+                        
+                        if (pick.result === true) {
+                            status = 'Win';
+                            statusColor = '#4CAF50';
+                        } else if (pick.result === false) {
+                            status = 'Loss';
+                            statusColor = '#f44336';
+                        } else if (pick.result === 'draw') {
+                            status = 'Voided';
+                            statusColor = '#FF9800';
+                        }
+                        
+                        var textStyle = pick.result === 'draw' ? 'text-decoration: line-through; opacity: 0.5;' : '';
+                        
+                        html += '<div style="border: 2px solid #e0e0e0; border-radius: 8px; padding: 12px; background: white; margin-bottom: 8px; ' + textStyle + '">';
+                        html += '<div style="display: flex; justify-content: space-between; align-items: center;">';
+                        html += '<div>';
+                        html += '<strong>' + pick.playerName + ':</strong> ' + pick.pick;
+                        html += '<div style="color: #666; font-size: 13px; margin-top: 4px;">';
+                        html += pick.game ? pick.game : 'No game selected';
+                        html += ' • <strong>' + pick.odds + '</strong>';
+                        html += '</div>';
+                        html += '</div>';
+                        html += '<span style="background: ' + statusColor + '; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">' + status + '</span>';
+                        html += '</div>';
+                        html += '</div>';
+                    }
+                });
                 
-                if (pick.result === true) {
-                    status = 'Win';
-                    statusColor = '#4CAF50';
-                } else if (pick.result === false) {
-                    status = 'Loss';
-                    statusColor = '#f44336';
-                } else if (pick.result === 'draw') {
-                    status = 'Voided';
-                    statusColor = '#FF9800';
-                }
-                
-                var textStyle = pick.result === 'draw' ? 'text-decoration: line-through; opacity: 0.5;' : '';
-                
-                html += '<div style="border: 2px solid #e0e0e0; border-radius: 8px; padding: 12px; background: white; ' + textStyle + '">';
-                html += '<div style="display: flex; justify-content: space-between; align-items: center;">';
-                html += '<div>';
-                html += '<strong>' + pick.playerName + ':</strong> ' + pick.pick;
-                html += '<div style="color: #666; font-size: 13px; margin-top: 4px;">';
-                html += pick.game ? pick.game : 'No game selected';
-                html += ' • <strong>' + pick.odds + '</strong>';
-                html += '</div>';
-                html += '</div>';
-                html += '<span style="background: ' + statusColor + '; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">' + status + '</span>';
-                html += '</div>';
-                html += '</div>';
+                html += '</div>'; // Close time slot group
             });
             
             container.innerHTML = html;
