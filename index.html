@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -81,13 +81,6 @@
             display: block;
         }
         
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        
         .form-group {
             display: flex;
             flex-direction: column;
@@ -128,14 +121,6 @@
             transform: translateY(-2px);
         }
         
-        .btn-danger {
-            background: linear-gradient(135deg, #f44336, #d32f2f);
-        }
-        
-        .picks-container {
-            margin-top: 30px;
-        }
-        
         .pick-slot {
             background: white;
             border: 2px solid #e0e0e0;
@@ -143,7 +128,6 @@
             padding: 20px;
             margin-bottom: 15px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            position: relative;
         }
         
         .pick-slot.filled {
@@ -154,19 +138,16 @@
         .pick-slot.win {
             background: linear-gradient(135deg, #e8f5e8, #d4edda);
             border-color: #4CAF50;
-            box-shadow: 0 6px 16px rgba(76, 175, 80, 0.2);
         }
         
         .pick-slot.loss {
             background: linear-gradient(135deg, #fdeaea, #f8d7da);
             border-color: #f44336;
-            box-shadow: 0 6px 16px rgba(244, 67, 54, 0.2);
         }
         
         .pick-slot.draw {
             background: linear-gradient(135deg, #fff3e0, #ffe0b3);
             border-color: #FF9800;
-            box-shadow: 0 6px 16px rgba(255, 152, 0, 0.2);
         }
         
         .sgp-group {
@@ -174,7 +155,7 @@
             border-radius: 15px;
             background: linear-gradient(135deg, rgba(255, 152, 0, 0.1), rgba(255, 224, 179, 0.1));
             padding: 15px;
-            padding-top: 25px;
+            padding-top: 35px;
             margin-bottom: 25px;
             position: relative;
         }
@@ -192,126 +173,6 @@
             font-weight: bold;
         }
         
-        .sgp-odds-container {
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 15px;
-        }
-        
-        .sgp-odds-field {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: white;
-            border: 2px solid #FF9800;
-            border-radius: 8px;
-            padding: 8px 12px;
-        }
-        
-        .sgp-odds-field label {
-            font-size: 14px;
-            font-weight: bold;
-            color: #FF9800;
-            margin: 0;
-            white-space: nowrap;
-        }
-        
-        .sgp-odds-field input {
-            width: 120px;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s ease;
-            color: #333;
-        }
-        
-        .sgp-odds-field input::placeholder {
-            color: #999;
-            font-weight: normal;
-        }
-        
-        .sgp-odds-field input:focus {
-            outline: none;
-            border-color: #4CAF50;
-        }
-        
-        .pick-slot.sgp-pick .pick-slot-field input[id*="odds"],
-        .pick-slot.sgp-pick .pick-slot-field input[id*="odds"]:focus {
-            text-decoration: line-through;
-            color: #999;
-            background: #f9f9f9;
-            border-color: #ddd;
-        }
-        
-        .pick-slot.sgp-pick .pick-slot-field label[for*="odds"]:after {
-            content: " (not used in SGP)";
-            font-size: 10px;
-            color: #999;
-            font-weight: normal;
-        }
-        
-        .pick-slot.sgp-pick {
-            background: rgba(255, 152, 0, 0.05);
-            border-color: #FFB74D;
-            margin-bottom: 15px;
-        }
-        
-        .pick-slot.sgp-pick:last-child {
-            margin-bottom: 0;
-        }
-        
-        .pick-slot.in-sgp {
-            opacity: 1;
-            background: rgba(255, 152, 0, 0.05);
-            border-color: #FFB74D;
-            position: relative;
-        }
-        
-        .pick-slot.in-sgp::after {
-            content: "🔗 Grouped in SGP above";
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            background: #FF9800;
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        
-        .pick-slot.saved {
-            border: 3px solid #4CAF50;
-            background: linear-gradient(135deg, #e8f5e8, #d4edda);
-            transform: none;
-            transition: all 0.3s ease;
-        }
-        
-        .save-indicator {
-            position: absolute;
-            top: -10px;
-            right: -10px;
-            background: #4CAF50;
-            color: white;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            font-weight: bold;
-            animation: saveSuccess 2s ease-in-out;
-            z-index: 10;
-        }
-        
-        @keyframes saveSuccess {
-            0% { transform: scale(0); opacity: 0; }
-            50% { transform: scale(1.2); opacity: 1; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        
         .pick-slot-header {
             display: flex;
             justify-content: space-between;
@@ -321,43 +182,11 @@
             gap: 10px;
         }
         
-        @media (max-width: 600px) {
-            .pick-slot-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .pick-slot-header > div {
-                width: 100%;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
-        }
-        
         .pick-slot-fields {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
             gap: 15px;
             margin-bottom: 15px;
-        }
-        
-        @media (max-width: 1200px) {
-            .pick-slot-fields {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-        
-        @media (max-width: 900px) {
-            .pick-slot-fields {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-        
-        @media (max-width: 600px) {
-            .pick-slot-fields {
-                grid-template-columns: 1fr;
-            }
         }
         
         .pick-slot-field {
@@ -378,14 +207,7 @@
             border: 1px solid #ddd;
             border-radius: 4px;
             font-size: 14px;
-            min-width: 0; /* Allow fields to shrink */
             width: 100%;
-        }
-        
-        .pick-slot-field input:focus,
-        .pick-slot-field select:focus {
-            outline: none;
-            border-color: #4CAF50;
         }
         
         .result-indicator {
@@ -393,7 +215,6 @@
             font-size: 20px;
             padding: 8px 16px;
             border-radius: 8px;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
         }
         
         .result-indicator.win {
@@ -424,17 +245,6 @@
             justify-content: center;
         }
         
-        @media (max-width: 600px) {
-            .result-buttons {
-                justify-content: stretch;
-            }
-            
-            .result-btn {
-                flex: 1;
-                min-width: 70px;
-            }
-        }
-        
         .result-btn {
             padding: 10px 16px;
             font-size: 14px;
@@ -452,41 +262,41 @@
         }
         
         .result-btn.win {
-            background: #4CAF50;
+            background: #81C784;
             color: white;
+        }
+        
+        .result-btn.win.active {
+            background: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.3);
+            transform: scale(1.05);
         }
         
         .result-btn.loss {
-            background: #f44336;
+            background: #E57373;
             color: white;
+        }
+        
+        .result-btn.loss.active {
+            background: #f44336;
+            box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.3);
+            transform: scale(1.05);
         }
         
         .result-btn.draw {
-            background: #FF9800;
+            background: #FFB74D;
             color: white;
         }
         
-        .result-btn.save {
-            background: #2196F3;
-            color: white;
+        .result-btn.draw.active {
+            background: #FF9800;
+            box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.3);
+            transform: scale(1.05);
         }
         
         .result-btn.reset {
             background: #757575;
             color: white;
-        }
-        
-        .pick-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        
-        .pick-info {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 10px;
         }
         
         .summary-card {
@@ -550,41 +360,12 @@
             background: #fafafa;
         }
         
-        .same-game-indicator {
-            background: #FF9800;
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        
         .week-selector {
             display: flex;
             align-items: center;
             gap: 15px;
             margin-bottom: 30px;
             flex-wrap: wrap;
-        }
-        
-        .week-selector > div {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-        
-        @media (max-width: 768px) {
-            .week-selector {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 20px;
-            }
-            
-            .week-selector > div {
-                width: 100%;
-                justify-content: space-between;
-            }
         }
         
         .current-week {
@@ -622,7 +403,6 @@
         </div>
         
         <div class="tab-content">
-            <!-- Weekly Picks Tab -->
             <div id="picks" class="tab-pane active">
                 <div class="week-selector">
                     <label for="nflWeek">NFL Week:</label>
@@ -645,10 +425,6 @@
                         <option value="16">Week 16</option>
                         <option value="17">Week 17</option>
                         <option value="18">Week 18</option>
-                        <option value="19">Wild Card</option>
-                        <option value="20">Divisional</option>
-                        <option value="21">Conference Championship</option>
-                        <option value="22">Super Bowl</option>
                     </select>
                     
                     <label for="currentWeek" style="margin-left: 30px;">Parlay Week:</label>
@@ -676,7 +452,7 @@
                     
                     <div style="margin-left: 40px; display: flex; align-items: center; gap: 15px;">
                         <label for="numberOfLegs">Parlay Legs:</label>
-                        <select id="numberOfLegs" onchange="generatePickSlots()">
+                        <select id="numberOfLegs" onchange="renderAllPicks()">
                             <option value="2">2 Legs</option>
                             <option value="3">3 Legs</option>
                             <option value="4">4 Legs</option>
@@ -719,36 +495,37 @@
                 </div>
                 
                 <div style="display: flex; gap: 15px; margin-bottom: 30px;">
-                    <button class="btn" onclick="saveAllPicks()" style="background: #4CAF50;">💾 Save All Picks</button>
+                    <button class="btn" onclick="saveAllPicks()">💾 Save All Picks</button>
                     <button class="btn" onclick="clearAllPicks()" style="background: #f44336;">🗑️ Clear All</button>
                 </div>
                 
-                <div id="pickSlotsContainer">
-                    <!-- Pick slots will be generated here -->
-                </div>
+                <div id="pickSlotsContainer"></div>
             </div>
             
-            <!-- Parlay Summary Tab -->
             <div id="summary" class="tab-pane">
-                <div class="summary-card">
-                    <h2>Week <span id="summaryWeek">1</span> Parlay Summary</h2>
-                    <div class="summary-grid">
-                        <div class="summary-item">
-                            <h3 id="totalOdds">+0</h3>
-                            <p>Total Parlay Odds</p>
-                        </div>
-                        <div class="summary-item">
-                            <h3 id="totalPicks">0</h3>
-                            <p>Total Picks</p>
-                        </div>
-                        <div class="summary-item">
-                            <h3 id="betAmount">$10</h3>
-                            <p>Bet Amount</p>
-                        </div>
-                        <div class="summary-item">
-                            <h3 id="potentialWinnings">$0</h3>
-                            <p>Potential Winnings</p>
-                        </div>
+                <h2 style="margin-bottom: 20px; color: #333;">Week <span id="summaryWeek">1</span> Parlay Summary</h2>
+                
+                <div style="background: white; border-radius: 15px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                    <h3 style="margin-bottom: 15px; color: #333;">Your Picks</h3>
+                    <div id="picksSummary" style="display: flex; flex-direction: column; gap: 10px;"></div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 20px;">
+                    <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-left: 4px solid #4CAF50;">
+                        <div style="color: #666; font-size: 14px; margin-bottom: 5px;">Total Parlay Odds</div>
+                        <div id="totalOdds" style="font-size: 28px; font-weight: bold; color: #4CAF50;">+0</div>
+                    </div>
+                    <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-left: 4px solid #2196F3;">
+                        <div style="color: #666; font-size: 14px; margin-bottom: 5px;">Total Picks</div>
+                        <div id="totalPicks" style="font-size: 28px; font-weight: bold; color: #2196F3;">0</div>
+                    </div>
+                    <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-left: 4px solid #FF9800;">
+                        <div style="color: #666; font-size: 14px; margin-bottom: 5px;">Bet Amount</div>
+                        <div id="betAmount" style="font-size: 28px; font-weight: bold; color: #FF9800;">$10</div>
+                    </div>
+                    <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-left: 4px solid #9C27B0;">
+                        <div style="color: #666; font-size: 14px; margin-bottom: 5px;">Potential Winnings</div>
+                        <div id="potentialWinnings" style="font-size: 28px; font-weight: bold; color: #9C27B0;">$0</div>
                     </div>
                 </div>
                 
@@ -757,42 +534,34 @@
                     <input type="number" id="betAmountInput" value="10" min="1" onchange="updateCalculations()">
                 </div>
                 
-                <div class="summary-card">
-                    <h3>Payout Breakdown</h3>
-                    <div class="summary-grid">
-                        <div class="summary-item">
-                            <h3 id="grossWinnings">$0</h3>
-                            <p>Gross Winnings</p>
+                <div style="background: white; border-radius: 15px; padding: 25px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                    <h3 style="margin-bottom: 20px; color: #333;">Payout Breakdown</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                        <div style="padding: 15px; background: #f5f5f5; border-radius: 8px;">
+                            <div style="color: #666; font-size: 14px; margin-bottom: 5px;">Gross Winnings</div>
+                            <div id="grossWinnings" style="font-size: 24px; font-weight: bold; color: #333;">$0</div>
                         </div>
-                        <div class="summary-item">
-                            <h3 id="taxes">$0</h3>
-                            <p>Taxes (30%)</p>
+                        <div style="padding: 15px; background: #f5f5f5; border-radius: 8px;">
+                            <div style="color: #666; font-size: 14px; margin-bottom: 5px;">Taxes (30%)</div>
+                            <div id="taxes" style="font-size: 24px; font-weight: bold; color: #f44336;">$0</div>
                         </div>
-                        <div class="summary-item">
-                            <h3 id="netWinnings">$0</h3>
-                            <p>Net Winnings</p>
+                        <div style="padding: 15px; background: #f5f5f5; border-radius: 8px;">
+                            <div style="color: #666; font-size: 14px; margin-bottom: 5px;">Net Winnings</div>
+                            <div id="netWinnings" style="font-size: 24px; font-weight: bold; color: #4CAF50;">$0</div>
                         </div>
-                        <div class="summary-item">
-                            <h3 id="perPerson">$0</h3>
-                            <p>Per Person (Net)</p>
+                        <div style="padding: 15px; background: #f5f5f5; border-radius: 8px;">
+                            <div style="color: #666; font-size: 14px; margin-bottom: 5px;">Per Person (Net)</div>
+                            <div id="perPerson" style="font-size: 24px; font-weight: bold; color: #2196F3;">$0</div>
                         </div>
-                    </div>
-                </div>
-                
-                <div id="sameGameParlays" style="margin-top: 30px;">
-                    <h3>Same Game Parlays</h3>
-                    <div id="sameGameContainer">
-                        <!-- Same game parlays will be shown here -->
                     </div>
                 </div>
             </div>
             
-            <!-- Leaderboard Tab -->
             <div id="leaderboard" class="tab-pane">
                 <div class="leaderboard">
                     <div class="leaderboard-header">
                         <h2>Season Leaderboard</h2>
-                        <p>Track everyone's picking performance</p>
+                        <p>Track everyone picking performance</p>
                     </div>
                     <table>
                         <thead>
@@ -803,11 +572,11 @@
                                 <th>Losses</th>
                                 <th>Draws</th>
                                 <th>Win %</th>
-                                <th>Contribution to Winning Parlays</th>
+                                <th>Contributions</th>
                             </tr>
                         </thead>
                         <tbody id="leaderboardBody">
-                            <!-- Leaderboard data will be populated here -->
+                            <tr><td colspan="7" style="text-align: center; color: #666;">No data available</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -819,21 +588,33 @@
         </div>
     </div>
     
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     
     <script>
-        // Global variables
-        let weeklyPicks = {};
-        let leaderboardData = {};
-        let currentWeek = 1;
-        let currentNFLWeek = 1;
-        let nflSchedule = {};
-        let database = null;
+        var weeklyPicks = {};
+        var leaderboardData = {};
+        var currentWeek = 1;
+        var currentNFLWeek = 1;
+        var nflSchedule = {};
+        var database = null;
+        
+        var playerNames = [
+            'Jace Allison',
+            'Khaled Daher',
+            'Michael Dixon',
+            'Michael Hedges',
+            'Elliott Kalin',
+            'Brendan McAleer',
+            'Nehad Osman',
+            'Nick Rose',
+            'Mario Sanelli',
+            'Tyler Vander Boegh',
+            'Jared Warren',
+            'Taylor Young'
+        ];
 
-        // Firebase configuration
-        const firebaseConfig = {
+        var firebaseConfig = {
             apiKey: "AIzaSyCSen1b1IDNvRXg96CZXf9PTGURvCga3Cs",
             authDomain: "parlay-picker.firebaseapp.com",
             databaseURL: "https://parlay-picker-default-rtdb.firebaseio.com/",
@@ -844,262 +625,302 @@
             measurementId: "G-E7F4G8DEN8"
         };
 
-        // Sample NFL schedule data
-        const sampleNFLSchedule = {
+        var sampleNFLSchedule = {
             1: [
-                { id: 'buf-ari', matchup: 'Buffalo Bills @ Arizona Cardinals', time: 'Early', day: 'Sunday' },
-                { id: 'pit-atl', matchup: 'Pittsburgh Steelers @ Atlanta Falcons', time: 'Early', day: 'Sunday' },
-                { id: 'hou-ind', matchup: 'Houston Texans @ Indianapolis Colts', time: 'Early', day: 'Sunday' },
-                { id: 'mia-jax', matchup: 'Miami Dolphins @ Jacksonville Jaguars', time: 'Early', day: 'Sunday' },
-                { id: 'ne-cin', matchup: 'New England Patriots @ Cincinnati Bengals', time: 'Early', day: 'Sunday' },
-                { id: 'car-no', matchup: 'Carolina Panthers @ New Orleans Saints', time: 'Early', day: 'Sunday' },
-                { id: 'min-nyg', matchup: 'Minnesota Vikings @ New York Giants', time: 'Early', day: 'Sunday' },
-                { id: 'ten-chi', matchup: 'Tennessee Titans @ Chicago Bears', time: 'Early', day: 'Sunday' },
-                { id: 'lac-lv', matchup: 'Los Angeles Chargers @ Las Vegas Raiders', time: 'Late', day: 'Sunday' },
-                { id: 'den-sea', matchup: 'Denver Broncos @ Seattle Seahawks', time: 'Late', day: 'Sunday' },
-                { id: 'gb-phi', matchup: 'Green Bay Packers @ Philadelphia Eagles', time: 'Late', day: 'Sunday' },
-                { id: 'tb-wsh', matchup: 'Tampa Bay Buccaneers @ Washington Commanders', time: 'Late', day: 'Sunday' },
-                { id: 'cle-dal', matchup: 'Cleveland Browns @ Dallas Cowboys', time: 'Late', day: 'Sunday' },
-                { id: 'sf-lar', matchup: 'San Francisco 49ers @ Los Angeles Rams', time: 'SNF', day: 'Sunday' },
-                { id: 'nyj-bal', matchup: 'New York Jets @ Baltimore Ravens', time: 'MNF', day: 'Monday' },
-                { id: 'kc-det', matchup: 'Kansas City Chiefs @ Detroit Lions', time: 'TNF', day: 'Thursday' }
+                { matchup: 'Kansas City Chiefs @ Detroit Lions', time: 'TNF' },
+                { matchup: 'Buffalo Bills @ Arizona Cardinals', time: 'Early' },
+                { matchup: 'Pittsburgh Steelers @ Atlanta Falcons', time: 'Early' },
+                { matchup: 'Houston Texans @ Indianapolis Colts', time: 'Early' },
+                { matchup: 'Miami Dolphins @ Jacksonville Jaguars', time: 'Early' },
+                { matchup: 'New England Patriots @ Cincinnati Bengals', time: 'Early' },
+                { matchup: 'Carolina Panthers @ New Orleans Saints', time: 'Early' },
+                { matchup: 'Minnesota Vikings @ New York Giants', time: 'Early' },
+                { matchup: 'Tennessee Titans @ Chicago Bears', time: 'Early' },
+                { matchup: 'Los Angeles Chargers @ Las Vegas Raiders', time: 'Late' },
+                { matchup: 'Denver Broncos @ Seattle Seahawks', time: 'Late' },
+                { matchup: 'Green Bay Packers @ Philadelphia Eagles', time: 'Late' },
+                { matchup: 'Tampa Bay Buccaneers @ Washington Commanders', time: 'Late' },
+                { matchup: 'Cleveland Browns @ Dallas Cowboys', time: 'Late' },
+                { matchup: 'San Francisco 49ers @ Los Angeles Rams', time: 'SNF' },
+                { matchup: 'New York Jets @ Baltimore Ravens', time: 'MNF' }
             ]
         };
-        
-        function initializeNFLSchedule() {
-            nflSchedule = sampleNFLSchedule;
-        }
 
-        // Initialize everything when page loads
         window.onload = function() {
-            console.log('Page loaded, initializing...');
-            initializeFirebase();
+            initializeApp();
         };
 
-        function initializeFirebase() {
+        function initializeApp() {
             try {
-                // Initialize Firebase
-                firebase.initializeApp(firebaseConfig);
-                database = firebase.database();
-                console.log('Firebase initialized successfully');
-                
-                // Test connection
-                testFirebaseConnection();
-                
+                if (typeof firebase !== 'undefined') {
+                    firebase.initializeApp(firebaseConfig);
+                    database = firebase.database();
+                } else {
+                    console.log('Firebase not available');
+                }
             } catch (error) {
-                console.error('Firebase initialization failed:', error);
-                console.log('Running in local mode without real-time sync');
-                initializeData();
+                console.error('Firebase error:', error);
             }
-        }
-
-        async function testFirebaseConnection() {
-            try {
-                await database.ref('test').set({
-                    message: 'Connected',
-                    timestamp: Date.now()
-                });
-                console.log('Firebase connection successful - enabling real-time sync');
-                initializeData();
-                setupRealtimeListeners();
-                
-            } catch (error) {
-                console.error('Firebase connection failed:', error);
-                console.log('Running in local mode');
-                initializeData();
-            }
-        }
-
-        function initializeData() {
-            weeklyPicks = {};
-            leaderboardData = {};
-            currentWeek = 1;
-            currentNFLWeek = 1;
             
-            initializeNFLSchedule();
-            
-            document.getElementById('currentWeek').value = currentWeek;
-            document.getElementById('nflWeek').value = currentNFLWeek;
-            document.getElementById('weekDisplay').textContent = currentWeek;
-            document.getElementById('summaryWeek').textContent = currentWeek;
-            
-            generatePickSlots();
+            nflSchedule = sampleNFLSchedule;
+            renderAllPicks();
             updateCalculations();
-            updateLeaderboard();
         }
 
         function updateNFLWeek() {
             currentNFLWeek = parseInt(document.getElementById('nflWeek').value);
-            generatePickSlots();
+            renderAllPicks();
         }
 
         function updateWeek() {
             currentWeek = parseInt(document.getElementById('currentWeek').value);
             document.getElementById('weekDisplay').textContent = currentWeek;
             document.getElementById('summaryWeek').textContent = currentWeek;
-            generatePickSlots();
+            renderAllPicks();
             updateCalculations();
         }
 
-        // Firebase Database Functions
-        async function savePicksToFirebase(week, picks) {
-            if (!database) {
-                console.log('Firebase not available - data saved locally only');
-                return;
-            }
-            
-            try {
-                await database.ref(`weeklyPicks/${week}`).set(picks);
-                console.log(`Picks synced to Firebase for week ${week}`);
-                showNotification('Picks synced to all league members!', 'success');
-            } catch (error) {
-                console.error('Error syncing picks:', error);
-                showNotification('Sync failed - picks saved locally only', 'warning');
-            }
-        }
-
-        async function loadPicksFromFirebase(week) {
-            if (!database) return [];
-            
-            try {
-                const snapshot = await database.ref(`weeklyPicks/${week}`).once('value');
-                return snapshot.exists() ? snapshot.val() : [];
-            } catch (error) {
-                console.error('Error loading picks:', error);
-                return [];
-            }
-        }
-
-        function setupRealtimeListeners() {
-            if (!database) return;
-            
-            // Listen for changes to current week
-            database.ref(`weeklyPicks/${currentWeek}`).on('value', (snapshot) => {
-                if (snapshot.exists()) {
-                    weeklyPicks[currentWeek] = snapshot.val();
-                    console.log('Real-time update received');
-                    
-                    const activeTab = document.querySelector('.tab-pane.active');
-                    if (activeTab && activeTab.id === 'picks') {
-                        generatePickSlots();
-                    }
-                    updateCalculations();
-                }
-            });
-        }
-
-        function showNotification(message, type = 'info') {
-            const notification = document.createElement('div');
-            const colors = {
-                success: '#4CAF50',
-                warning: '#FF9800',
-                error: '#f44336',
-                info: '#2196F3'
-            };
-            
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: ${colors[type]};
-                color: white;
-                padding: 15px 20px;
-                border-radius: 8px;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-                z-index: 1000;
-                font-weight: bold;
-                max-width: 300px;
-            `;
-            notification.innerHTML = message;
-            
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.parentNode.removeChild(notification);
-                }
-            }, 3000);
-        }
-
-        function generatePickSlots() {
-            const numberOfLegs = parseInt(document.getElementById('numberOfLegs').value);
-            const container = document.getElementById('pickSlotsContainer');
+        function renderAllPicks() {
+            var container = document.getElementById('pickSlotsContainer');
             container.innerHTML = '';
             
-            const existingPicks = weeklyPicks[currentWeek] || [];
+            var savedPicks = weeklyPicks[currentWeek] || [];
+            var numberOfLegs = parseInt(document.getElementById('numberOfLegs').value);
             
-            for (let i = 0; i < numberOfLegs; i++) {
-                const existingPick = existingPicks[i] || null;
-                const slotDiv = createPickSlot(i, existingPick);
-                container.appendChild(slotDiv);
+            var gameGroups = {};
+            savedPicks.forEach(function(pick, index) {
+                if (pick && pick.game) {
+                    if (!gameGroups[pick.game]) {
+                        gameGroups[pick.game] = [];
+                    }
+                    gameGroups[pick.game].push(pick);
+                }
+            });
+            
+            var renderedSlots = {};
+            
+            for (var game in gameGroups) {
+                if (gameGroups[game].length >= 2) {
+                    var sgpDiv = createSGPGroup(game, gameGroups[game]);
+                    container.appendChild(sgpDiv);
+                    
+                    gameGroups[game].forEach(function(pick) {
+                        var index = savedPicks.indexOf(pick);
+                        if (index >= 0) renderedSlots[index] = true;
+                    });
+                }
+            }
+            
+            for (var i = 0; i < numberOfLegs; i++) {
+                if (!renderedSlots[i]) {
+                    var pick = savedPicks[i] || null;
+                    var slot = createPickSlot(i, pick);
+                    container.appendChild(slot);
+                }
             }
         }
 
-        function createPickSlot(i, existingPick) {
-            const slotDiv = document.createElement('div');
-            slotDiv.className = getSlotClass(existingPick);
-            slotDiv.id = `pickSlot${i}`;
+        function createSGPGroup(game, picks) {
+            var gameId = game.replace(/[^a-zA-Z0-9]/g, '');
+            var div = document.createElement('div');
+            div.className = 'sgp-group';
             
-            const resultText = getResultText(existingPick);
-            const resultClass = getResultClass(existingPick);
+            var activeLegs = picks.filter(function(p) { return p.result !== 'draw'; });
+            var hasOnlyOneLeg = activeLegs.length === 1;
             
-            slotDiv.innerHTML = `
-                <div class="pick-slot-header">
-                    <h4>Pick ${i + 1}</h4>
-                    <div style="display: flex; align-items: center; gap: 15px;">
-                        <span class="result-indicator ${resultClass}">${resultText}</span>
-                    </div>
-                </div>
-                <div class="pick-slot-fields">
-                    <div class="pick-slot-field">
-                        <label>Player Name</label>
-                        <input type="text" id="player${i}" value="${existingPick?.playerName || ''}" placeholder="Player name">
-                    </div>
-                    <div class="pick-slot-field">
-                        <label>Pick/Bet</label>
-                        <input type="text" id="pick${i}" value="${existingPick?.pick || ''}" placeholder="Team to win, over/under, etc.">
-                    </div>
-                    <div class="pick-slot-field">
-                        <label>Odds</label>
-                        <input type="text" id="odds${i}" value="${existingPick?.odds || ''}" placeholder="-110, +200" onblur="formatOdds(${i})">
-                    </div>
-                    <div class="pick-slot-field">
-                        <label>Game</label>
-                        <select id="game${i}" onchange="updateTimeSlotFromGame(${i})">
-                            <option value="">Select Game</option>
-                            ${generateGameOptions(existingPick?.game)}
-                        </select>
-                    </div>
-                    <div class="pick-slot-field">
-                        <label>Time Slot</label>
-                        <select id="timeSlot${i}">
-                            <option value="">Select</option>
-                            <option value="TNF" ${existingPick?.timeSlot === 'TNF' ? 'selected' : ''}>TNF</option>
-                            <option value="Early" ${existingPick?.timeSlot === 'Early' ? 'selected' : ''}>Early</option>
-                            <option value="Late" ${existingPick?.timeSlot === 'Late' ? 'selected' : ''}>Late</option>
-                            <option value="SNF" ${existingPick?.timeSlot === 'SNF' ? 'selected' : ''}>SNF</option>
-                            <option value="MNF" ${existingPick?.timeSlot === 'MNF' ? 'selected' : ''}>MNF</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="result-buttons">
-                    <button class="result-btn" onclick="saveIndividualPick(${i})" style="background: #2196F3; color: white;">💾 Save</button>
-                    <button class="result-btn win" onclick="updateSlotResult(${i}, true)">✓ Win</button>
-                    <button class="result-btn loss" onclick="updateSlotResult(${i}, false)">✗ Loss</button>
-                    <button class="result-btn draw" onclick="updateSlotResult(${i}, 'draw')">🤝 Draw</button>
-                    <button class="result-btn reset" onclick="updateSlotResult(${i}, null)">↻ Reset</button>
-                </div>
-            `;
+            var status = 'PENDING';
+            var statusClass = 'pending';
+            var results = picks.map(function(p) { return p.result; });
             
-            return slotDiv;
+            if (results.every(function(r) { return r === true; })) {
+                status = 'WIN';
+                statusClass = 'win';
+            } else if (results.some(function(r) { return r === false; })) {
+                status = 'LOSS';
+                statusClass = 'loss';
+            } else if (results.some(function(r) { return r === 'draw'; })) {
+                status = 'DRAW';
+                statusClass = 'draw';
+            }
+            
+            var sgpOddsStyle = hasOnlyOneLeg ? 
+                'width: 120px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; text-decoration: line-through; color: #999; background: #f5f5f5;' :
+                'width: 120px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;';
+            
+            var html = '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">' +
+                '<div style="font-size: 16px; font-weight: bold; color: #FF9800;">' + game + (hasOnlyOneLeg ? ' (Single Bet)' : '') + '</div>' +
+                '<span class="result-indicator ' + statusClass + '" style="font-size: 14px;">' + (hasOnlyOneLeg ? '' : 'SGP ') + status + '</span>' +
+                '</div>' +
+                '<div style="display: flex; justify-content: flex-end; margin-bottom: 15px;">' +
+                '<div style="display: flex; align-items: center; gap: 10px; background: white; border: 2px solid #FF9800; border-radius: 8px; padding: 8px 12px;">' +
+                '<label style="font-size: 14px; font-weight: bold; color: #FF9800; margin: 0;">SGP Odds' + (hasOnlyOneLeg ? ' (not used)' : '') + ':</label>' +
+                '<input type="text" value="' + (picks[0].sgpOdds || '') + '" placeholder="-110, +200" data-game="' + game + '" class="sgp-odds-input" style="' + sgpOddsStyle + '" onblur="formatSGPOddsInput(this)" ' + (hasOnlyOneLeg ? 'readonly' : '') + '>' +
+                '</div>' +
+                '</div>';
+            
+            div.innerHTML = html;
+            
+            picks.forEach(function(pick) {
+                var pickIndex = weeklyPicks[currentWeek].indexOf(pick);
+                var pickDiv = createSGPPickSlot(pickIndex, pick, hasOnlyOneLeg);
+                div.appendChild(pickDiv);
+            });
+            
+            var btnDiv = document.createElement('div');
+            btnDiv.style.cssText = 'text-align: center; margin-top: 15px;';
+            var saveBtn = document.createElement('button');
+            saveBtn.className = 'btn';
+            saveBtn.style.background = '#4CAF50';
+            saveBtn.textContent = '💾 Save SGP';
+            saveBtn.onclick = function() {
+                saveSGPOdds(game);
+            };
+            btnDiv.appendChild(saveBtn);
+            div.appendChild(btnDiv);
+            
+            return div;
         }
 
-        function saveIndividualPick(slotIndex) {
-            const playerName = document.getElementById(`player${slotIndex}`).value.trim();
-            const pick = document.getElementById(`pick${slotIndex}`).value.trim();
-            const odds = document.getElementById(`odds${slotIndex}`).value.trim();
-            const game = document.getElementById(`game${slotIndex}`).value;
-            const timeSlot = document.getElementById(`timeSlot${slotIndex}`).value;
+        function createSGPPickSlot(index, pick, hasOnlyOneLeg) {
+            var div = document.createElement('div');
+            div.className = 'pick-slot';
+            div.style.cssText = 'background: rgba(255, 152, 0, 0.05); border-color: #FFB74D; margin-bottom: 15px;';
+            
+            var resultClass = pick.result === true ? 'win' : pick.result === false ? 'loss' : pick.result === 'draw' ? 'draw' : 'pending';
+            var resultText = pick.result === true ? 'WIN' : pick.result === false ? 'LOSS' : pick.result === 'draw' ? 'DRAW' : 'PENDING';
+            
+            var winActive = pick.result === true ? 'active' : '';
+            var lossActive = pick.result === false ? 'active' : '';
+            var drawActive = pick.result === 'draw' ? 'active' : '';
+            
+            var voidWarning = '';
+            if (pick.result === 'draw') {
+                voidWarning = '<div style="background: #FF9800; color: white; padding: 8px; border-radius: 4px; margin-top: 10px; font-size: 12px; font-weight: bold;">⚠️ VOIDED LEG - Removed from SGP calculation</div>';
+            }
+            
+            var oddsLabel = hasOnlyOneLeg ? 'Odds' : 'Odds <span style="font-size: 10px; color: #999;">(not used in SGP)</span>';
+            var oddsStyle = hasOnlyOneLeg ? 'background: white;' : 'text-decoration: line-through; color: #666; background: #f5f5f5;';
+            var oddsValue = pick.odds || '';
+            
+            var playerName = pick.playerName || ('Pick ' + (index + 1));
+            
+            var html = '<div style="background: linear-gradient(135deg, #FF9800, #F57C00); color: white; padding: 12px 20px; margin: -20px -20px 15px -20px; border-radius: 12px 12px 0 0; display: flex; justify-content: space-between; align-items: center;">' +
+                '<div style="display: flex; align-items: center; gap: 10px;">' +
+                '<span id="playerNameDisplay' + index + '" style="font-size: 18px; font-weight: bold;">' + playerName + '</span>' +
+                '<input type="text" id="playerNameEdit' + index + '" value="' + playerName + '" style="display: none; padding: 6px 10px; border: 2px solid white; border-radius: 4px; font-size: 16px; font-weight: bold;">' +
+                '<button onclick="toggleEditPlayerName(' + index + ')" id="editBtn' + index + '" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 14px;">✏️ Edit</button>' +
+                '</div>' +
+                '<span class="result-indicator ' + resultClass + '">' + resultText + '</span>' +
+                '</div>' +
+                '<div class="pick-slot-fields">' +
+                '<div class="pick-slot-field"><label>Pick/Bet</label><input type="text" value="' + (pick.pick || '') + '" readonly style="background: #f5f5f5;"></div>' +
+                '<div class="pick-slot-field"><label>' + oddsLabel + '</label><input type="text" value="' + oddsValue + '" readonly style="' + oddsStyle + '"></div>' +
+                '<div class="pick-slot-field"><label>Game</label><input type="text" value="' + (pick.game || '') + '" readonly style="background: #f5f5f5;"></div>' +
+                '<div class="pick-slot-field"><label>Time Slot</label><input type="text" value="' + (pick.timeSlot || '') + '" readonly style="background: #f5f5f5;"></div>' +
+                '</div>' + voidWarning +
+                '<div class="result-buttons">' +
+                '<button class="result-btn win ' + winActive + '" onclick="toggleResult(' + index + ', true)">✓ Win</button>' +
+                '<button class="result-btn loss ' + lossActive + '" onclick="toggleResult(' + index + ', false)">✗ Loss</button>' +
+                '<button class="result-btn draw ' + drawActive + '" onclick="toggleResult(' + index + ', \'draw\')">🤝 Draw</button>' +
+                '<button class="result-btn reset" onclick="toggleResult(' + index + ', null)">↻ Reset</button>' +
+                '</div>';
+            
+            div.innerHTML = html;
+            return div;
+        }
+
+        function createPickSlot(index, pick) {
+            var div = document.createElement('div');
+            var className = 'pick-slot';
+            if (pick) {
+                if (pick.playerName && pick.pick && pick.odds) className += ' filled';
+                if (pick.result === true) className += ' win';
+                else if (pick.result === false) className += ' loss';
+                else if (pick.result === 'draw') className += ' draw';
+            }
+            div.className = className;
+            
+            var resultClass = pick && pick.result === true ? 'win' : pick && pick.result === false ? 'loss' : pick && pick.result === 'draw' ? 'draw' : 'pending';
+            var resultText = pick && pick.result === true ? 'WIN' : pick && pick.result === false ? 'LOSS' : pick && pick.result === 'draw' ? 'DRAW' : 'PENDING';
+            
+            var winActive = pick && pick.result === true ? 'active' : '';
+            var lossActive = pick && pick.result === false ? 'active' : '';
+            var drawActive = pick && pick.result === 'draw' ? 'active' : '';
+            
+            var voidWarning = '';
+            if (pick && pick.result === 'draw') {
+                voidWarning = '<div style="background: #FF9800; color: white; padding: 8px; border-radius: 4px; margin-top: 10px; font-size: 12px; font-weight: bold;">⚠️ VOIDED LEG - Removed from parlay calculation</div>';
+            }
+            
+            var defaultName = index < playerNames.length ? playerNames[index] : 'Pick ' + (index + 1);
+            var playerName = pick && pick.playerName ? pick.playerName : defaultName;
+            
+            var html = '<div style="background: linear-gradient(135deg, #4CAF50, #45a049); color: white; padding: 12px 20px; margin: -20px -20px 15px -20px; border-radius: 12px 12px 0 0; display: flex; justify-content: space-between; align-items: center;">' +
+                '<div style="display: flex; align-items: center; gap: 10px;">' +
+                '<span id="playerNameDisplay' + index + '" style="font-size: 18px; font-weight: bold;">' + playerName + '</span>' +
+                '<input type="text" id="playerNameEdit' + index + '" value="' + playerName + '" style="display: none; padding: 6px 10px; border: 2px solid white; border-radius: 4px; font-size: 16px; font-weight: bold;">' +
+                '<button onclick="toggleEditPlayerName(' + index + ')" id="editBtn' + index + '" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 14px;">✏️ Edit</button>' +
+                '</div>' +
+                '<span class="result-indicator ' + resultClass + '">' + resultText + '</span>' +
+                '</div>' +
+                '<div class="pick-slot-fields">' +
+                '<div class="pick-slot-field"><label>Pick/Bet</label><input type="text" id="pick' + index + '" value="' + (pick ? pick.pick || '' : '') + '" placeholder="Team to win, over/under"></div>' +
+                '<div class="pick-slot-field"><label>Odds</label><input type="text" id="odds' + index + '" value="' + (pick ? pick.odds || '' : '') + '" placeholder="-110, +200" onblur="formatOdds(' + index + ')"></div>' +
+                '<div class="pick-slot-field"><label>Game</label><select id="game' + index + '" onchange="updateTimeSlotFromGame(' + index + ')"><option value="">Select Game</option>' + generateGameOptions(pick ? pick.game : '') + '</select></div>' +
+                '<div class="pick-slot-field"><label>Time Slot</label><select id="timeSlot' + index + '"><option value="">Select</option>' +
+                '<option value="TNF"' + (pick && pick.timeSlot === 'TNF' ? ' selected' : '') + '>TNF</option>' +
+                '<option value="Early"' + (pick && pick.timeSlot === 'Early' ? ' selected' : '') + '>Early</option>' +
+                '<option value="Late"' + (pick && pick.timeSlot === 'Late' ? ' selected' : '') + '>Late</option>' +
+                '<option value="SNF"' + (pick && pick.timeSlot === 'SNF' ? ' selected' : '') + '>SNF</option>' +
+                '<option value="MNF"' + (pick && pick.timeSlot === 'MNF' ? ' selected' : '') + '>MNF</option>' +
+                '</select></div>' +
+                '</div>' + voidWarning +
+                '<div class="result-buttons">' +
+                '<button class="result-btn" style="background: #2196F3; color: white;" onclick="savePick(' + index + ')">💾 Save</button>' +
+                '<button class="result-btn win ' + winActive + '" onclick="toggleResult(' + index + ', true)">✓ Win</button>' +
+                '<button class="result-btn loss ' + lossActive + '" onclick="toggleResult(' + index + ', false)">✗ Loss</button>' +
+                '<button class="result-btn draw ' + drawActive + '" onclick="toggleResult(' + index + ', \'draw\')">🤝 Draw</button>' +
+                '<button class="result-btn reset" onclick="toggleResult(' + index + ', null)">↻ Reset</button>' +
+                '</div>';
+            
+            div.innerHTML = html;
+            return div;
+        }
+
+        function toggleEditPlayerName(index) {
+            var display = document.getElementById('playerNameDisplay' + index);
+            var edit = document.getElementById('playerNameEdit' + index);
+            var btn = document.getElementById('editBtn' + index);
+            
+            if (edit.style.display === 'none') {
+                display.style.display = 'none';
+                edit.style.display = 'inline-block';
+                edit.focus();
+                edit.select();
+                btn.textContent = '✓ Save';
+            } else {
+                var newName = edit.value.trim();
+                if (newName) {
+                    display.textContent = newName;
+                    display.style.display = 'inline';
+                    edit.style.display = 'none';
+                    btn.textContent = '✏️ Edit';
+                    
+                    if (weeklyPicks[currentWeek] && weeklyPicks[currentWeek][index]) {
+                        weeklyPicks[currentWeek][index].playerName = newName;
+                        updateCalculations();
+                    }
+                }
+            }
+        }
+
+        function savePick(index) {
+            var playerNameDisplay = document.getElementById('playerNameDisplay' + index);
+            var playerName = playerNameDisplay ? playerNameDisplay.textContent.trim() : '';
+            var pick = document.getElementById('pick' + index).value.trim();
+            var odds = document.getElementById('odds' + index).value.trim();
+            var game = document.getElementById('game' + index).value;
+            var timeSlot = document.getElementById('timeSlot' + index).value;
             
             if (!playerName || !pick || !odds) {
                 alert('Please fill in Player Name, Pick, and Odds before saving.');
@@ -1110,576 +931,205 @@
                 weeklyPicks[currentWeek] = [];
             }
             
-            const pickData = {
-                id: Date.now() + slotIndex,
-                playerName,
-                pick,
-                odds,
-                game,
-                timeSlot,
-                result: null,
-                isSaved: true
+            var pickData = {
+                playerName: playerName,
+                pick: pick,
+                odds: odds,
+                game: game,
+                timeSlot: timeSlot,
+                result: null
             };
             
-            // Find existing or add new
-            let actualPickIndex = -1;
-            let filledSlots = 0;
+            while (weeklyPicks[currentWeek].length <= index) {
+                weeklyPicks[currentWeek].push(null);
+            }
+            weeklyPicks[currentWeek][index] = pickData;
             
-            for (let i = 0; i <= slotIndex; i++) {
-                const pName = document.getElementById(`player${i}`).value.trim();
-                const pPick = document.getElementById(`pick${i}`).value.trim();
-                const pOdds = document.getElementById(`odds${i}`).value.trim();
-                
-                if (pName && pPick && pOdds) {
-                    if (i === slotIndex) {
-                        actualPickIndex = filledSlots;
-                        break;
+            checkForSGPs();
+            updateCalculations();
+            renderAllPicks();
+        }
+
+        function checkForSGPs() {
+            var picks = weeklyPicks[currentWeek] || [];
+            var gameGroups = {};
+            
+            picks.forEach(function(pick) {
+                if (pick && pick.game) {
+                    if (!gameGroups[pick.game]) {
+                        gameGroups[pick.game] = [];
                     }
-                    filledSlots++;
+                    gameGroups[pick.game].push(pick);
+                }
+            });
+            
+            for (var game in gameGroups) {
+                if (gameGroups[game].length >= 2) {
+                    showNotification('🎯 SGP Auto-Detected! ' + gameGroups[game].length + ' picks for ' + game + '. Please enter SGP odds from your sportsbook.', 'warning');
                 }
             }
+        }
+
+        function saveSGPOdds(game) {
+            var input = document.querySelector('.sgp-odds-input[data-game="' + game + '"]');
+            var sgpOdds = input ? input.value.trim() : '';
             
-            if (actualPickIndex >= 0 && actualPickIndex < weeklyPicks[currentWeek].length) {
-                weeklyPicks[currentWeek][actualPickIndex] = pickData;
-            } else {
-                weeklyPicks[currentWeek].push(pickData);
+            if (!sgpOdds) {
+                alert('Please enter the SGP odds from your sportsbook before saving.');
+                if (input) input.focus();
+                return;
             }
             
-            // Save to Firebase for real-time sync
-            savePicksToFirebase(currentWeek, weeklyPicks[currentWeek]);
+            var picks = weeklyPicks[currentWeek] || [];
+            var updated = 0;
+            picks.forEach(function(pick) {
+                if (pick && pick.game === game) {
+                    pick.sgpOdds = sgpOdds;
+                    pick.isSGP = true;
+                    updated++;
+                }
+            });
             
-            // Show success feedback
-            const saveButton = document.querySelector(`#pickSlot${slotIndex} .result-btn[onclick*="saveIndividualPick"]`);
-            const originalText = saveButton.innerHTML;
-            saveButton.innerHTML = '✅ Saved!';
-            saveButton.style.background = '#4CAF50';
+            showNotification('✓ SGP saved successfully for ' + game + '!', 'success');
+            updateCalculations();
+            renderAllPicks();
+        }
+
+        function toggleResult(index, result) {
+            if (!weeklyPicks[currentWeek] || !weeklyPicks[currentWeek][index]) return;
             
-            setTimeout(() => {
-                saveButton.innerHTML = originalText;
-                saveButton.style.background = '#2196F3';
-            }, 1500);
+            var pick = weeklyPicks[currentWeek][index];
             
-            if (game) {
-                autoDetectAndGroupSGPs(game);
+            if (pick.result === result) {
+                pick.result = null;
+            } else {
+                pick.result = result;
+            }
+            
+            if (result === 'draw' && pick.isSGP && pick.game) {
+                handleSGPVoid(pick.game);
             }
             
             updateCalculations();
-            console.log('Pick saved:', pickData);
+            updateLeaderboardData();
+            renderAllPicks();
         }
 
-        function autoDetectAndGroupSGPs(savedGame) {
-            const currentPicks = weeklyPicks[currentWeek] || [];
-            const sameGamePicks = currentPicks.filter(pick => 
-                pick && pick.isSaved && pick.game === savedGame
-            );
+        function handleSGPVoid(game) {
+            var picks = weeklyPicks[currentWeek] || [];
+            var gamePicksActive = picks.filter(function(p) { return p && p.game === game && p.result !== 'draw'; });
             
-            if (sameGamePicks.length >= 2) {
-                console.log(`Auto-detected SGP: ${sameGamePicks.length} picks for ${savedGame}`);
-                showSGPAutoDetectedNotification(savedGame, sameGamePicks.length);
-                refreshSGPs();
-            } else {
-                generatePickSlots();
+            if (gamePicksActive.length === 1) {
+                picks.forEach(function(pick) {
+                    if (pick && pick.game === game) {
+                        pick.isSGP = false;
+                        // Keep sgpOdds to display crossed out, don't set to null
+                    }
+                });
+                showNotification('⚠️ SGP reduced to 1 leg - now a single bet at ' + gamePicksActive[0].odds, 'warning');
+            } else if (gamePicksActive.length >= 2) {
+                var voidedCount = picks.filter(function(p) { return p && p.game === game && p.result === 'draw'; }).length;
+                showNotification('⚠️ ' + voidedCount + ' leg(s) voided from SGP. ' + gamePicksActive.length + ' legs remain. Please enter new SGP odds!', 'warning');
             }
         }
 
-        function showSGPAutoDetectedNotification(game, pickCount) {
-            const notification = document.createElement('div');
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: #FF9800;
-                color: white;
-                padding: 15px 20px;
-                border-radius: 8px;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-                z-index: 1000;
-                font-weight: bold;
-                max-width: 300px;
-            `;
-            notification.innerHTML = `
-                🎯 SGP Auto-Detected!<br>
-                <small>${pickCount} picks found for ${game}<br>
-                Please enter SGP odds from your sportsbook</small>
-            `;
+        function formatOdds(index) {
+            var oddsInput = document.getElementById('odds' + index);
+            if (!oddsInput) return;
+            
+            var oddsValue = oddsInput.value.trim();
+            if (!oddsValue) return;
+            
+            var cleanOdds = oddsValue.replace(/[+-]/g, '');
+            if (isNaN(cleanOdds) || cleanOdds === '') return;
+            
+            var numericOdds = parseInt(cleanOdds);
+            
+            if (!oddsValue.includes('+') && !oddsValue.includes('-')) {
+                if (numericOdds >= 100) {
+                    oddsInput.value = '+' + numericOdds;
+                } else {
+                    oddsInput.value = '-' + numericOdds;
+                }
+            } else if (oddsValue.startsWith('+') || oddsValue.startsWith('-')) {
+                oddsInput.value = oddsValue.charAt(0) + numericOdds;
+            }
+        }
+
+        function formatSGPOddsInput(input) {
+            var oddsValue = input.value.trim();
+            if (!oddsValue) return;
+            
+            var cleanOdds = oddsValue.replace(/[+-]/g, '');
+            if (isNaN(cleanOdds) || cleanOdds === '') return;
+            
+            var numericOdds = parseInt(cleanOdds);
+            
+            if (!oddsValue.includes('+') && !oddsValue.includes('-')) {
+                if (numericOdds >= 100) {
+                    input.value = '+' + numericOdds;
+                } else {
+                    input.value = '-' + numericOdds;
+                }
+            } else if (oddsValue.startsWith('+') || oddsValue.startsWith('-')) {
+                input.value = oddsValue.charAt(0) + numericOdds;
+            }
+        }
+
+        function updateTimeSlotFromGame(index) {
+            var gameSelect = document.getElementById('game' + index);
+            var timeSlotSelect = document.getElementById('timeSlot' + index);
+            
+            if (!gameSelect || !timeSlotSelect) return;
+            
+            var selectedGame = gameSelect.value;
+            if (!selectedGame) return;
+            
+            var schedule = nflSchedule[currentNFLWeek] || [];
+            var game = schedule.find(function(g) {
+                return g.matchup === selectedGame;
+            });
+            
+            if (game) {
+                timeSlotSelect.value = game.time;
+            }
+        }
+
+        function generateGameOptions(selectedGame) {
+            var schedule = nflSchedule[currentNFLWeek] || [];
+            return schedule.map(function(game) {
+                return '<option value="' + game.matchup + '"' + (selectedGame === game.matchup ? ' selected' : '') + '>' +
+                    game.matchup + ' (' + game.time + ')' +
+                    '</option>';
+            }).join('');
+        }
+
+        function showNotification(message, type) {
+            var colors = {
+                success: '#4CAF50',
+                warning: '#FF9800',
+                error: '#f44336',
+                info: '#2196F3'
+            };
+            
+            var notification = document.createElement('div');
+            notification.style.cssText =
+                'position: fixed; top: 20px; right: 20px; background: ' + colors[type] + '; color: white; ' +
+                'padding: 15px 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); ' +
+                'z-index: 1000; font-weight: bold; max-width: 300px;';
+            notification.textContent = message;
             
             document.body.appendChild(notification);
             
-            setTimeout(() => {
+            setTimeout(function() {
                 if (notification.parentNode) {
                     notification.parentNode.removeChild(notification);
                 }
-            }, 4000);
+            }, 3000);
         }
 
-        function refreshSGPs() {
-            console.log('refreshSGPs called');
-            const numberOfLegs = parseInt(document.getElementById('numberOfLegs').value);
-            
-            // First, capture all current values before regenerating
-            const currentValues = {};
-            for (let i = 0; i < numberOfLegs; i++) {
-                const playerEl = document.getElementById(`player${i}`);
-                const pickEl = document.getElementById(`pick${i}`);
-                const oddsEl = document.getElementById(`odds${i}`);
-                const gameEl = document.getElementById(`game${i}`);
-                const timeSlotEl = document.getElementById(`timeSlot${i}`);
-                
-                if (playerEl) {
-                    currentValues[i] = {
-                        playerName: playerEl.value || '',
-                        pick: pickEl ? pickEl.value || '' : '',
-                        odds: oddsEl ? oddsEl.value || '' : '',
-                        game: gameEl ? gameEl.value || '' : '',
-                        timeSlot: timeSlotEl ? timeSlotEl.value || '' : ''
-                    };
-                }
-            }
-            
-            const container = document.getElementById('pickSlotsContainer');
-            container.innerHTML = '';
-            
-            // Group picks by game for SGP organization
-            const gameGroups = {};
-            const individualPicks = [];
-            
-            for (let i = 0; i < numberOfLegs; i++) {
-                const values = currentValues[i];
-                if (!values) continue;
-                
-                const game = values.game;
-                
-                if (game && values.playerName && values.pick && values.odds) {
-                    // Check if there's a saved pick for this combination
-                    const savedPick = weeklyPicks[currentWeek] && weeklyPicks[currentWeek].find(p => 
-                        p.playerName === values.playerName && p.pick === values.pick && p.isSaved
-                    );
-                    
-                    if (savedPick) {
-                        // Check for other picks with same game
-                        let hasSameGame = false;
-                        for (let j = 0; j < numberOfLegs; j++) {
-                            const otherValues = currentValues[j];
-                            if (i !== j && otherValues && otherValues.game === game && 
-                                otherValues.playerName && otherValues.pick && otherValues.odds) {
-                                
-                                // Check if the other pick is also saved
-                                const otherSavedPick = weeklyPicks[currentWeek] && weeklyPicks[currentWeek].find(p => 
-                                    p.playerName === otherValues.playerName && p.pick === otherValues.pick && p.isSaved
-                                );
-                                
-                                if (otherSavedPick) {
-                                    hasSameGame = true;
-                                    break;
-                                }
-                            }
-                        }
-                        
-                        if (hasSameGame) {
-                            if (!gameGroups[game]) {
-                                gameGroups[game] = [];
-                            }
-                            gameGroups[game].push({ index: i, values: values });
-                        } else {
-                            individualPicks.push({ index: i, values: values });
-                        }
-                    } else {
-                        individualPicks.push({ index: i, values: values });
-                    }
-                } else {
-                    individualPicks.push({ index: i, values: values });
-                }
-            }
-            
-            // First, render SGP groups at the top
-            Object.entries(gameGroups).forEach(([game, picks]) => {
-                if (picks.length > 1) {
-                    const sgpGroupDiv = document.createElement('div');
-                    sgpGroupDiv.className = 'sgp-group';
-                    
-                    // Determine overall SGP result
-                    const sgpPicks = picks.map(p => weeklyPicks[currentWeek] && weeklyPicks[currentWeek].find(wp => 
-                        wp.playerName === p.values.playerName && wp.pick === p.values.pick
-                    )).filter(p => p);
-                    
-                    let sgpResultText = '⏳ SGP PENDING';
-                    let sgpResultClass = 'pending';
-                    
-                    if (sgpPicks.length > 0) {
-                        const results = sgpPicks.map(pick => pick.result);
-                        
-                        if (results.every(result => result === true)) {
-                            sgpResultText = '✅ SGP WIN';
-                            sgpResultClass = 'win';
-                        } else if (results.some(result => result === false)) {
-                            sgpResultText = '❌ SGP LOSS';
-                            sgpResultClass = 'loss';
-                        } else if (results.some(result => result === 'draw')) {
-                            sgpResultText = '🤝 SGP DRAW';
-                            sgpResultClass = 'draw';
-                        }
-                    }
-                    
-                    // Add SGP header with overall result
-                    const sgpHeader = document.createElement('div');
-                    sgpHeader.style.cssText = `
-                        display: flex;
-                        justify-content: space-between;
-                        align-items: center;
-                        margin-bottom: 15px;
-                        padding: 10px 0;
-                    `;
-                    sgpHeader.innerHTML = `
-                        <div style="font-size: 16px; font-weight: bold; color: #FF9800;">
-                            🎯 Same Game Parlay - ${game}
-                        </div>
-                        <span class="result-indicator ${sgpResultClass}" style="font-size: 14px;">
-                            ${sgpResultText}
-                        </span>
-                    `;
-                    sgpGroupDiv.appendChild(sgpHeader);
-                    
-                    // Add SGP odds field
-                    const oddsContainer = document.createElement('div');
-                    oddsContainer.className = 'sgp-odds-container';
-                    oddsContainer.innerHTML = `
-                        <div class="sgp-odds-field">
-                            <label>SGP Odds:</label>
-                            <input type="text" placeholder="-110, +200" id="sgp-odds-${game.replace(/[^a-zA-Z0-9]/g, '')}" 
-                                   onblur="formatSGPOdds('${game.replace(/[^a-zA-Z0-9]/g, '')}')">
-                        </div>
-                    `;
-                    sgpGroupDiv.appendChild(oddsContainer);
-                    
-                    // Add each pick in the SGP with preserved values
-                    picks.forEach(({ index, values }) => {
-                        const slotDiv = createPickSlotWithValues(index, values, true);
-                        sgpGroupDiv.appendChild(slotDiv);
-                    });
-                    
-                    // Add SGP action buttons
-                    const actionsDiv = document.createElement('div');
-                    actionsDiv.style.textAlign = 'center';
-                    actionsDiv.style.marginTop = '15px';
-                    actionsDiv.innerHTML = `
-                        <button class="btn" onclick="saveSGP('${game}')" style="background: #4CAF50; color: white;">
-                            💾 Save SGP
-                        </button>
-                    `;
-                    sgpGroupDiv.appendChild(actionsDiv);
-                    
-                    container.appendChild(sgpGroupDiv);
-                }
-            });
-            
-            // Then render individual picks with preserved values
-            individualPicks.forEach(({ index, values }) => {
-                const slotDiv = createPickSlotWithValues(index, values, false);
-                container.appendChild(slotDiv);
-            });
-        }
-
-        // Create a pick slot element with preserved values
-        function createPickSlotWithValues(i, values, isSGP = false) {
-            const slotDiv = document.createElement('div');
-            slotDiv.className = 'pick-slot' + (isSGP ? ' sgp-pick' : '');
-            slotDiv.id = `pickSlot${i}`;
-            
-            // Check if this pick is saved by looking at weeklyPicks data
-            const savedPick = weeklyPicks[currentWeek] && weeklyPicks[currentWeek].find(p => 
-                p.isSaved && p.playerName === values?.playerName && p.pick === values?.pick
-            );
-            
-            if (savedPick) {
-                slotDiv.className += ' permanently-saved';
-            }
-            
-            // Get result text and class for individual pick
-            let resultText = '⏳ PENDING';
-            let resultClass = 'pending';
-            
-            if (savedPick) {
-                if (savedPick.result === true) {
-                    resultText = '✅ WIN';
-                    resultClass = 'win';
-                } else if (savedPick.result === false) {
-                    resultText = '❌ LOSS';
-                    resultClass = 'loss';
-                } else if (savedPick.result === 'draw') {
-                    resultText = '🤝 DRAW';
-                    resultClass = 'draw';
-                }
-            }
-            
-            slotDiv.innerHTML = `
-                <div class="pick-slot-header">
-                    <h4>Pick ${i + 1}</h4>
-                    <div style="display: flex; align-items: center; gap: 15px;">
-                        <span class="result-indicator ${resultClass}">${resultText}</span>
-                    </div>
-                </div>
-                <div class="pick-slot-fields">
-                    <div class="pick-slot-field">
-                        <label>Player Name</label>
-                        <input type="text" id="player${i}" value="${values?.playerName || ''}" placeholder="Player name">
-                    </div>
-                    <div class="pick-slot-field">
-                        <label>Pick/Bet</label>
-                        <input type="text" id="pick${i}" value="${values?.pick || ''}" placeholder="Team to win, over/under, etc.">
-                    </div>
-                    <div class="pick-slot-field">
-                        <label>Odds</label>
-                        <input type="text" id="odds${i}" value="${values?.odds || ''}" placeholder="-110, +200" onblur="formatOdds(${i})" ${isSGP ? 'readonly' : ''}>
-                    </div>
-                    <div class="pick-slot-field">
-                        <label>Game</label>
-                        <select id="game${i}" onchange="updateTimeSlotFromGame(${i})">
-                            <option value="">Select Game</option>
-                            ${generateGameOptionsWithSelected(values?.game || '')}
-                        </select>
-                    </div>
-                    <div class="pick-slot-field">
-                        <label>Time Slot</label>
-                        <select id="timeSlot${i}">
-                            <option value="">Select</option>
-                            <option value="TNF" ${values?.timeSlot === 'TNF' ? 'selected' : ''}>TNF</option>
-                            <option value="Early" ${values?.timeSlot === 'Early' ? 'selected' : ''}>Early</option>
-                            <option value="Late" ${values?.timeSlot === 'Late' ? 'selected' : ''}>Late</option>
-                            <option value="SNF" ${values?.timeSlot === 'SNF' ? 'selected' : ''}>SNF</option>
-                            <option value="MNF" ${values?.timeSlot === 'MNF' ? 'selected' : ''}>MNF</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="result-buttons">
-                    <button class="result-btn" onclick="saveIndividualPick(${i})" style="background: #2196F3; color: white;">💾 Save</button>
-                    <button class="result-btn win" onclick="updateSlotResult(${i}, true)">✓ Win</button>
-                    <button class="result-btn loss" onclick="updateSlotResult(${i}, false)">✗ Loss</button>
-                    <button class="result-btn draw" onclick="updateSlotResult(${i}, 'draw')">🤝 Draw</button>
-                    <button class="result-btn reset" onclick="updateSlotResult(${i}, null)">↻ Reset</button>
-                </div>
-            `;
-            
-            return slotDiv;
-        }
-
-        // Generate game options with preserved selection
-        function generateGameOptionsWithSelected(selectedGame = '') {
-            const currentWeekSchedule = nflSchedule[currentNFLWeek] || [];
-            
-            return currentWeekSchedule.map(game => 
-                `<option value="${game.matchup}" ${selectedGame === game.matchup ? 'selected' : ''}>
-                    ${game.matchup} (${game.time})
-                </option>`
-            ).join('');
-        }
-
-        // Format SGP odds input
-        function formatSGPOdds(gameId) {
-            const oddsInput = document.getElementById(`sgp-odds-${gameId}`);
-            if (!oddsInput) return;
-            
-            let oddsValue = oddsInput.value.trim();
-            
-            if (!oddsValue) return;
-            
-            const cleanOdds = oddsValue.replace(/[+-]/g, '');
-            
-            if (isNaN(cleanOdds) || cleanOdds === '') {
-                return;
-            }
-            
-            const numericOdds = parseInt(cleanOdds);
-            
-            if (!oddsValue.includes('+') && !oddsValue.includes('-')) {
-                if (numericOdds >= 100) {
-                    oddsInput.value = '+' + numericOdds;
-                } else {
-                    oddsInput.value = '-' + numericOdds;
-                }
-            } else if (oddsValue.startsWith('+') || oddsValue.startsWith('-')) {
-                oddsInput.value = oddsValue.charAt(0) + numericOdds;
-            }
-        }
-
-        // Save SGP with validation
-        function saveSGP(game) {
-            const gameId = game.replace(/[^a-zA-Z0-9]/g, '');
-            const sgpOddsInput = document.getElementById(`sgp-odds-${gameId}`);
-            const sgpOdds = sgpOddsInput ? sgpOddsInput.value.trim() : '';
-            
-            if (!sgpOdds) {
-                alert('⚠️ Please enter the SGP odds from your sportsbook before saving.');
-                sgpOddsInput.focus();
-                return;
-            }
-            
-            // Find all picks in this SGP and validate they're complete
-            const numberOfLegs = parseInt(document.getElementById('numberOfLegs').value);
-            const sgpPicks = [];
-            
-            for (let i = 0; i < numberOfLegs; i++) {
-                const gameElement = document.getElementById(`game${i}`);
-                if (gameElement && gameElement.value === game) {
-                    const playerName = document.getElementById(`player${i}`).value.trim();
-                    const pick = document.getElementById(`pick${i}`).value.trim();
-                    const odds = document.getElementById(`odds${i}`).value.trim();
-                    
-                    if (playerName && pick && odds) {
-                        sgpPicks.push({
-                            slotIndex: i,
-                            playerName,
-                            pick,
-                            odds,
-                            game,
-                            timeSlot: document.getElementById(`timeSlot${i}`).value,
-                            sameGameGroup: gameId
-                        });
-                    }
-                }
-            }
-            
-            // Update each individual pick with SGP information
-            sgpPicks.forEach(pickData => {
-                const existingIndex = weeklyPicks[currentWeek].findIndex(p => 
-                    p.playerName === pickData.playerName && p.pick === pickData.pick
-                );
-                
-                if (existingIndex >= 0) {
-                    weeklyPicks[currentWeek][existingIndex].sgpOdds = sgpOdds;
-                    weeklyPicks[currentWeek][existingIndex].isSGP = true;
-                    weeklyPicks[currentWeek][existingIndex].sameGameGroup = gameId;
-                }
-            });
-            
-            // Save to Firebase
-            savePicksToFirebase(currentWeek, weeklyPicks[currentWeek]);
-            
-            showNotification(`SGP saved successfully for ${game}!`, 'success');
-            updateCalculations();
-        }
-
-        // Helper functions
-        function getSlotClass(pick) {
-            let baseClass = 'pick-slot';
-            if (!pick) return baseClass;
-            
-            if (pick.playerName && pick.pick && pick.odds) {
-                baseClass += ' filled';
-            }
-            
-            if (pick.result === true) return baseClass + ' win';
-            if (pick.result === false) return baseClass + ' loss';
-            if (pick.result === 'draw') return baseClass + ' draw';
-            
-            return baseClass;
-        }
-        
-        function getResultText(pick) {
-            if (!pick || pick.result === null) return '⏳ PENDING';
-            if (pick.result === true) return '✅ WIN';
-            if (pick.result === false) return '❌ LOSS';
-            if (pick.result === 'draw') return '🤝 DRAW';
-            return '⏳ PENDING';
-        }
-        
-        function getResultClass(pick) {
-            if (!pick || pick.result === null) return 'pending';
-            if (pick.result === true) return 'win';
-            if (pick.result === false) return 'loss';
-            if (pick.result === 'draw') return 'draw';
-            return 'pending';
-        }
-
-        function generateGameOptions(selectedGame = '') {
-            const currentWeekSchedule = nflSchedule[currentNFLWeek] || [];
-            return currentWeekSchedule.map(game => 
-                `<option value="${game.matchup}" ${selectedGame === game.matchup ? 'selected' : ''}>
-                    ${game.matchup} (${game.time})
-                </option>`
-            ).join('');
-        }
-
-        function formatOdds(slotIndex) {
-            const oddsInput = document.getElementById(`odds${slotIndex}`);
-            let oddsValue = oddsInput.value.trim();
-            
-            if (!oddsValue) return;
-            
-            const cleanOdds = oddsValue.replace(/[+-]/g, '');
-            
-            if (isNaN(cleanOdds) || cleanOdds === '') {
-                return;
-            }
-            
-            const numericOdds = parseInt(cleanOdds);
-            
-            if (!oddsValue.includes('+') && !oddsValue.includes('-')) {
-                if (numericOdds >= 100) {
-                    oddsInput.value = '+' + numericOdds;
-                } else {
-                    oddsInput.value = '-' + numericOdds;
-                }
-            } else if (oddsValue.startsWith('+') || oddsValue.startsWith('-')) {
-                oddsInput.value = oddsValue.charAt(0) + numericOdds;
-            }
-        }
-
-        function updateTimeSlotFromGame(slotIndex) {
-            const gameSelect = document.getElementById(`game${slotIndex}`);
-            const timeSlotSelect = document.getElementById(`timeSlot${slotIndex}`);
-            const selectedGame = gameSelect.value;
-            
-            if (selectedGame) {
-                const currentWeekSchedule = nflSchedule[currentNFLWeek] || [];
-                const game = currentWeekSchedule.find(g => g.matchup === selectedGame);
-                
-                if (game) {
-                    timeSlotSelect.value = game.time;
-                }
-            }
-        }
-
-        function updateSlotResult(slotIndex, result) {
-            if (!weeklyPicks[currentWeek]) weeklyPicks[currentWeek] = [];
-            
-            let actualPickIndex = -1;
-            let filledSlots = 0;
-            
-            for (let i = 0; i <= slotIndex; i++) {
-                const playerName = document.getElementById(`player${i}`).value.trim();
-                const pick = document.getElementById(`pick${i}`).value.trim();
-                const odds = document.getElementById(`odds${i}`).value.trim();
-                
-                if (playerName && pick && odds) {
-                    if (i === slotIndex) {
-                        actualPickIndex = filledSlots;
-                        break;
-                    }
-                    filledSlots++;
-                }
-            }
-            
-            if (actualPickIndex >= 0 && weeklyPicks[currentWeek][actualPickIndex]) {
-                if (result === null) {
-                    // Reset - remove pick
-                    weeklyPicks[currentWeek].splice(actualPickIndex, 1);
-                } else {
-                    // Update result
-                    weeklyPicks[currentWeek][actualPickIndex].result = result;
-                }
-                
-                // Sync changes to Firebase
-                savePicksToFirebase(currentWeek, weeklyPicks[currentWeek]);
-                
-                generatePickSlots();
-                updateLeaderboardData();
-                updateCalculations();
-            }
-        }
-
-        // Calculation functions
         function americanToDecimal(american) {
-            const odds = parseFloat(american.replace('+', ''));
+            var odds = parseFloat(american.replace('+', ''));
             if (odds > 0) {
                 return (odds / 100) + 1;
             } else {
@@ -1695,44 +1145,190 @@
             }
         }
 
-        function calculateParlayOdds(picks) {
-            if (picks.length === 0) return 1;
+        function updateCalculations() {
+            var picks = weeklyPicks[currentWeek] || [];
+            var betAmount = parseFloat(document.getElementById('betAmountInput').value) || 10;
             
-            let totalOdds = 1;
-            picks.forEach(pick => {
-                totalOdds *= americanToDecimal(pick.odds);
+            var activePicks = picks.filter(function(p) { return p && p.result !== 'draw'; });
+            
+            var totalOdds = 1;
+            var gameGroups = {};
+            var processedGames = {};
+            
+            // First, count active picks per game
+            var gamePickCounts = {};
+            activePicks.forEach(function(pick) {
+                if (pick.game) {
+                    gamePickCounts[pick.game] = (gamePickCounts[pick.game] || 0) + 1;
+                }
             });
             
-            return totalOdds;
-        }
-
-        function updateCalculations() {
-            const picks = weeklyPicks[currentWeek] || [];
-            const betAmount = parseFloat(document.getElementById('betAmountInput').value) || 10;
+            activePicks.forEach(function(pick) {
+                var activeLegsForGame = pick.game ? gamePickCounts[pick.game] : 0;
+                
+                // If this was an SGP but now only has 1 active leg, treat as individual bet
+                if (pick.isSGP && activeLegsForGame === 1) {
+                    totalOdds *= americanToDecimal(pick.odds);
+                }
+                // If it's an SGP with 2+ active legs, use SGP odds (only once per game)
+                else if (pick.isSGP && pick.sgpOdds && activeLegsForGame >= 2) {
+                    if (!processedGames[pick.game]) {
+                        processedGames[pick.game] = true;
+                        totalOdds *= americanToDecimal(pick.sgpOdds);
+                    }
+                }
+                // Individual bets (not SGP)
+                else if (!pick.isSGP) {
+                    totalOdds *= americanToDecimal(pick.odds);
+                }
+            });
             
-            const totalOdds = calculateParlayOdds(picks);
-            const americanOdds = decimalToAmerican(totalOdds);
-            const potentialWinnings = betAmount * totalOdds;
-            const grossWinnings = potentialWinnings - betAmount;
-            const taxes = grossWinnings * 0.3;
-            const netWinnings = grossWinnings - taxes;
-            const perPerson = picks.length > 0 ? netWinnings / picks.length : 0;
+            var americanOdds = decimalToAmerican(totalOdds);
+            var potentialWinnings = betAmount * totalOdds;
+            var grossWinnings = potentialWinnings - betAmount;
+            var taxes = grossWinnings * 0.3;
+            var netWinnings = grossWinnings - taxes;
+            var perPerson = activePicks.length > 0 ? netWinnings / activePicks.length : 0;
             
             document.getElementById('totalOdds').textContent = americanOdds;
-            document.getElementById('totalPicks').textContent = picks.length;
+            document.getElementById('totalPicks').textContent = picks.filter(function(p) { return p; }).length;
             document.getElementById('betAmount').textContent = '$' + betAmount.toFixed(2);
             document.getElementById('potentialWinnings').textContent = '$' + potentialWinnings.toFixed(2);
             document.getElementById('grossWinnings').textContent = '$' + grossWinnings.toFixed(2);
             document.getElementById('taxes').textContent = '$' + taxes.toFixed(2);
             document.getElementById('netWinnings').textContent = '$' + netWinnings.toFixed(2);
             document.getElementById('perPerson').textContent = '$' + perPerson.toFixed(2);
+            
+            updatePicksSummary();
+        }
+
+        function updatePicksSummary() {
+            var picks = weeklyPicks[currentWeek] || [];
+            var container = document.getElementById('picksSummary');
+            
+            if (!container) return;
+            
+            if (picks.filter(function(p) { return p; }).length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">No picks saved for this week</p>';
+                return;
+            }
+            
+            var gameGroups = {};
+            var individualPicks = [];
+            
+            picks.forEach(function(pick) {
+                if (!pick) return;
+                
+                if (pick.game) {
+                    if (!gameGroups[pick.game]) {
+                        gameGroups[pick.game] = [];
+                    }
+                    gameGroups[pick.game].push(pick);
+                } else {
+                    individualPicks.push(pick);
+                }
+            });
+            
+            var html = '';
+            
+            for (var game in gameGroups) {
+                var gamePicks = gameGroups[game];
+                
+                if (gamePicks.length >= 2) {
+                    var activeLegs = gamePicks.filter(function(p) { return p.result !== 'draw'; });
+                    var hasOnlyOneLeg = activeLegs.length === 1;
+                    var sgpOdds = gamePicks[0].sgpOdds || 'Not Set';
+                    
+                    var status = 'Pending';
+                    var statusColor = '#757575';
+                    var results = gamePicks.map(function(p) { return p.result; });
+                    
+                    if (results.every(function(r) { return r === true; })) {
+                        status = 'Win';
+                        statusColor = '#4CAF50';
+                    } else if (results.some(function(r) { return r === false; })) {
+                        status = 'Loss';
+                        statusColor = '#f44336';
+                    } else if (results.some(function(r) { return r === 'draw'; })) {
+                        status = 'Draw';
+                        statusColor = '#FF9800';
+                    }
+                    
+                    html += '<div style="border: 2px solid #FF9800; border-radius: 8px; padding: 12px; background: rgba(255, 152, 0, 0.05);">';
+                    html += '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">';
+                    html += '<strong style="color: #FF9800;">🎯 SGP: ' + game + (hasOnlyOneLeg ? ' (Single)' : '') + '</strong>';
+                    html += '<span style="background: ' + statusColor + '; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">' + status + '</span>';
+                    html += '</div>';
+                    
+                    if (!hasOnlyOneLeg) {
+                        html += '<div style="font-weight: bold; color: #FF9800; margin-bottom: 8px;">Odds: ' + sgpOdds + '</div>';
+                    }
+                    
+                    gamePicks.forEach(function(pick) {
+                        var isVoided = pick.result === 'draw';
+                        var textStyle = isVoided ? 'text-decoration: line-through; opacity: 0.5;' : '';
+                        var oddsToShow = pick.odds;
+                        
+                        html += '<div style="' + textStyle + 'padding: 4px 0; font-size: 14px;">';
+                        html += '• ' + pick.playerName + ': ' + pick.pick;
+                        if (hasOnlyOneLeg && !isVoided) {
+                            html += ' @ <strong>' + oddsToShow + '</strong>';
+                        }
+                        if (isVoided) {
+                            html += ' <span style="color: #FF9800; font-weight: bold;">[VOIDED]</span>';
+                        }
+                        html += '</div>';
+                    });
+                    
+                    html += '</div>';
+                } else {
+                    gamePicks.forEach(function(pick) {
+                        individualPicks.push(pick);
+                    });
+                }
+            }
+            
+            individualPicks.forEach(function(pick) {
+                var status = 'Pending';
+                var statusColor = '#757575';
+                
+                if (pick.result === true) {
+                    status = 'Win';
+                    statusColor = '#4CAF50';
+                } else if (pick.result === false) {
+                    status = 'Loss';
+                    statusColor = '#f44336';
+                } else if (pick.result === 'draw') {
+                    status = 'Voided';
+                    statusColor = '#FF9800';
+                }
+                
+                var textStyle = pick.result === 'draw' ? 'text-decoration: line-through; opacity: 0.5;' : '';
+                
+                html += '<div style="border: 2px solid #e0e0e0; border-radius: 8px; padding: 12px; background: white; ' + textStyle + '">';
+                html += '<div style="display: flex; justify-content: space-between; align-items: center;">';
+                html += '<div>';
+                html += '<strong>' + pick.playerName + ':</strong> ' + pick.pick;
+                html += '<div style="color: #666; font-size: 13px; margin-top: 4px;">';
+                html += pick.game ? pick.game : 'No game selected';
+                html += ' • <strong>' + pick.odds + '</strong>';
+                html += '</div>';
+                html += '</div>';
+                html += '<span style="background: ' + statusColor + '; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">' + status + '</span>';
+                html += '</div>';
+                html += '</div>';
+            });
+            
+            container.innerHTML = html;
         }
 
         function updateLeaderboardData() {
             leaderboardData = {};
             
-            Object.entries(weeklyPicks).forEach(([week, picks]) => {
-                picks.forEach(pick => {
+            for (var week in weeklyPicks) {
+                if (!weeklyPicks[week]) continue;
+                weeklyPicks[week].forEach(function(pick) {
+                    if (!pick) return;
                     if (!leaderboardData[pick.playerName]) {
                         leaderboardData[pick.playerName] = {
                             wins: 0,
@@ -1742,58 +1338,67 @@
                         };
                     }
                     
-                    if (pick.result === true) {
-                        leaderboardData[pick.playerName].wins++;
-                    } else if (pick.result === false) {
-                        leaderboardData[pick.playerName].losses++;
-                    } else if (pick.result === 'draw') {
-                        leaderboardData[pick.playerName].draws++;
-                    }
+                    if (pick.result === true) leaderboardData[pick.playerName].wins++;
+                    else if (pick.result === false) leaderboardData[pick.playerName].losses++;
+                    else if (pick.result === 'draw') leaderboardData[pick.playerName].draws++;
                 });
-            });
+            }
             
             updateLeaderboard();
         }
 
         function updateLeaderboard() {
-            const tbody = document.getElementById('leaderboardBody');
+            var tbody = document.getElementById('leaderboardBody');
             tbody.innerHTML = '';
             
-            const players = Object.entries(leaderboardData)
-                .map(([name, data]) => ({
-                    name,
+            var players = [];
+            for (var name in leaderboardData) {
+                var data = leaderboardData[name];
+                var total = data.wins + data.losses + data.draws;
+                var winRate = total > 0 ? (data.wins / total * 100) : 0;
+                
+                players.push({
+                    name: name,
                     wins: data.wins,
                     losses: data.losses,
-                    draws: data.draws || 0,
-                    winRate: data.wins + data.losses + (data.draws || 0) > 0 ? 
-                        (data.wins / (data.wins + data.losses + (data.draws || 0)) * 100) : 0,
+                    draws: data.draws,
+                    winRate: winRate,
                     contributions: data.contributions
-                }))
-                .sort((a, b) => b.winRate - a.winRate || b.wins - a.wins);
+                });
+            }
+            
+            players.sort(function(a, b) {
+                return b.winRate - a.winRate || b.wins - a.wins;
+            });
             
             if (players.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #666;">No data available</td></tr>';
                 return;
             }
             
-            players.forEach((player, index) => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td>${player.name}</td>
-                    <td style="color: #4CAF50; font-weight: bold;">${player.wins}</td>
-                    <td style="color: #f44336; font-weight: bold;">${player.losses}</td>
-                    <td style="color: #FF9800; font-weight: bold;">${player.draws}</td>
-                    <td>${player.winRate.toFixed(1)}%</td>
-                    <td>${player.contributions}</td>
-                `;
+            players.forEach(function(player, index) {
+                var row = document.createElement('tr');
+                row.innerHTML =
+                    '<td>' + (index + 1) + '</td>' +
+                    '<td>' + player.name + '</td>' +
+                    '<td style="color: #4CAF50; font-weight: bold;">' + player.wins + '</td>' +
+                    '<td style="color: #f44336; font-weight: bold;">' + player.losses + '</td>' +
+                    '<td style="color: #FF9800; font-weight: bold;">' + player.draws + '</td>' +
+                    '<td>' + player.winRate.toFixed(1) + '%</td>' +
+                    '<td>' + player.contributions + '</td>';
                 tbody.appendChild(row);
             });
         }
 
         function switchTab(tabName, clickedButton) {
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+            var tabs = document.querySelectorAll('.tab');
+            for (var i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove('active');
+            }
+            var panes = document.querySelectorAll('.tab-pane');
+            for (var i = 0; i < panes.length; i++) {
+                panes[i].classList.remove('active');
+            }
             
             clickedButton.classList.add('active');
             document.getElementById(tabName).classList.add('active');
@@ -1806,9 +1411,9 @@
         }
 
         function convertOdds() {
-            const american = parseFloat(document.getElementById('americanOdds').value);
+            var american = parseFloat(document.getElementById('americanOdds').value);
             if (!isNaN(american)) {
-                let decimal;
+                var decimal;
                 if (american > 0) {
                     decimal = (american / 100) + 1;
                 } else {
@@ -1816,7 +1421,7 @@
                 }
                 document.getElementById('decimalOdds').value = decimal.toFixed(2);
                 
-                const impliedProb = american > 0 ? 
+                var impliedProb = american > 0 ? 
                     (100 / (american + 100)) * 100 : 
                     (Math.abs(american) / (Math.abs(american) + 100)) * 100;
                 document.getElementById('impliedProb').value = impliedProb.toFixed(1) + '%';
@@ -1824,9 +1429,9 @@
         }
         
         function convertFromDecimal() {
-            const decimal = parseFloat(document.getElementById('decimalOdds').value);
+            var decimal = parseFloat(document.getElementById('decimalOdds').value);
             if (!isNaN(decimal) && decimal > 1) {
-                let american;
+                var american;
                 if (decimal >= 2) {
                     american = '+' + Math.round((decimal - 1) * 100);
                 } else {
@@ -1834,7 +1439,7 @@
                 }
                 document.getElementById('americanOdds').value = american;
                 
-                const impliedProb = (1 / decimal) * 100;
+                var impliedProb = (1 / decimal) * 100;
                 document.getElementById('impliedProb').value = impliedProb.toFixed(1) + '%';
             }
         }
@@ -1842,40 +1447,44 @@
         function clearAllPicks() {
             if (confirm('Are you sure you want to clear all picks for this week?')) {
                 weeklyPicks[currentWeek] = [];
-                generatePickSlots();
+                renderAllPicks();
                 updateCalculations();
             }
         }
 
         function saveAllPicks() {
-            const numberOfLegs = parseInt(document.getElementById('numberOfLegs').value);
-            const newPicks = [];
+            var numberOfLegs = parseInt(document.getElementById('numberOfLegs').value);
+            var newPicks = [];
             
-            for (let i = 0; i < numberOfLegs; i++) {
-                const playerName = document.getElementById(`player${i}`).value.trim();
-                const pick = document.getElementById(`pick${i}`).value.trim();
-                const odds = document.getElementById(`odds${i}`).value.trim();
-                const game = document.getElementById(`game${i}`).value;
-                const timeSlot = document.getElementById(`timeSlot${i}`).value;
+            for (var i = 0; i < numberOfLegs; i++) {
+                var playerDisplay = document.getElementById('playerNameDisplay' + i);
+                var pickEl = document.getElementById('pick' + i);
+                var oddsEl = document.getElementById('odds' + i);
+                var gameEl = document.getElementById('game' + i);
+                var timeSlotEl = document.getElementById('timeSlot' + i);
                 
-                if (playerName && pick && odds) {
-                    const newPick = {
-                        id: Date.now() + i,
-                        playerName,
-                        pick,
-                        odds,
-                        game,
-                        timeSlot,
-                        result: null,
-                        isSaved: true
-                    };
-                    newPicks.push(newPick);
+                if (playerDisplay && pickEl && oddsEl) {
+                    var playerName = playerDisplay.textContent.trim();
+                    var pick = pickEl.value.trim();
+                    var odds = oddsEl.value.trim();
+                    
+                    if (playerName && pick && odds) {
+                        newPicks.push({
+                            playerName: playerName,
+                            pick: pick,
+                            odds: odds,
+                            game: gameEl ? gameEl.value : '',
+                            timeSlot: timeSlotEl ? timeSlotEl.value : '',
+                            result: null
+                        });
+                    }
                 }
             }
             
             weeklyPicks[currentWeek] = newPicks;
             alert('All picks saved successfully!');
-            generatePickSlots();
+            checkForSGPs();
+            renderAllPicks();
             updateCalculations();
         }
 
@@ -1883,7 +1492,7 @@
             if (confirm('Are you sure you want to reset all season stats? This cannot be undone.')) {
                 leaderboardData = {};
                 weeklyPicks = {};
-                generatePickSlots();
+                renderAllPicks();
                 updateCalculations();
                 updateLeaderboard();
             }
