@@ -1989,6 +1989,9 @@
                 handleSGPVoid(pick.game);
             }
             
+            // Save changes to Firebase
+            saveToFirebase();
+            
             updateCalculations();
             updateLeaderboardData();
             renderAllPicks();
