@@ -2030,6 +2030,7 @@
         function clearAllPicks() {
             if (confirm('Are you sure you want to clear all picks for this week?')) {
                 weeklyPicks[currentWeek] = [];
+                saveToFirebase();
                 renderAllPicks();
                 updateCalculations();
             }
@@ -2065,6 +2066,7 @@
             }
             
             weeklyPicks[currentWeek] = newPicks;
+            saveToFirebase();
             alert('All picks saved successfully!');
             checkForSGPs();
             renderAllPicks();
