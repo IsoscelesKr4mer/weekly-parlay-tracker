@@ -1655,14 +1655,14 @@
                 '</div>' + voidWarning +
                 '<div style="display: flex; gap: 8px; margin-top: 15px; align-items: center; flex-wrap: wrap; justify-content: space-between;">' +
                 '<div style="display: flex; gap: 8px;">' +
-                '<button class="result-btn" id="saveBtn' + index + '" style="background: #757575; color: white; cursor: not-allowed;" onclick="savePick(' + index + ')" disabled>💾 Save</button>' +
-                '<button class="result-btn" style="background: #f44336; color: white;" onclick="clearIndividualPick(' + index + ')">🗑️ Clear Pick</button>' +
-                '</div>' +
-                '<div style="display: flex; gap: 8px;">' +
                 '<button class="result-btn win ' + winActive + '" onclick="toggleResult(' + index + ', true)">✓ Win</button>' +
                 '<button class="result-btn loss ' + lossActive + '" onclick="toggleResult(' + index + ', false)">✗ Loss</button>' +
                 '<button class="result-btn draw ' + drawActive + '" onclick="toggleResult(' + index + ', \'draw\')">🤝 Draw</button>' +
                 '<button class="result-btn reset" onclick="toggleResult(' + index + ', null)">↻ Reset</button>' +
+                '</div>' +
+                '<div style="display: flex; gap: 8px;">' +
+                '<button class="result-btn" id="saveBtn' + index + '" style="background: #757575; color: white; cursor: not-allowed;" onclick="savePick(' + index + ')" disabled>💾 Save</button>' +
+                '<button class="result-btn" style="background: #f44336; color: white;" onclick="clearIndividualPick(' + index + ')">🗑️ Clear Pick</button>' +
                 '</div>' +
                 '</div>';
             
