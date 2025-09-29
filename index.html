@@ -709,9 +709,49 @@
                     align-items: center !important;
                 }
                 
-                .summary-week-selector select {
-                    min-width: 120px !important;
-                }
+            .summary-week-selector select {
+                min-width: 120px !important;
+            }
+            
+            /* Bet info card mobile layout */
+            .bet-info-card {
+                flex-direction: column !important;
+                gap: 16px !important;
+                align-items: stretch !important;
+            }
+            
+            .bet-input-section {
+                justify-content: center !important;
+                flex-wrap: wrap !important;
+            }
+            
+            .bet-input-section button {
+                margin-top: 8px !important;
+                width: 100% !important;
+                max-width: 120px !important;
+            }
+            
+            .bet-results-section {
+                justify-content: center !important;
+                gap: 32px !important;
+            }
+            
+            /* Summary bet info mobile layout */
+            .summary-bet-info {
+                flex-direction: column !important;
+                gap: 16px !important;
+                align-items: center !important;
+            }
+            
+            .summary-bet-display {
+                display: flex !important;
+                align-items: center !important;
+                gap: 8px !important;
+            }
+            
+            .summary-bet-results {
+                gap: 32px !important;
+            }
                 
                 /* Stats grid mobile optimization */
                 .stats-grid {
@@ -962,6 +1002,73 @@
             font-size: 14px;
             min-width: 100px;
         }
+        
+        .bet-info-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .bet-input-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .bet-input-section label {
+            font-weight: 500;
+            color: #374151;
+            white-space: nowrap;
+        }
+        
+        .bet-input-section input {
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background: white;
+            font-size: 14px;
+            width: 120px;
+        }
+        
+        .bet-results-section {
+            display: flex;
+            gap: 24px;
+        }
+        
+        .bet-result-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .bet-result-label {
+            font-size: 12px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+        
+        .bet-result-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        
+        .bet-result-value.primary {
+            color: #3b82f6;
+        }
+        
+        .bet-result-value.success {
+            color: #10b981;
+        }
     </style>
 </head>
 <body>
@@ -979,6 +1086,24 @@
         
         <div class="tab-content">
             <div id="picks" class="tab-pane active">
+                <div class="bet-info-card">
+                    <div class="bet-input-section">
+                        <label for="betAmount">Bet Amount ($):</label>
+                        <input type="number" id="betAmount" value="100" min="1" step="1" placeholder="Enter bet amount">
+                        <button id="updateBetBtn" onclick="confirmBetAmountUpdate()" style="background: #3b82f6; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; margin-left: 8px;">Update</button>
+                    </div>
+                    <div class="bet-results-section">
+                        <div class="bet-result-item">
+                            <span class="bet-result-label">Total Odds:</span>
+                            <span class="bet-result-value" id="totalOddsDisplay">+100</span>
+                        </div>
+                        <div class="bet-result-item">
+                            <span class="bet-result-label">Total Payout:</span>
+                            <span class="bet-result-value" id="totalPayoutDisplay">$200.00</span>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="week-selector">
                     <label for="currentWeek">Week:</label>
                     <select id="currentWeek" onchange="updateWeek()">
@@ -1071,6 +1196,22 @@
                 </div>
                 
                 <div style="background: white; border-radius: 15px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                    <div class="summary-bet-info" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #e2e8f0;">
+                        <div class="summary-bet-display">
+                            <label>Bet Amount:</label>
+                            <span id="summaryBetAmountDisplay" style="font-weight: 600; color: #374151; margin-left: 8px;">$100</span>
+                        </div>
+                        <div class="summary-bet-results" style="display: flex; gap: 24px;">
+                            <div style="text-align: center;">
+                                <div style="font-size: 12px; color: #6b7280; font-weight: 500;">Total Odds</div>
+                                <div id="summaryTotalOdds" style="font-size: 18px; font-weight: 700; color: #3b82f6;">+100</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 12px; color: #6b7280; font-weight: 500;">Total Payout</div>
+                                <div id="summaryTotalPayout" style="font-size: 18px; font-weight: 700; color: #10b981;">$200.00</div>
+                            </div>
+                        </div>
+                    </div>
                     <h3 style="margin-bottom: 15px; color: #333;">Your Picks</h3>
                     <div id="picksSummary" style="display: flex; flex-direction: column; gap: 10px;"></div>
                 </div>
@@ -1094,10 +1235,6 @@
                     </div>
                 </div>
                 
-                <div class="form-group" style="max-width: 200px; margin-bottom: 20px;">
-                    <label for="betAmountInput">Bet Amount ($)</label>
-                    <input type="number" id="betAmountInput" value="10" min="1" onchange="updateCalculations()">
-                </div>
                 
                 <div style="background: white; border-radius: 15px; padding: 25px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
                     <h3 style="margin-bottom: 20px; color: #333;">Payout Breakdown</h3>
@@ -1160,6 +1297,7 @@
         var weeklyPicks = {};
         var leaderboardData = {};
         var isSavingToFirebase = false; // Flag to prevent Firebase listener from overriding our saves
+        var betAmounts = {}; // Store bet amounts per week
         function getCurrentNFLWeek() {
             // 2025 NFL Season started September 4, 2025 (Week 1)
             var seasonStart = new Date('2025-09-04');
@@ -1571,6 +1709,7 @@
                     
                     // Load data from Firebase
                     loadDataFromFirebase();
+                    loadBetAmountsFromFirebase();
                 } else {
                     console.log('Firebase not available - using local storage only');
                 }
@@ -1662,6 +1801,11 @@
             }
             
             document.getElementById('summaryWeek').textContent = currentWeek;
+            
+            // Load bet amount for this week
+            var currentBetAmount = betAmounts[currentWeek] || 100;
+            document.getElementById('betAmount').value = currentBetAmount;
+            
             renderAllPicks();
             updateCalculations();
             updateParlayStatus();
@@ -1678,9 +1822,18 @@
             }
             
             document.getElementById('summaryWeek').textContent = currentWeek;
+            
+            // Load bet amount for this week
+            var currentBetAmount = betAmounts[currentWeek] || 100;
+            var picksBetAmount = document.getElementById('betAmount');
+            if (picksBetAmount) {
+                picksBetAmount.value = currentBetAmount;
+            }
+            
             renderAllPicks();
             updateCalculations();
             updateParlayStatus();
+            updateSummaryBetInfo();
         }
 
         function renderAllPicks() {
@@ -2486,9 +2639,158 @@
             }
         }
 
-        function updateCalculations() {
+        function confirmBetAmountUpdate() {
+            var newBetAmount = parseFloat(document.getElementById('betAmount').value);
+            
+            if (!newBetAmount || newBetAmount < 1) {
+                showNotification('Please enter a valid bet amount (minimum $1)', 'error');
+                return;
+            }
+            
+            var currentBetAmount = betAmounts[currentWeek] || 100;
+            
+            if (newBetAmount === currentBetAmount) {
+                showNotification('Bet amount is already set to $' + newBetAmount.toFixed(0), 'info');
+                return;
+            }
+            
+            // Show confirmation dialog
+            var confirmMessage = 'Update bet amount from $' + currentBetAmount.toFixed(0) + ' to $' + newBetAmount.toFixed(0) + '?';
+            if (confirm(confirmMessage)) {
+                betAmounts[currentWeek] = newBetAmount;
+                saveBetAmountsToFirebase();
+                updateBetCalculations();
+                showNotification('Bet amount updated to $' + newBetAmount.toFixed(0), 'success');
+            } else {
+                // Reset input to current value if cancelled
+                document.getElementById('betAmount').value = currentBetAmount;
+            }
+        }
+
+        function updateBetCalculations() {
+            var betAmount = betAmounts[currentWeek] || 100;
+            
+            // Update the input field to show current bet amount
+            document.getElementById('betAmount').value = betAmount;
+            
             var picks = weeklyPicks[currentWeek] || [];
-            var betAmount = parseFloat(document.getElementById('betAmountInput').value) || 10;
+            var activePicks = picks.filter(function(p) { return p && p.result !== 'draw'; });
+            
+            if (activePicks.length === 0) {
+                document.getElementById('totalOddsDisplay').textContent = '+100';
+                document.getElementById('totalPayoutDisplay').textContent = '$' + (betAmount * 2).toFixed(2);
+                return;
+            }
+            
+            var totalOdds = 1;
+            var gameGroups = {};
+            var processedGames = {};
+            
+            // Count active picks per game
+            activePicks.forEach(function(pick) {
+                if (pick.game) {
+                    if (!gameGroups[pick.game]) {
+                        gameGroups[pick.game] = [];
+                    }
+                    gameGroups[pick.game].push(pick);
+                }
+            });
+            
+            // Calculate total odds
+            activePicks.forEach(function(pick) {
+                var activeLegsForGame = gameGroups[pick.game] ? gameGroups[pick.game].length : 1;
+                
+                // If this was an SGP but now only has 1 active leg, treat as individual bet
+                if (pick.isSGP && activeLegsForGame === 1) {
+                    totalOdds *= americanToDecimal(pick.odds);
+                }
+                // If it's an SGP with 2+ active legs, use SGP odds (only once per game)
+                else if (pick.isSGP && pick.sgpOdds && activeLegsForGame >= 2) {
+                    if (!processedGames[pick.game]) {
+                        processedGames[pick.game] = true;
+                        totalOdds *= americanToDecimal(pick.sgpOdds);
+                    }
+                }
+                // Individual bets (not SGP)
+                else if (!pick.isSGP) {
+                    totalOdds *= americanToDecimal(pick.odds);
+                }
+            });
+            
+            var totalPayout = betAmount * totalOdds;
+            var americanOdds = decimalToAmerican(totalOdds);
+            
+            document.getElementById('totalOddsDisplay').textContent = americanOdds;
+            document.getElementById('totalPayoutDisplay').textContent = '$' + totalPayout.toFixed(2);
+            
+            // Update summary page if we're on it
+            updateSummaryBetInfo();
+        }
+
+        function updateSummaryBetInfo() {
+            var betAmount = betAmounts[currentWeek] || 100;
+            
+            // Update summary bet amount display (read-only)
+            document.getElementById('summaryBetAmountDisplay').textContent = '$' + betAmount.toFixed(0);
+            
+            var picks = weeklyPicks[currentWeek] || [];
+            var activePicks = picks.filter(function(p) { return p && p.result !== 'draw'; });
+            
+            if (activePicks.length === 0) {
+                document.getElementById('summaryTotalOdds').textContent = '+100';
+                document.getElementById('summaryTotalPayout').textContent = '$' + (betAmount * 2).toFixed(2);
+                return;
+            }
+            
+            var totalOdds = 1;
+            var gameGroups = {};
+            var processedGames = {};
+            
+            // Count active picks per game
+            activePicks.forEach(function(pick) {
+                if (pick.game) {
+                    if (!gameGroups[pick.game]) {
+                        gameGroups[pick.game] = [];
+                    }
+                    gameGroups[pick.game].push(pick);
+                }
+            });
+            
+            // Calculate total odds
+            activePicks.forEach(function(pick) {
+                var activeLegsForGame = gameGroups[pick.game] ? gameGroups[pick.game].length : 1;
+                
+                // If this was an SGP but now only has 1 active leg, treat as individual bet
+                if (pick.isSGP && activeLegsForGame === 1) {
+                    totalOdds *= americanToDecimal(pick.odds);
+                }
+                // If it's an SGP with 2+ active legs, use SGP odds (only once per game)
+                else if (pick.isSGP && pick.sgpOdds && activeLegsForGame >= 2) {
+                    if (!processedGames[pick.game]) {
+                        processedGames[pick.game] = true;
+                        totalOdds *= americanToDecimal(pick.sgpOdds);
+                    }
+                }
+                // Individual bets (not SGP)
+                else if (!pick.isSGP) {
+                    totalOdds *= americanToDecimal(pick.odds);
+                }
+            });
+            
+            var totalPayout = betAmount * totalOdds;
+            var americanOdds = decimalToAmerican(totalOdds);
+            
+            document.getElementById('summaryTotalOdds').textContent = americanOdds;
+            document.getElementById('summaryTotalPayout').textContent = '$' + totalPayout.toFixed(2);
+        }
+
+
+        function updateCalculations() {
+            // Call the new bet calculation function
+            updateBetCalculations();
+            
+            var picks = weeklyPicks[currentWeek] || [];
+            var betAmount = parseFloat(document.getElementById('betAmount') ? document.getElementById('betAmount').value : 100) || 100;
             
             var activePicks = picks.filter(function(p) { return p && p.result !== 'draw'; });
             
