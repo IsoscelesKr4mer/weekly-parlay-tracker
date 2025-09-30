@@ -2268,8 +2268,8 @@ var picks = weeklyPicks[currentWeek] || [];
 var activePicks = picks.filter(function(p) { return p && p.result !== 'draw'; });
 
 if (activePicks.length === 0) {
-document.getElementById('totalOddsDisplay').textContent = '+100';
-            document.getElementById('totalPayoutDisplay').textContent = formatCurrency(betAmount * 2);
+document.getElementById('totalOddsDisplay').textContent = '+0';
+            document.getElementById('totalPayoutDisplay').textContent = formatCurrency(0);
 return;
 }
 
@@ -2331,8 +2331,8 @@ var picks = weeklyPicks[currentWeek] || [];
 var activePicks = picks.filter(function(p) { return p && p.result !== 'draw'; });
 
 if (activePicks.length === 0) {
-document.getElementById('summaryTotalOdds').textContent = '+100';
-                document.getElementById('summaryTotalPayout').textContent = formatCurrency(betAmount * 2);
+document.getElementById('summaryTotalOdds').textContent = '+0';
+                document.getElementById('summaryTotalPayout').textContent = formatCurrency(0);
 return;
 }
 
