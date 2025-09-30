@@ -2742,8 +2742,7 @@ if (!leaderboardData[pick.playerName]) {
 leaderboardData[pick.playerName] = {
 wins: 0,
 losses: 0,
-draws: 0,
-contributions: 0
+draws: 0
 };
 }
 
@@ -2764,15 +2763,14 @@ var players = [];
 for (var name in leaderboardData) {
 var data = leaderboardData[name];
 var total = data.wins + data.losses + data.draws;
-var winRate = total > 0 ? (data.wins / total * 100) : 0;
+var winRate = total > 0 ? (data.wins / total) : 0;
 
 players.push({
 name: name,
 wins: data.wins,
 losses: data.losses,
 draws: data.draws,
-winRate: winRate,
-contributions: data.contributions
+winRate: winRate
 });
 }
 
@@ -2793,8 +2791,7 @@ row.innerHTML =
 '<td style="color: #4CAF50; font-weight: bold;">' + player.wins + '</td>' +
 '<td style="color: #f44336; font-weight: bold;">' + player.losses + '</td>' +
 '<td style="color: #FF9800; font-weight: bold;">' + player.draws + '</td>' +
-'<td>' + player.winRate.toFixed(1) + '%</td>' +
-'<td>' + player.contributions + '</td>';
+'<td>' + player.winRate.toFixed(3) + '</td>';
 tbody.appendChild(row);
 });
 }
