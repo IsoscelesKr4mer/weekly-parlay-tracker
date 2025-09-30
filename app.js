@@ -75,22 +75,26 @@ var betAmounts = {}; // Store bet amounts per week
 var lockedWeeks = {}; // Track which weeks are locked
 var lockPassword = "BigDumperis110%sexy"; // Password to unlock picks
 function getCurrentNFLWeek() {
-// 2025 NFL Season started September 4, 2025 (Week 1)
-var seasonStart = new Date('2025-09-04');
-var today = new Date();
-
-// Calculate days since season start
-var daysSinceStart = Math.floor((today - seasonStart) / (1000 * 60 * 60 * 24));
-
-// NFL weeks run Tuesday to Monday, but Week 1 started on Thursday
-// Adjust for the Thursday start of Week 1
-var adjustedDays = daysSinceStart + 2; // Thursday = 2 days into the week
-
-// Calculate current week (each week is 7 days)
-var calculatedWeek = Math.floor(adjustedDays / 7) + 1;
-
-// Ensure we don't go beyond Week 18
-return Math.min(Math.max(calculatedWeek, 1), 18);
+    // 2025 NFL Season started September 4, 2025 (Week 1) at 8:20 PM EST
+    // Create season start date in Eastern Time
+    var seasonStart = new Date('2025-09-04T20:20:00-05:00'); // 8:20 PM EST
+    
+    // Get current time in Eastern Time
+    var now = new Date();
+    var easternTime = new Date(now.toLocaleString("en-US", {timeZone: "America/New_York"}));
+    
+    // Calculate days since season start
+    var daysSinceStart = Math.floor((easternTime - seasonStart) / (1000 * 60 * 60 * 24));
+    
+    // NFL weeks run Tuesday to Monday, but Week 1 started on Thursday
+    // Adjust for the Thursday start of Week 1
+    var adjustedDays = daysSinceStart + 2; // Thursday = 2 days into the week
+    
+    // Calculate current week (each week is 7 days)
+    var calculatedWeek = Math.floor(adjustedDays / 7) + 1;
+    
+    // Ensure we don't go beyond Week 18
+    return Math.min(Math.max(calculatedWeek, 1), 18);
 }
 
 function updateCurrentWeekDropdown() {
