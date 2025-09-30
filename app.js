@@ -1241,11 +1241,15 @@ console.log('Loaded leaderboard from Firebase');
 // Load locked weeks
 database.ref('lockedWeeks').on('value', function(snapshot) {
 var data = snapshot.val();
+console.log('Firebase lockedWeeks snapshot:', data);
 if (data) {
 lockedWeeks = data;
+console.log('Updated lockedWeeks:', lockedWeeks);
 updateLockButtonState();
 updatePicksLockState();
 console.log('Loaded locked weeks from Firebase');
+} else {
+console.log('No locked weeks data found in Firebase');
 }
 });
 }
@@ -1264,6 +1268,7 @@ isSavingToFirebase = true;
 database.ref('weeklyPicks').set(weeklyPicks);
 
 // Save locked weeks
+console.log('Saving lockedWeeks to Firebase:', lockedWeeks);
 database.ref('lockedWeeks').set(lockedWeeks);
 
 // Update leaderboard data
@@ -2201,6 +2206,7 @@ lockPicks();
 
 function lockPicks() {
 lockedWeeks[currentWeek] = true;
+console.log('Locking week', currentWeek, 'lockedWeeks:', lockedWeeks);
 var lockBtn = document.getElementById('lockBtn');
 lockBtn.innerHTML = '🔓 Unlock Week ' + currentWeek;
 lockBtn.style.background = '#10b981';
@@ -2233,6 +2239,7 @@ showNotification('Week ' + currentWeek + ' picks unlocked', 'success');
 
 function updateLockButtonState() {
 var lockBtn = document.getElementById('lockBtn');
+console.log('updateLockButtonState - currentWeek:', currentWeek, 'lockedWeeks:', lockedWeeks, 'isLocked:', lockedWeeks[currentWeek]);
 if (lockedWeeks[currentWeek]) {
 lockBtn.innerHTML = '🔓 Unlock Week ' + currentWeek;
 lockBtn.style.background = '#10b981';
