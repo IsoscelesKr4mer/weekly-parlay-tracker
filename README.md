@@ -24,7 +24,7 @@ A collaborative web application for tracking weekly fantasy football parlay pick
 
 ## 🚀 Live Demo
 
-Visit the live application: [Your GitHub Pages URL]
+Visit the live application: https://isosceleskr4mer.github.io/weekly-parlay-tracker/
 
 ## 🛠️ Technology Stack
 
