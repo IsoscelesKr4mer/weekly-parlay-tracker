@@ -1308,6 +1308,8 @@ document.getElementById('betAmount').value = currentBetAmount;
 renderAllPicks();
 updateCalculations();
 updateParlayStatus();
+updateSummaryBetInfo();
+
 updateLockButtonState();
 updatePicksLockState();
 }
