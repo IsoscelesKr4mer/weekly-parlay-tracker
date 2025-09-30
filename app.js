@@ -1,4 +1,74 @@
-﻿var weeklyPicks = {};
+﻿// Backup system for weekly data
+var weeklyBackups = {};
+
+function createBackup(week) {
+    if (weeklyPicks[week]) {
+        weeklyBackups[week] = {
+            data: JSON.parse(JSON.stringify(weeklyPicks[week])),
+            timestamp: new Date().toISOString(),
+            betAmount: betAmounts[week] || 24
+        };
+        console.log('Backup created for Week ' + week);
+    }
+}
+
+function restoreBackup(week) {
+    if (weeklyBackups[week]) {
+        if (confirm('🔄 Restore Week ' + week + ' from backup?\n\nBackup created: ' + new Date(weeklyBackups[week].timestamp).toLocaleString() + '\n\nThis will overwrite current data.')) {
+            weeklyPicks[week] = JSON.parse(JSON.stringify(weeklyBackups[week].data));
+            betAmounts[week] = weeklyBackups[week].betAmount;
+            saveToFirebase();
+            saveBetAmountsToFirebase();
+            renderAllPicks();
+            updateCalculations();
+            updateParlayStatus();
+            showNotification('Week ' + week + ' restored from backup!', 'success');
+        }
+    } else {
+        showNotification('No backup available for Week ' + week, 'error');
+    }
+}
+
+function showBackupManager() {
+    var backupInfo = '📋 Available Backups:\n\n';
+    var hasBackups = false;
+    
+    for (var week in weeklyBackups) {
+        hasBackups = true;
+        var backup = weeklyBackups[week];
+        var date = new Date(backup.timestamp).toLocaleString();
+        backupInfo += 'Week ' + week + ': ' + date + '\n';
+    }
+    
+    if (!hasBackups) {
+        backupInfo += 'No backups available.\n\nBackups are created automatically when you make changes.';
+    }
+    
+    alert(backupInfo);
+}
+
+// Auto-create backup before destructive actions
+function createBackupBeforeAction(week) {
+    createBackup(week);
+}
+
+// Utility function to format numbers with commas
+function formatNumber(num) {
+    return num.toLocaleString('en-US', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+    });
+}
+
+// Utility function to format currency with commas
+function formatCurrency(num) {
+    return '$' + num.toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+}
+
+var weeklyPicks = {};
 var leaderboardData = {};
 var isSavingToFirebase = false; // Flag to prevent Firebase listener from overriding our saves
 var betAmounts = {}; // Store bet amounts per week
@@ -1451,7 +1521,7 @@ var activePicks = picks.filter(function(p) { return p && p.result !== 'draw'; })
 
 if (activePicks.length === 0) {
 document.getElementById('totalOddsDisplay').textContent = '+100';
-document.getElementById('totalPayoutDisplay').textContent = '$' + (betAmount * 2).toFixed(2);
+            document.getElementById('totalPayoutDisplay').textContent = formatCurrency(betAmount * 2);
 return;
 }
 
@@ -1494,7 +1564,7 @@ var totalPayout = betAmount * totalOdds;
 var americanOdds = decimalToAmerican(totalOdds);
 
 document.getElementById('totalOddsDisplay').textContent = americanOdds;
-document.getElementById('totalPayoutDisplay').textContent = '$' + totalPayout.toFixed(2);
+            document.getElementById('totalPayoutDisplay').textContent = formatCurrency(totalPayout);
 
 // Update summary page if we're on it
 updateSummaryBetInfo();
@@ -1503,18 +1573,18 @@ updateSummaryBetInfo();
 function updateSummaryBetInfo() {
 var betAmount = betAmounts[currentWeek] || 24;
 
-// Update summary bet amount display (read-only)
-document.getElementById('summaryBetAmountDisplay').textContent = '$' + betAmount.toFixed(0);
-
-// Update the bet amount card in the summary stats
-document.getElementById('summaryBetAmountCard').textContent = '$' + betAmount.toFixed(0);
+            // Update summary bet amount display (read-only)
+            document.getElementById('summaryBetAmountDisplay').textContent = formatCurrency(betAmount);
+            
+            // Update the bet amount card in the summary stats
+            document.getElementById('summaryBetAmountCard').textContent = formatCurrency(betAmount);
 
 var picks = weeklyPicks[currentWeek] || [];
 var activePicks = picks.filter(function(p) { return p && p.result !== 'draw'; });
 
 if (activePicks.length === 0) {
 document.getElementById('summaryTotalOdds').textContent = '+100';
-document.getElementById('summaryTotalPayout').textContent = '$' + (betAmount * 2).toFixed(2);
+                document.getElementById('summaryTotalPayout').textContent = formatCurrency(betAmount * 2);
 return;
 }
 
@@ -1557,7 +1627,7 @@ var totalPayout = betAmount * totalOdds;
 var americanOdds = decimalToAmerican(totalOdds);
 
 document.getElementById('summaryTotalOdds').textContent = americanOdds;
-document.getElementById('summaryTotalPayout').textContent = '$' + totalPayout.toFixed(2);
+            document.getElementById('summaryTotalPayout').textContent = formatCurrency(totalPayout);
 }
 
 
@@ -1609,12 +1679,12 @@ var netWinnings = potentialWinnings - taxes;
 var perPerson = activePicks.length > 0 ? netWinnings / activePicks.length : 0;
 
 document.getElementById('totalOdds').textContent = americanOdds;
-document.getElementById('totalPicks').textContent = picks.filter(function(p) { return p; }).length;
-document.getElementById('betAmount').textContent = '$' + betAmount.toFixed(2);
-document.getElementById('potentialWinnings').textContent = '$' + potentialWinnings.toFixed(2);
-document.getElementById('taxes').textContent = '$' + taxes.toFixed(2);
-document.getElementById('netWinnings').textContent = '$' + netWinnings.toFixed(2);
-document.getElementById('perPerson').textContent = '$' + perPerson.toFixed(2);
+            document.getElementById('totalPicks').textContent = formatNumber(picks.filter(function(p) { return p; }).length);
+            document.getElementById('betAmount').textContent = formatCurrency(betAmount);
+            document.getElementById('potentialWinnings').textContent = formatCurrency(potentialWinnings);
+            document.getElementById('taxes').textContent = formatCurrency(taxes);
+            document.getElementById('netWinnings').textContent = formatCurrency(netWinnings);
+            document.getElementById('perPerson').textContent = formatCurrency(perPerson);
 
 updatePicksSummary();
 }
@@ -2027,30 +2097,46 @@ document.getElementById('impliedProb').value = impliedProb.toFixed(1) + '%';
 }
 
 function clearIndividualPick(index) {
-if (confirm('Are you sure you want to clear this pick?')) {
-if (weeklyPicks[currentWeek] && weeklyPicks[currentWeek][index]) {
-// Clear the pick completely
-weeklyPicks[currentWeek][index] = null;
+    if (!confirm('⚠️ Are you sure you want to delete this pick?\n\nThis action cannot be undone.')) {
+        return;
+    }
+    
+    // Create backup before destructive action
+    createBackupBeforeAction(currentWeek);
+    
+    if (weeklyPicks[currentWeek] && weeklyPicks[currentWeek][index]) {
+        // Clear the pick completely
+        weeklyPicks[currentWeek][index] = null;
 
-// Save to Firebase
-saveToFirebase();
+        // Save to Firebase
+        saveToFirebase();
 
-showNotification('Pick cleared successfully!', 'success');
-updateCalculations();
-renderAllPicks();
-} else {
-showNotification('No pick to clear at this position.', 'info');
-}
-}
+        showNotification('Pick deleted successfully!', 'success');
+        updateCalculations();
+        renderAllPicks();
+    } else {
+        showNotification('No pick to clear at this position.', 'info');
+    }
 }
 
 function clearAllPicks() {
-if (confirm('Are you sure you want to clear all picks for this week?')) {
-weeklyPicks[currentWeek] = [];
-saveToFirebase();
-renderAllPicks();
-updateCalculations();
-}
+    if (!confirm('⚠️ WARNING: This will delete ALL picks for Week ' + currentWeek + '!\n\nThis action cannot be undone.\n\nAre you sure you want to continue?')) {
+        return;
+    }
+    
+    if (!confirm('🚨 FINAL WARNING: You are about to permanently delete all picks for Week ' + currentWeek + '!\n\nClick OK only if you are absolutely certain.')) {
+        return;
+    }
+    
+    // Create backup before destructive action
+    createBackupBeforeAction(currentWeek);
+    
+    weeklyPicks[currentWeek] = [];
+    saveToFirebase();
+    renderAllPicks();
+    updateCalculations();
+    updateParlayStatus();
+    showNotification('All picks cleared for Week ' + currentWeek, 'info');
 }
 
 function saveAllPicks() {
