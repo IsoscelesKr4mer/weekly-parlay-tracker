@@ -93,11 +93,20 @@
                     </div>
                 </div>
                 
-                <div style="display: flex; gap: 15px; margin-bottom: 30px;">
-                    <button class="btn" onclick="saveAllPicks()">💾 Save All Picks</button>
+                <div style="display: flex; gap: 15px; margin-bottom: 30px; align-items: center;">
                     <button class="btn" onclick="clearAllPicks()" style="background: #f44336;">🗑️ Clear All</button>
-                    <button class="btn" onclick="showBackupManager()" style="background: #6b7280;">📋 View Backups</button>
-                    <button class="btn" onclick="restoreBackup(currentWeek)" style="background: #10b981;">🔄 Restore Week</button>
+                    
+                    <!-- Admin Dropdown -->
+                    <div class="admin-dropdown">
+                        <button class="btn admin-toggle" onclick="toggleAdminDropdown()" style="background: #6b7280;">⚙️ Admin</button>
+                        <div class="admin-menu" id="adminMenu" style="display: none;">
+                            <button class="admin-btn" onclick="saveDraft(currentWeek); hideAdminDropdown();">💾 Save Draft</button>
+                            <button class="admin-btn" onclick="viewDrafts(currentWeek); hideAdminDropdown();">📂 View Drafts</button>
+                            <button class="admin-btn" onclick="showAuditLog(currentWeek); hideAdminDropdown();">📊 Audit Log</button>
+                            <button class="admin-btn" onclick="debugWeek4Data(); hideAdminDropdown();">🐛 Debug Week 4</button>
+                            <button class="admin-btn" onclick="fixSGPData(currentWeek); hideAdminDropdown();">🔧 Fix SGP Data</button>
+                        </div>
+                    </div>
                 </div>
                 
                 <div id="pickSlotsContainer"></div>

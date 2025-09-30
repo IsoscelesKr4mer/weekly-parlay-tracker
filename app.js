@@ -1,6 +1,718 @@
 ﻿// Backup system for weekly data
 var weeklyBackups = {};
 
+// Audit log system for tracking changes
+var auditLog = {};
+
+// Manual draft system
+var draftData = {};
+
+function logAuditEntry(week, action, details, user = 'Unknown') {
+    if (!auditLog[week]) {
+        auditLog[week] = [];
+    }
+    
+    var entry = {
+        timestamp: new Date().toISOString(),
+        user: user,
+        action: action,
+        details: details
+    };
+    
+    auditLog[week].push(entry);
+    
+    // Keep only last 100 entries per week to prevent memory issues
+    if (auditLog[week].length > 100) {
+        auditLog[week] = auditLog[week].slice(-100);
+    }
+    
+    // Save audit log to Firebase
+    if (database) {
+        database.ref('auditLog').set(auditLog);
+    }
+}
+
+function loadAuditLogFromFirebase() {
+    if (!database) return;
+    
+    database.ref('auditLog').on('value', function(snapshot) {
+        if (snapshot.exists()) {
+            auditLog = snapshot.val();
+        }
+    });
+}
+
+function loadBetAmountsFromFirebase() {
+    if (!database) return;
+    
+    database.ref('betAmounts').on('value', function(snapshot) {
+        if (snapshot.exists()) {
+            betAmounts = snapshot.val();
+        }
+    });
+}
+
+function saveBetAmountsToFirebase() {
+    if (!database) return;
+    
+    database.ref('betAmounts').set(betAmounts);
+}
+
+function loadDraftsFromFirebase() {
+    if (!database) return;
+    
+    database.ref('drafts').on('value', function(snapshot) {
+        if (snapshot.exists()) {
+            var firebaseDrafts = snapshot.val();
+            
+            // Load existing localStorage drafts
+            var savedDrafts = localStorage.getItem('parlayDrafts');
+            if (savedDrafts) {
+                try {
+                    draftData = JSON.parse(savedDrafts);
+                } catch (e) {
+                    console.error('Error loading drafts from localStorage:', e);
+                    draftData = {};
+                }
+            }
+            
+            // Merge Firebase drafts with localStorage drafts
+            for (var weekKey in firebaseDrafts) {
+                if (!draftData[weekKey]) {
+                    draftData[weekKey] = {};
+                }
+                for (var draftName in firebaseDrafts[weekKey]) {
+                    draftData[weekKey][draftName] = firebaseDrafts[weekKey][draftName];
+                }
+            }
+            
+            // Update localStorage with merged data
+            localStorage.setItem('parlayDrafts', JSON.stringify(draftData));
+            console.log('Drafts synced from Firebase');
+        }
+    });
+}
+
+function showAuditLog(week) {
+    if (!auditLog[week] || auditLog[week].length === 0) {
+        showNotification('No audit entries found for Week ' + week, 'info');
+        return;
+    }
+    
+    var logHtml = '<div class="audit-log-modal">';
+    logHtml += '<h3>📋 Audit Log - Week ' + week + '</h3>';
+    logHtml += '<div class="audit-entries">';
+    
+    // Show entries in reverse chronological order (newest first)
+    auditLog[week].slice().reverse().forEach(function(entry) {
+        var date = new Date(entry.timestamp).toLocaleString();
+        logHtml += '<div class="audit-entry">';
+        logHtml += '<div class="audit-header">';
+        logHtml += '<span class="audit-time">' + date + '</span>';
+        logHtml += '<span class="audit-user">' + entry.user + '</span>';
+        logHtml += '</div>';
+        logHtml += '<div class="audit-action">' + entry.action + '</div>';
+        if (entry.details) {
+            logHtml += '<div class="audit-details">' + entry.details + '</div>';
+        }
+        logHtml += '</div>';
+    });
+    
+    logHtml += '</div>';
+    logHtml += '<button class="btn" onclick="closeModal()" style="background: #6b7280; margin-top: 20px;">Close</button>';
+    logHtml += '</div>';
+    
+    showModal(logHtml);
+}
+
+// Manual draft functions
+function saveDraft(week) {
+    // Prompt for draft name
+    var draftName = prompt('Enter a name for this draft:');
+    if (!draftName || draftName.trim() === '') {
+        showNotification('Draft name is required', 'error');
+        return;
+    }
+    
+    // Load existing drafts from localStorage
+    var savedDrafts = localStorage.getItem('parlayDrafts');
+    if (savedDrafts) {
+        try {
+            draftData = JSON.parse(savedDrafts);
+        } catch (e) {
+            console.error('Error loading drafts:', e);
+            draftData = {};
+        }
+    }
+    
+    if (!draftData[week]) {
+        draftData[week] = {};
+    }
+    
+    var pickSlots = document.querySelectorAll('.pick-slot');
+    var hasData = false;
+    
+    // First, save any unsaved form data
+    pickSlots.forEach(function(slot, index) {
+        var playerInput = slot.querySelector('input[placeholder*="Player"]');
+        var pickInput = slot.querySelector('input[placeholder*="Pick"]');
+        var oddsInput = slot.querySelector('input[placeholder*="Odds"]');
+        var gameSelect = slot.querySelector('select');
+        var timeSlotSelect = slot.querySelector('select[name*="timeSlot"]');
+        
+        // Only save if at least one field has content
+        if ((playerInput && playerInput.value.trim()) || 
+            (pickInput && pickInput.value.trim()) || 
+            (oddsInput && oddsInput.value.trim())) {
+            
+            draftData[week][index] = {
+                playerName: playerInput ? playerInput.value.trim() : '',
+                pick: pickInput ? pickInput.value.trim() : '',
+                odds: oddsInput ? oddsInput.value.trim() : '',
+                game: gameSelect ? gameSelect.value : '',
+                timeSlot: timeSlotSelect ? timeSlotSelect.value : '',
+                timestamp: Date.now()
+            };
+            hasData = true;
+        }
+    });
+    
+    // Also save completed picks from weeklyPicks data
+    var savedPicks = weeklyPicks[week] || [];
+    savedPicks.forEach(function(pick, index) {
+        if (pick) {
+            draftData[week][index] = {
+                playerName: pick.playerName || '',
+                pick: pick.pick || '',
+                odds: pick.odds || '',
+                game: pick.game || '',
+                timeSlot: pick.timeSlot || '',
+                result: pick.result || null,
+                isSGP: pick.isSGP || false,
+                sgpOdds: pick.sgpOdds || null,
+                timestamp: Date.now()
+            };
+            hasData = true;
+        }
+    });
+    
+    if (hasData) {
+        // Create a copy of the current draft data
+        var draftPicks = {};
+        Object.keys(draftData[week]).forEach(function(key) {
+            if (typeof draftData[week][key] === 'object' && draftData[week][key].playerName !== undefined) {
+                draftPicks[key] = draftData[week][key];
+            }
+        });
+        
+        // Save to localStorage with draft name
+        draftData[week][draftName] = {
+            picks: draftPicks,
+            timestamp: Date.now()
+        };
+        
+        // Remove the old unnamed data
+        Object.keys(draftData[week]).forEach(function(key) {
+            if (key !== draftName && typeof draftData[week][key] === 'object' && !draftData[week][key].picks) {
+                delete draftData[week][key];
+            }
+        });
+        
+        localStorage.setItem('parlayDrafts', JSON.stringify(draftData));
+        
+        // Also save to Firebase
+        if (database) {
+            database.ref('drafts').set(draftData);
+        }
+        
+        showNotification('Draft "' + draftName + '" saved for Week ' + week, 'success');
+    } else {
+        showNotification('No data to save as draft', 'info');
+    }
+}
+
+function viewDrafts(week) {
+    // Load from localStorage first
+    var savedDrafts = localStorage.getItem('parlayDrafts');
+    if (savedDrafts) {
+        try {
+            draftData = JSON.parse(savedDrafts);
+        } catch (e) {
+            console.error('Error loading drafts from localStorage:', e);
+            draftData = {};
+        }
+    }
+    
+    // Also load from Firebase
+    if (database) {
+        database.ref('drafts').once('value', function(snapshot) {
+            if (snapshot.exists()) {
+                var firebaseDrafts = snapshot.val();
+                // Merge Firebase drafts with localStorage drafts
+                for (var weekKey in firebaseDrafts) {
+                    if (!draftData[weekKey]) {
+                        draftData[weekKey] = {};
+                    }
+                    for (var draftName in firebaseDrafts[weekKey]) {
+                        draftData[weekKey][draftName] = firebaseDrafts[weekKey][draftName];
+                    }
+                }
+                // Update localStorage with merged data
+                localStorage.setItem('parlayDrafts', JSON.stringify(draftData));
+            }
+        });
+    }
+    
+    var weekDrafts = draftData[week];
+    if (!weekDrafts || Object.keys(weekDrafts).length === 0) {
+        showNotification('No drafts found for Week ' + week, 'info');
+        return;
+    }
+    
+    // Show draft management modal
+    showDraftManagementModal(week, weekDrafts);
+}
+
+function showDraftManagementModal(week, weekDrafts) {
+    var html = '<div class="draft-management-modal">';
+    html += '<h3>📂 Draft Manager - Week ' + week + '</h3>';
+    html += '<p>Manage your saved drafts:</p>';
+    html += '<div class="draft-list">';
+    
+    Object.keys(weekDrafts).forEach(function(draftName) {
+        var draft = weekDrafts[draftName];
+        if (draft && draft.picks) {
+            var date = new Date(draft.timestamp).toLocaleString();
+            var pickCount = Object.keys(draft.picks).length;
+            html += '<div class="draft-item">';
+            html += '<div class="draft-info">';
+            html += '<strong>' + draftName + '</strong>';
+            html += '<div class="draft-time">Saved: ' + date + '</div>';
+            html += '<div class="draft-count">' + pickCount + ' pick(s)</div>';
+            html += '</div>';
+            html += '<div class="draft-actions">';
+            html += '<button class="btn" onclick="loadSelectedDraft(' + week + ', \'' + draftName + '\'); closeModal();" style="background: #10b981; padding: 8px 12px; font-size: 12px; margin-right: 8px;">Load</button>';
+            html += '<button class="btn" onclick="deleteDraft(' + week + ', \'' + draftName + '\'); showDraftManagementModal(' + week + ', draftData[' + week + ']);" style="background: #ef4444; padding: 8px 12px; font-size: 12px;">Delete</button>';
+            html += '</div>';
+            html += '</div>';
+        }
+    });
+    
+    html += '</div>';
+    html += '<button class="btn" onclick="closeModal()" style="background: #6b7280; margin-top: 20px;">Close</button>';
+    html += '</div>';
+    
+    showModal(html);
+}
+
+function loadSelectedDraft(week, draftName) {
+    var weekDrafts = draftData[week];
+    var selectedDraft = weekDrafts[draftName];
+    
+    if (!selectedDraft || !selectedDraft.picks) {
+        showNotification('Draft not found', 'error');
+        return;
+    }
+    
+    var draftPicks = selectedDraft.picks;
+    
+    // Load the draft data into the form
+    var pickSlots = document.querySelectorAll('.pick-slot');
+    var loadedCount = 0;
+    
+    pickSlots.forEach(function(slot, index) {
+        var draft = draftPicks[index];
+        if (draft) {
+            var playerInput = slot.querySelector('input[placeholder*="Player"]');
+            var pickInput = slot.querySelector('input[placeholder*="Pick"]');
+            var oddsInput = slot.querySelector('input[placeholder*="Odds"]');
+            var gameSelect = slot.querySelector('select');
+            var timeSlotSelect = slot.querySelector('select[name*="timeSlot"]');
+            
+            if (playerInput && draft.playerName) playerInput.value = draft.playerName;
+            if (pickInput && draft.pick) pickInput.value = draft.pick;
+            if (oddsInput && draft.odds) oddsInput.value = draft.odds;
+            if (gameSelect && draft.game) gameSelect.value = draft.game;
+            if (timeSlotSelect && draft.timeSlot) timeSlotSelect.value = draft.timeSlot;
+            loadedCount++;
+        }
+    });
+    
+    // Also load completed picks back into weeklyPicks data
+    var restoredPicks = [];
+    Object.keys(draftPicks).forEach(function(index) {
+        var draft = draftPicks[index];
+        if (draft && (draft.playerName || draft.pick || draft.odds)) {
+            restoredPicks[parseInt(index)] = {
+                playerName: draft.playerName || '',
+                pick: draft.pick || '',
+                odds: draft.odds || '',
+                game: draft.game || '',
+                timeSlot: draft.timeSlot || '',
+                result: draft.result || null,
+                isSGP: draft.isSGP || false,
+                sgpOdds: draft.sgpOdds || null,
+                timestamp: Date.now()
+            };
+        }
+    });
+    
+    if (restoredPicks.length > 0) {
+        weeklyPicks[week] = restoredPicks;
+        saveToFirebase();
+        renderAllPicks();
+        updateCalculations();
+        updateParlayStatus();
+    }
+    
+    if (loadedCount > 0 || restoredPicks.length > 0) {
+        showNotification('Loaded draft "' + draftName + '" for Week ' + week, 'success');
+    } else {
+        showNotification('No valid drafts to load', 'info');
+    }
+}
+
+function deleteDraft(week, draftName) {
+    if (!confirm('Are you sure you want to delete the draft "' + draftName + '" for Week ' + week + '?\n\nThis action cannot be undone.')) {
+        return;
+    }
+    
+    if (draftData[week] && draftData[week][draftName]) {
+        delete draftData[week][draftName];
+        
+        // Update localStorage
+        localStorage.setItem('parlayDrafts', JSON.stringify(draftData));
+        
+        // Update Firebase
+        if (database) {
+            database.ref('drafts').set(draftData);
+        }
+        
+        showNotification('Draft "' + draftName + '" deleted for Week ' + week, 'success');
+    } else {
+        showNotification('Draft not found', 'error');
+    }
+}
+
+// Debug function to check Week 4 data
+function debugWeek4Data() {
+    console.log('=== WEEK 4 DEBUG ===');
+    var week4Picks = weeklyPicks[4] || [];
+    console.log('Total picks:', week4Picks.length);
+    
+    week4Picks.forEach(function(pick, index) {
+        if (pick) {
+            console.log('Pick ' + index + ':', {
+                playerName: pick.playerName,
+                pick: pick.pick,
+                odds: pick.odds,
+                game: pick.game,
+                isSGP: pick.isSGP,
+                sgpOdds: pick.sgpOdds,
+                result: pick.result
+            });
+        }
+    });
+    
+    // Test both calculation methods
+    var activePicks = week4Picks.filter(function(p) { return p && p.result !== 'draw'; });
+    console.log('Active picks:', activePicks.length);
+    
+    // Method 1: updateBetCalculations logic
+    var totalOdds1 = 1;
+    var gameGroups1 = {};
+    var processedGames1 = {};
+    
+    activePicks.forEach(function(pick) {
+        if (pick.game) {
+            if (!gameGroups1[pick.game]) {
+                gameGroups1[pick.game] = [];
+            }
+            gameGroups1[pick.game].push(pick);
+        }
+    });
+    
+    activePicks.forEach(function(pick) {
+        var activeLegsForGame = gameGroups1[pick.game] ? gameGroups1[pick.game].length : 1;
+        
+        if (pick.isSGP && activeLegsForGame === 1) {
+            totalOdds1 *= americanToDecimal(pick.odds);
+        } else if (pick.isSGP && pick.sgpOdds && activeLegsForGame >= 2) {
+            if (!processedGames1[pick.game]) {
+                processedGames1[pick.game] = true;
+                totalOdds1 *= americanToDecimal(pick.sgpOdds);
+            }
+        } else if (!pick.isSGP) {
+            totalOdds1 *= americanToDecimal(pick.odds);
+        }
+    });
+    
+    // Method 2: updateCalculations logic
+    var totalOdds2 = 1;
+    var gamePickCounts2 = {};
+    var processedGames2 = {};
+    
+    activePicks.forEach(function(pick) {
+        if (pick.game) {
+            gamePickCounts2[pick.game] = (gamePickCounts2[pick.game] || 0) + 1;
+        }
+    });
+    
+    activePicks.forEach(function(pick) {
+        var activeLegsForGame = pick.game ? gamePickCounts2[pick.game] : 0;
+        
+        if (pick.isSGP && activeLegsForGame === 1) {
+            totalOdds2 *= americanToDecimal(pick.odds);
+        } else if (pick.isSGP && pick.sgpOdds && activeLegsForGame >= 2) {
+            if (!processedGames2[pick.game]) {
+                processedGames2[pick.game] = true;
+                totalOdds2 *= americanToDecimal(pick.sgpOdds);
+            }
+        } else if (!pick.isSGP) {
+            totalOdds2 *= americanToDecimal(pick.odds);
+        }
+    });
+    
+    console.log('Method 1 (updateBetCalculations):', decimalToAmerican(totalOdds1));
+    console.log('Method 2 (updateCalculations):', decimalToAmerican(totalOdds2));
+    console.log('Game groups (Method 1):', gameGroups1);
+    console.log('Game counts (Method 2):', gamePickCounts2);
+    
+    // Detailed SGP analysis
+    console.log('\n=== SGP DETAILED ANALYSIS ===');
+    Object.keys(gameGroups1).forEach(function(game) {
+        var picks = gameGroups1[game];
+        if (picks.length > 1) {
+            console.log('Game:', game);
+            console.log('  Picks count:', picks.length);
+            picks.forEach(function(pick, index) {
+                console.log('  Pick ' + index + ':', {
+                    playerName: pick.playerName,
+                    pick: pick.pick,
+                    odds: pick.odds,
+                    isSGP: pick.isSGP,
+                    sgpOdds: pick.sgpOdds,
+                    result: pick.result
+                });
+            });
+            
+            // Check if all picks have the same SGP odds
+            var sgpOdds = picks[0].sgpOdds;
+            var allSameSgpOdds = picks.every(function(pick) {
+                return pick.sgpOdds === sgpOdds;
+            });
+            console.log('  All have same SGP odds:', allSameSgpOdds, 'SGP odds:', sgpOdds);
+        }
+    });
+    
+    console.log('==================');
+}
+
+// Fix SGP data inconsistencies
+function fixSGPData(week) {
+    if (!weeklyPicks[week]) {
+        showNotification('No data found for Week ' + week, 'error');
+        return;
+    }
+    
+    var fixed = false;
+    var gameGroups = {};
+    
+    // Group picks by game
+    weeklyPicks[week].forEach(function(pick, index) {
+        if (pick && pick.game) {
+            if (!gameGroups[pick.game]) {
+                gameGroups[pick.game] = [];
+            }
+            gameGroups[pick.game].push({pick: pick, index: index});
+        }
+    });
+    
+    // Fix SGP inconsistencies
+    Object.keys(gameGroups).forEach(function(game) {
+        var picks = gameGroups[game];
+        if (picks.length > 1) {
+            // Find the SGP odds to use (from the first pick that has them)
+            var sgpOdds = null;
+            var hasSGP = false;
+            
+            picks.forEach(function(item) {
+                if (item.pick.isSGP && item.pick.sgpOdds) {
+                    sgpOdds = item.pick.sgpOdds;
+                    hasSGP = true;
+                }
+            });
+            
+            if (hasSGP && sgpOdds) {
+                // Apply SGP odds to all picks in this game
+                picks.forEach(function(item) {
+                    if (!item.pick.isSGP || !item.pick.sgpOdds) {
+                        item.pick.isSGP = true;
+                        item.pick.sgpOdds = sgpOdds;
+                        fixed = true;
+                        console.log('Fixed pick:', item.pick.playerName, 'in game:', game, 'with SGP odds:', sgpOdds);
+                    }
+                });
+            }
+        }
+    });
+    
+    if (fixed) {
+        saveToFirebase();
+        showNotification('SGP data fixed for Week ' + week + '! Odds recalculated.', 'success');
+        updateCalculations();
+        renderAllPicks();
+    } else {
+        showNotification('No SGP inconsistencies found in Week ' + week, 'info');
+    }
+}
+
+// Admin dropdown functions
+function toggleAdminDropdown() {
+    var menu = document.getElementById('adminMenu');
+    if (menu.style.display === 'none' || menu.style.display === '') {
+        menu.style.display = 'block';
+    } else {
+        menu.style.display = 'none';
+    }
+}
+
+function hideAdminDropdown() {
+    var menu = document.getElementById('adminMenu');
+    menu.style.display = 'none';
+}
+
+// Close admin dropdown when clicking outside
+document.addEventListener('click', function(event) {
+    var adminDropdown = document.querySelector('.admin-dropdown');
+    var adminMenu = document.getElementById('adminMenu');
+    
+    if (adminDropdown && !adminDropdown.contains(event.target)) {
+        adminMenu.style.display = 'none';
+    }
+});
+
+// Modal functions
+function showModal(html) {
+    // Remove existing modal if any
+    var existingModal = document.getElementById('modal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+    
+    // Create modal overlay
+    var modal = document.createElement('div');
+    modal.id = 'modal';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+    `;
+    
+    // Create modal content
+    var modalContent = document.createElement('div');
+    modalContent.style.cssText = `
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        max-width: 90vw;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    `;
+    modalContent.innerHTML = html;
+    
+    modal.appendChild(modalContent);
+    document.body.appendChild(modal);
+    
+    // Close modal when clicking overlay
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+}
+
+// Preserve unsaved form data
+var unsavedFormData = {};
+
+function preserveUnsavedFormData() {
+    // Clear previous data
+    unsavedFormData = {};
+    
+    // Get all pick slots
+    var pickSlots = document.querySelectorAll('.pick-slot');
+    pickSlots.forEach(function(slot, index) {
+        var playerInput = slot.querySelector('input[placeholder*="Player"]');
+        var pickInput = slot.querySelector('input[placeholder*="Pick"]');
+        var oddsInput = slot.querySelector('input[placeholder*="Odds"]');
+        var gameSelect = slot.querySelector('select');
+        var timeSlotSelect = slot.querySelector('select[name*="timeSlot"]');
+        
+        // Only preserve if there's actual data and it's not saved
+        var hasData = false;
+        var data = {};
+        
+        if (playerInput && playerInput.value.trim()) {
+            data.playerName = playerInput.value.trim();
+            hasData = true;
+        }
+        if (pickInput && pickInput.value.trim()) {
+            data.pick = pickInput.value.trim();
+            hasData = true;
+        }
+        if (oddsInput && oddsInput.value.trim()) {
+            data.odds = oddsInput.value.trim();
+            hasData = true;
+        }
+        if (gameSelect && gameSelect.value) {
+            data.game = gameSelect.value;
+            hasData = true;
+        }
+        if (timeSlotSelect && timeSlotSelect.value) {
+            data.timeSlot = timeSlotSelect.value;
+            hasData = true;
+        }
+        
+        // Only preserve if there's data and this slot doesn't have a saved pick
+        if (hasData && !weeklyPicks[currentWeek][index]) {
+            unsavedFormData[index] = data;
+        }
+    });
+}
+
+function restoreUnsavedFormData() {
+    // Restore unsaved form data after re-rendering
+    for (var index in unsavedFormData) {
+        var data = unsavedFormData[index];
+        var playerInput = document.getElementById('playerName' + index);
+        var pickInput = document.getElementById('pick' + index);
+        var oddsInput = document.getElementById('odds' + index);
+        var gameSelect = document.getElementById('game' + index);
+        var timeSlotSelect = document.getElementById('timeSlot' + index);
+        
+        if (playerInput && data.playerName) playerInput.value = data.playerName;
+        if (pickInput && data.pick) pickInput.value = data.pick;
+        if (oddsInput && data.odds) oddsInput.value = data.odds;
+        if (gameSelect && data.game) gameSelect.value = data.game;
+        if (timeSlotSelect && data.timeSlot) timeSlotSelect.value = data.timeSlot;
+    }
+}
+
+function closeModal() {
+    var modal = document.getElementById('modal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
 function createBackup(week) {
     if (weeklyPicks[week]) {
         weeklyBackups[week] = {
@@ -29,23 +741,6 @@ function restoreBackup(week) {
     }
 }
 
-function showBackupManager() {
-    var backupInfo = '📋 Available Backups:\n\n';
-    var hasBackups = false;
-    
-    for (var week in weeklyBackups) {
-        hasBackups = true;
-        var backup = weeklyBackups[week];
-        var date = new Date(backup.timestamp).toLocaleString();
-        backupInfo += 'Week ' + week + ': ' + date + '\n';
-    }
-    
-    if (!hasBackups) {
-        backupInfo += 'No backups available.\n\nBackups are created automatically when you make changes.';
-    }
-    
-    alert(backupInfo);
-}
 
 // Auto-create backup before destructive actions
 function createBackupBeforeAction(week) {
@@ -490,6 +1185,8 @@ console.log('Firebase initialized successfully');
 // Load data from Firebase
 loadDataFromFirebase();
 loadBetAmountsFromFirebase();
+loadAuditLogFromFirebase();
+loadDraftsFromFirebase();
 } else {
 console.log('Firebase not available - using local storage only');
 }
@@ -510,6 +1207,7 @@ renderAllPicks();
 updateCalculations();
 updateLockButtonState();
 updatePicksLockState();
+
 }
 
 function loadDataFromFirebase() {
@@ -634,6 +1332,9 @@ savedPicks = [];
 weeklyPicks[currentWeek] = savedPicks;
 }
 
+// Preserve unsaved form data before re-rendering
+preserveUnsavedFormData();
+
 var numberOfLegs = parseInt(document.getElementById('numberOfLegs').value);
 
 var gameGroups = {};
@@ -667,6 +1368,9 @@ var slot = createPickSlot(i, pick);
 container.appendChild(slot);
 }
 }
+
+// Restore unsaved form data after rendering
+restoreUnsavedFormData();
 }
 
 function createSGPGroup(game, picks) {
@@ -1192,8 +1896,15 @@ weeklyPicks[currentWeek].push(null);
 }
 weeklyPicks[currentWeek][index] = pickData;
 
+// Log audit entry
+var isNewPick = !weeklyPicks[currentWeek][index];
+var action = isNewPick ? 'Added pick' : 'Updated pick';
+var details = playerName + ': ' + pick + ' (' + odds + ') - ' + game;
+logAuditEntry(currentWeek, action, details);
+
 // Save to Firebase
 saveToFirebase();
+
 
 // Show prominent save confirmation
 showNotification('Pick saved and synced to all users!', 'success');
@@ -1274,11 +1985,17 @@ if (!weeklyPicks[currentWeek] || !weeklyPicks[currentWeek][index]) return;
 
 var pick = weeklyPicks[currentWeek][index];
 
+var oldResult = pick.result;
 if (pick.result === result) {
 pick.result = null;
 } else {
 pick.result = result;
 }
+
+// Log audit entry
+var action = oldResult === result ? 'Reset result' : 'Set result to ' + result;
+var details = pick.playerName + ': ' + pick.pick + ' (' + pick.odds + ')';
+logAuditEntry(currentWeek, action, details);
 
 if (result === 'draw' && pick.isSGP && pick.game) {
 handleSGPVoid(pick.game);
@@ -1917,7 +2634,7 @@ var textStyle = isVoided ? 'text-decoration: line-through; opacity: 0.5;' : '';
 var oddsToShow = pick.odds;
 
 html += '<div style="' + textStyle + 'padding: 4px 0; font-size: 14px;">';
-html += '• ' + pick.playerName + ': ' + pick.pick;
+html += '• <strong>' + pick.playerName + ':</strong> ' + pick.pick;
 if (hasOnlyOneLeg && !isVoided) {
 html += ' @ <strong>' + oddsToShow + '</strong>';
 }
@@ -2109,6 +2826,11 @@ function clearIndividualPick(index) {
     createBackupBeforeAction(currentWeek);
     
     if (weeklyPicks[currentWeek] && weeklyPicks[currentWeek][index]) {
+        // Log audit entry before clearing
+        var pick = weeklyPicks[currentWeek][index];
+        var details = pick.playerName + ': ' + pick.pick + ' (' + pick.odds + ') - ' + pick.game;
+        logAuditEntry(currentWeek, 'Deleted pick', details);
+        
         // Clear the pick completely
         weeklyPicks[currentWeek][index] = null;
 
@@ -2135,6 +2857,10 @@ function clearAllPicks() {
     // Create backup before destructive action
     createBackupBeforeAction(currentWeek);
     
+    // Log audit entry
+    var pickCount = weeklyPicks[currentWeek] ? weeklyPicks[currentWeek].filter(p => p !== null).length : 0;
+    logAuditEntry(currentWeek, 'Cleared all picks', 'Deleted ' + pickCount + ' picks');
+    
     weeklyPicks[currentWeek] = [];
     saveToFirebase();
     renderAllPicks();
@@ -2143,42 +2869,6 @@ function clearAllPicks() {
     showNotification('All picks cleared for Week ' + currentWeek, 'info');
 }
 
-function saveAllPicks() {
-var numberOfLegs = parseInt(document.getElementById('numberOfLegs').value);
-var newPicks = [];
-
-for (var i = 0; i < numberOfLegs; i++) {
-var playerDisplay = document.getElementById('playerNameDisplay' + i);
-var pickEl = document.getElementById('pick' + i);
-var oddsEl = document.getElementById('odds' + i);
-var gameEl = document.getElementById('game' + i);
-var timeSlotEl = document.getElementById('timeSlot' + i);
-
-if (playerDisplay && pickEl && oddsEl) {
-var playerName = playerDisplay.textContent.trim();
-var pick = pickEl.value.trim();
-var odds = oddsEl.value.trim();
-
-if (playerName && pick && odds) {
-newPicks.push({
-playerName: playerName,
-pick: pick,
-odds: odds,
-game: gameEl ? gameEl.value : '',
-timeSlot: timeSlotEl ? timeSlotEl.value : '',
-result: null
-});
-}
-}
-}
-
-weeklyPicks[currentWeek] = newPicks;
-saveToFirebase();
-alert('All picks saved successfully!');
-checkForSGPs();
-renderAllPicks();
-updateCalculations();
-}
 
 function editSGPPick(index) {
 // Use the new editing system - mark as editing and re-render
