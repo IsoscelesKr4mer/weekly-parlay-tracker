@@ -1699,7 +1699,7 @@ html = '<div style="background: linear-gradient(135deg, #4CAF50, #45a049); color
 '</div>' +
 '<div style="display: flex; gap: 8px;">' +
 '<button class="result-btn" id="saveBtn' + index + '" style="background: #757575; color: white; cursor: not-allowed;" onclick="savePick(' + index + ')" disabled>💾 Save</button>' +
-'<button class="result-btn" style="background: #6b7280; color: white;" onclick="cancelEditPick(' + index + ')">❌ Cancel</button>' +
+(isEditing ? '<button class="result-btn" style="background: #6b7280; color: white;" onclick="cancelEditPick(' + index + ')">❌ Cancel</button>' : '') +
 '<button class="result-btn" style="background: #f44336; color: white;" onclick="clearIndividualPick(' + index + ')">🗑️ Clear Pick</button>' +
 '</div>' +
 '</div>';
