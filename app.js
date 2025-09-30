@@ -1237,6 +1237,17 @@ updateLeaderboard();
 console.log('Loaded leaderboard from Firebase');
 }
 });
+
+// Load locked weeks
+database.ref('lockedWeeks').on('value', function(snapshot) {
+var data = snapshot.val();
+if (data) {
+lockedWeeks = data;
+updateLockButtonState();
+updatePicksLockState();
+console.log('Loaded locked weeks from Firebase');
+}
+});
 }
 
 function saveToFirebase() {
@@ -1251,6 +1262,9 @@ isSavingToFirebase = true;
 
 // Save weekly picks
 database.ref('weeklyPicks').set(weeklyPicks);
+
+// Save locked weeks
+database.ref('lockedWeeks').set(lockedWeeks);
 
 // Update leaderboard data
 updateLeaderboardData();
@@ -2195,6 +2209,9 @@ lockBtn.style.background = '#10b981';
 var picksContent = document.getElementById('picks');
 picksContent.classList.add('picks-locked');
 
+// Save to Firebase
+saveToFirebase();
+
 showNotification('Week ' + currentWeek + ' picks locked', 'info');
 }
 
@@ -2207,6 +2224,9 @@ lockBtn.style.background = '#ef4444';
 // Remove lock styling from picks tab content
 var picksContent = document.getElementById('picks');
 picksContent.classList.remove('picks-locked');
+
+// Save to Firebase
+saveToFirebase();
 
 showNotification('Week ' + currentWeek + ' picks unlocked', 'success');
 }
