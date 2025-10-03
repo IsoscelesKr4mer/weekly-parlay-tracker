@@ -1448,7 +1448,7 @@ var numberOfLegs = parseInt(document.getElementById('numberOfLegs').value);
 
 var gameGroups = {};
 savedPicks.forEach(function(pick, index) {
-if (pick && pick.game) {
+if (pick && pick.game && pick.game !== 'No game' && pick.pick && pick.pick !== 'No pick' && pick.pick !== '' && pick.odds && pick.odds !== 'No odds' && pick.odds !== '') {
 if (!gameGroups[pick.game]) {
 gameGroups[pick.game] = [];
 }
