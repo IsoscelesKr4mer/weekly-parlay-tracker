@@ -1327,7 +1327,22 @@ if (Array.isArray(data)) {
         if (data.hasOwnProperty(week)) {
             var weekNum = parseInt(week);
             if (!isNaN(weekNum)) {
-                weeklyPicks[weekNum] = data[week];
+                var weekData = data[week];
+                // If weekData is an object with numeric keys, convert to array
+                if (typeof weekData === 'object' && weekData !== null && !Array.isArray(weekData)) {
+                    var weekArray = [];
+                    for (var key in weekData) {
+                        if (weekData.hasOwnProperty(key)) {
+                            var index = parseInt(key);
+                            if (!isNaN(index)) {
+                                weekArray[index] = weekData[key];
+                            }
+                        }
+                    }
+                    weeklyPicks[weekNum] = weekArray;
+                } else {
+                    weeklyPicks[weekNum] = weekData;
+                }
             }
         }
     }
