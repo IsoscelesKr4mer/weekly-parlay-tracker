@@ -1946,6 +1946,12 @@ saveToFirebase();
 // Show prominent save confirmation
 showNotification('Pick saved and synced to all users!', 'success');
 
+// Get the pick slot element before re-rendering
+var pickSlot = document.getElementById('saveBtn' + index);
+if (pickSlot) {
+    pickSlot = pickSlot.closest('.pick-slot');
+}
+
 // Update UI to reflect saved state
 renderAllPicks();
 updateCalculations();
@@ -1955,15 +1961,14 @@ updateParlayStatus();
 disableSaveButton(index);
 
 // Add a temporary blue flash to the pick slot
-var pickSlot = document.getElementById('saveBtn' + index).closest('.pick-slot');
 if (pickSlot) {
-pickSlot.style.transition = 'all 0.3s ease';
-pickSlot.style.transform = 'scale(1.02)';
-pickSlot.style.boxShadow = '0 8px 20px rgba(33, 150, 243, 0.3)';
-setTimeout(function() {
-pickSlot.style.transform = 'scale(1)';
-pickSlot.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';
-}, 300);
+    pickSlot.style.transition = 'all 0.3s ease';
+    pickSlot.style.transform = 'scale(1.02)';
+    pickSlot.style.boxShadow = '0 8px 20px rgba(33, 150, 243, 0.3)';
+    setTimeout(function() {
+        pickSlot.style.transform = 'scale(1)';
+        pickSlot.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';
+    }, 300);
 }
 
 checkForSGPs();
