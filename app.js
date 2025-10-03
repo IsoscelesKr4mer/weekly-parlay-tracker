@@ -3184,10 +3184,34 @@ function updatePicksFromSheets(sheetsPicks) {
         }
     });
     
-    // Don't clear picks - only sync actual picks from spreadsheet
+    // Clear picks for players who are not in the spreadsheet
+    var clearedCount = 0;
+    for (var i = 0; i < weeklyPicks[currentWeek].length; i++) {
+        var existingPick = weeklyPicks[currentWeek][i];
+        if (existingPick && existingPick.playerName) {
+            var existingName = existingPick.playerName.trim().toLowerCase();
+            var hasPickInSheets = playersWithSheetPicks[existingName];
+            
+            if (!hasPickInSheets && existingPick.pick && existingPick.pick !== '') {
+                // Player exists on website but not in spreadsheet - clear their pick
+                console.log('Clearing pick for', existingPick.playerName, '- not found in spreadsheet');
+                weeklyPicks[currentWeek][i] = {
+                    playerName: existingPick.playerName,
+                    pick: '',
+                    odds: '',
+                    game: '',
+                    timeSlot: '',
+                    timestamp: Date.now(),
+                    isEditing: false
+                };
+                clearedCount++;
+                logAuditEntry(currentWeek, 'Cleared pick (removed from spreadsheet)', existingPick.playerName);
+            }
+        }
+    }
     
-    if (updatedCount > 0 || addedCount > 0) {
-        console.log('Sync completed - Updated:', updatedCount, 'Added:', addedCount);
+    if (updatedCount > 0 || addedCount > 0 || clearedCount > 0) {
+        console.log('Sync completed - Updated:', updatedCount, 'Added:', addedCount, 'Cleared:', clearedCount);
         console.log('Final weeklyPicks array length:', weeklyPicks[currentWeek].length);
         
         saveToFirebase();
@@ -3198,6 +3222,7 @@ function updatePicksFromSheets(sheetsPicks) {
         var message = '';
         if (addedCount > 0) message += 'Added ' + addedCount + ' picks. ';
         if (updatedCount > 0) message += 'Updated ' + updatedCount + ' picks. ';
+        if (clearedCount > 0) message += 'Cleared ' + clearedCount + ' picks.';
         showNotification(message, 'success');
     }
 }
