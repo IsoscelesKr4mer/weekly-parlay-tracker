@@ -3089,6 +3089,22 @@ function updatePicksFromSheets(sheetsPicks) {
         weeklyPicks[currentWeek].push(null);
     }
     
+    // Pre-populate empty slots with player names if they don't exist
+    for (var i = 0; i < Math.min(playerNames.length, numberOfLegs); i++) {
+        if (!weeklyPicks[currentWeek][i]) {
+            weeklyPicks[currentWeek][i] = {
+                playerName: playerNames[i],
+                pick: '',
+                odds: '',
+                game: '',
+                timeSlot: '',
+                timestamp: Date.now(),
+                isEditing: false
+            };
+            console.log('Pre-populated slot', i, 'with player:', playerNames[i]);
+        }
+    }
+    
     console.log('updatePicksFromSheets called with', sheetsPicks.length, 'picks');
     console.log('Current week:', currentWeek);
     console.log('Number of legs:', numberOfLegs);
