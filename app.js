@@ -3086,10 +3086,11 @@ function updatePicksFromSheets(sheetsPicks) {
     sheetsPicks.forEach(function(sheetsPick, index) {
         console.log('Processing sheet pick for player:', sheetsPick.playerName, 'at array index:', index);
         
-        // Find existing pick by player name or create new one
+        // Find existing pick by player name - look more carefully for any existing slot with this player
         var existingPickIndex = -1;
         for (var i = 0; i < weeklyPicks[currentWeek].length; i++) {
             var existingPick = weeklyPicks[currentWeek][i];
+            console.log('Checking slot', i, ':', existingPick ? existingPick.playerName : 'null');
             if (existingPick && existingPick.playerName === sheetsPick.playerName) {
                 existingPickIndex = i;
                 console.log('Found existing pick at slot', i, 'for player', sheetsPick.playerName);
@@ -3097,85 +3098,72 @@ function updatePicksFromSheets(sheetsPicks) {
             }
         }
         
-        if (existingPickIndex >= 0) {
-            // Update existing pick
-            var existingPick = weeklyPicks[currentWeek][existingPickIndex];
-            var hasChanges = false;
-            
-            if (existingPick.pick !== sheetsPick.pick) {
-                existingPick.pick = sheetsPick.pick;
-                hasChanges = true;
-            }
-            if (existingPick.odds !== sheetsPick.odds) {
-                existingPick.odds = sheetsPick.odds;
-                hasChanges = true;
-            }
-            if (existingPick.game !== sheetsPick.game) {
-                existingPick.game = sheetsPick.game;
-                hasChanges = true;
-            }
-            if (existingPick.timeSlot !== sheetsPick.timeSlot) {
-                existingPick.timeSlot = sheetsPick.timeSlot;
-                hasChanges = true;
-            }
-            
-            if (hasChanges) {
-                existingPick.timestamp = Date.now();
-                updatedCount++;
-                logAuditEntry(currentWeek, 'Updated pick from Google Sheets', sheetsPick.playerName + ': ' + sheetsPick.pick);
-            }
-        } else {
-            // Add new pick - find the first available slot
-            var nextSlotIndex = -1;
+        // If no existing pick found, look for empty slots (or slots with partial data)
+        if (existingPickIndex === -1) {
             for (var i = 0; i < weeklyPicks[currentWeek].length; i++) {
-                if (!weeklyPicks[currentWeek][i]) {
-                    nextSlotIndex = i;
+                var slot = weeklyPicks[currentWeek][i];
+                if (!slot || !slot.pick || !slot.playerName) {
+                    // Found an empty or incomplete slot
+                    existingPickIndex = i;
+                    console.log('Found empty/incomplete slot at', i, 'for player', sheetsPick.playerName);
                     break;
                 }
             }
+        }
+        
+        if (existingPickIndex >= 0) {
+            // Replace/update the existing slot completely with the synced data
+            var oldPick = weeklyPicks[currentWeek][existingPickIndex];
+            var hasExistingData = oldPick && (oldPick.pick || oldPick.playerName);
             
-            if (nextSlotIndex === -1) {
-                // No empty slots, add to the end
-                nextSlotIndex = weeklyPicks[currentWeek].length;
+            // Use the new data from sheets, but preserve timestamp if updating
+            var newPick = {
+                playerName: sheetsPick.playerName,
+                pick: sheetsPick.pick,
+                odds: sheetsPick.odds,
+                game: sheetsPick.game,
+                timeSlot: sheetsPick.timeSlot,
+                timestamp: (oldPick && oldPick.timestamp) ? oldPick.timestamp : Date.now(),
+                isEditing: false  // Start as read-only
+            };
+            
+            weeklyPicks[currentWeek][existingPickIndex] = newPick;
+            
+            if (hasExistingData) {
+                updatedCount++;
+                logAuditEntry(currentWeek, 'Updated pick from Google Sheets', sheetsPick.playerName + ': ' + sheetsPick.pick);
+                console.log('Updated existing pick for', sheetsPick.playerName, 'at slot', existingPickIndex);
+            } else {
+                addedCount++;
+                logAuditEntry(currentWeek, 'Added pick from Google Sheets', sheetsPick.playerName + ': ' + sheetsPick.pick);
+                console.log('Filled empty slot for', sheetsPick.playerName, 'at slot', existingPickIndex);
             }
+        } else {
+            // No existing slot found, add to the end (should rarely happen now)
+            var newPick = {
+                playerName: sheetsPick.playerName,
+                pick: sheetsPick.pick,
+                odds: sheetsPick.odds,
+                game: sheetsPick.game,
+                timeSlot: sheetsPick.timeSlot,
+                timestamp: Date.now(),
+                isEditing: false
+            };
             
-            // Ensure array is long enough
-            while (weeklyPicks[currentWeek].length <= nextSlotIndex) {
-                weeklyPicks[currentWeek].push(null);
-            }
-            
-            weeklyPicks[currentWeek][nextSlotIndex] = sheetsPick;
+            weeklyPicks[currentWeek].push(newPick);
             addedCount++;
             logAuditEntry(currentWeek, 'Added pick from Google Sheets', sheetsPick.playerName + ': ' + sheetsPick.pick);
-            console.log('Added new pick for', sheetsPick.playerName, 'at slot', nextSlotIndex);
+            console.log('Added new pick for', sheetsPick.playerName, 'at end of array');
         }
     });
     
     if (updatedCount > 0 || addedCount > 0) {
-        // Temporarily set picks to editing mode for time slot auto-selection
-        var picks = weeklyPicks[currentWeek] || [];
-        picks.forEach(function(pick, index) {
-            if (pick && pick.game) {
-                pick.isEditing = true;
-            }
-        });
-        
         saveToFirebase();
         renderAllPicks();
         
         // Update time slot dropdowns for synced picks after DOM is ready
         setTimeout(function() {
             updateTimeSlotDropdownsFromSync();
-            
-            // Set picks back to read-only mode after time slot selection
-            picks.forEach(function(pick, index) {
-                if (pick) {
-                    pick.isEditing = false;
-                }
-            });
-            
-            // Re-render to show read-only view
-            renderAllPicks();
         }, 100);
         
         updateCalculations();
