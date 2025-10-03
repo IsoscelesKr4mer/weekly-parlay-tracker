@@ -2181,13 +2181,21 @@ return game ? game.time : '';
 }
 
 function updateTimeSlotDropdownsFromSync() {
-// Update time slot dropdowns for all picks that have games but no time slot selected
+// Use the existing manual game selection logic to auto-select time slots
 var picks = weeklyPicks[currentWeek] || [];
+console.log('updateTimeSlotDropdownsFromSync: Processing', picks.length, 'picks');
+
 picks.forEach(function(pick, index) {
-    if (pick && pick.game && pick.timeSlot) {
+    if (pick && pick.game) {
+        console.log('Pick', index, '- Game:', pick.game, 'Calling updateTimeSlotFromGame');
+        // Use the existing manual logic to auto-select time slot
+        updateTimeSlotFromGame(index);
+        
+        // Also update the pick data with the selected time slot
         var timeSlotSelect = document.getElementById('timeSlot' + index);
-        if (timeSlotSelect && timeSlotSelect.value !== pick.timeSlot) {
-            timeSlotSelect.value = pick.timeSlot;
+        if (timeSlotSelect && timeSlotSelect.value) {
+            pick.timeSlot = timeSlotSelect.value;
+            console.log('Updated pick timeSlot to:', pick.timeSlot);
         }
     }
 });
@@ -2856,21 +2864,18 @@ function parseCSVData(csvText) {
             gameName = findGameByAbbreviation(gameAbbreviation);
         }
         
-        // Auto-determine time slot from game if not provided
-        var timeSlot = columns[4] ? columns[4].trim() : '';
-        if (!timeSlot && gameName) {
-            timeSlot = getTimeSlotFromGame(gameName);
-        }
-        
+        // Don't set timeSlot here - let the manual logic handle it after DOM is rendered
         var pick = {
             playerName: playerName,
             pick: columns[1] ? columns[1].trim() : '',
             odds: columns[2] ? columns[2].trim() : '',
             game: gameName,
-            timeSlot: timeSlot,
+            timeSlot: '', // Will be auto-selected by updateTimeSlotFromGame
             timestamp: Date.now(),
-            isEditing: false
+            isEditing: true  // Set to true so time slot dropdown is rendered
         };
+        
+        console.log('Created pick object:', pick);
         
         // Only add if we have essential data
         if (pick.playerName && pick.pick && pick.odds) {
@@ -3080,8 +3085,10 @@ function updatePicksFromSheets(sheetsPicks) {
         saveToFirebase();
         renderAllPicks();
         
-        // Update time slot dropdowns for synced picks
-        updateTimeSlotDropdownsFromSync();
+        // Update time slot dropdowns for synced picks after DOM is ready
+        setTimeout(function() {
+            updateTimeSlotDropdownsFromSync();
+        }, 100);
         
         updateCalculations();
         updateParlayStatus();
