@@ -2660,6 +2660,7 @@ function enableAutoSync() {
     sheetsConfig.autoSyncEnabled = true;
     sheetsConfig.syncInterval = setInterval(syncFromSheets, 5 * 60 * 1000); // 5 minutes
     
+    console.log('Auto-sync enabled, interval ID:', sheetsConfig.syncInterval);
     updateSyncStatus();
     showNotification('Auto-sync enabled (every 5 minutes)', 'info');
 }
@@ -2678,6 +2679,12 @@ function disableAutoSync() {
 function updateSyncStatus() {
     var syncStatus = document.getElementById('syncStatus');
     var syncStatusText = document.getElementById('syncStatusText');
+    
+    // Check if DOM elements exist
+    if (!syncStatus || !syncStatusText) {
+        console.log('Sync status elements not found, skipping update');
+        return;
+    }
     
     if (sheetsConfig.spreadsheetId) {
         syncStatus.style.display = 'block';
@@ -2727,11 +2734,20 @@ function loadSyncSettings() {
             
             // Restore auto-sync if it was enabled
             if (config.autoSyncEnabled) {
-                enableAutoSync();
+                console.log('Restoring auto-sync from localStorage');
+                // Add small delay to ensure DOM is ready
+                setTimeout(function() {
+                    enableAutoSync();
+                }, 100);
             }
             
             console.log('Sync settings loaded from localStorage:', config);
             updateSyncStatus();
+            
+            // Retry updateSyncStatus after DOM is fully loaded
+            setTimeout(function() {
+                updateSyncStatus();
+            }, 200);
             return;
         } catch (e) {
             console.error('Error loading sync settings from localStorage:', e);
@@ -2749,7 +2765,11 @@ function loadSyncSettings() {
                 
                 // Restore auto-sync if it was enabled
                 if (config.autoSyncEnabled) {
-                    enableAutoSync();
+                    console.log('Restoring auto-sync from Firebase');
+                    // Add small delay to ensure DOM is ready
+                    setTimeout(function() {
+                        enableAutoSync();
+                    }, 100);
                 }
                 
                 // Save to localStorage for future loads
@@ -2757,6 +2777,11 @@ function loadSyncSettings() {
                 
                 console.log('Sync settings loaded from Firebase:', config);
                 updateSyncStatus();
+                
+                // Retry updateSyncStatus after DOM is fully loaded
+                setTimeout(function() {
+                    updateSyncStatus();
+                }, 200);
             }
         }).catch(function(error) {
             console.error('Error loading sync settings from Firebase:', error);
