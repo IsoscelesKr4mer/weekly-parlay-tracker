@@ -3085,6 +3085,8 @@ function updatePicksFromSheets(sheetsPicks) {
     
     console.log('updatePicksFromSheets called with', sheetsPicks.length, 'picks');
     console.log('Current weeklyPicks array length:', weeklyPicks[currentWeek] ? weeklyPicks[currentWeek].length : 0);
+    console.log('Current weeklyPicks array:', weeklyPicks[currentWeek]);
+    console.log('Sheets picks:', sheetsPicks);
     
     var updatedCount = 0;
     var addedCount = 0;
@@ -3112,6 +3114,7 @@ function updatePicksFromSheets(sheetsPicks) {
         
         // Only look for truly empty slots (null/undefined), NOT slots with player names
         if (existingPickIndex === -1) {
+            console.log('No existing pick found for', sheetsPick.playerName, '- looking for empty slots');
             for (var i = 0; i < weeklyPicks[currentWeek].length; i++) {
                 var slot = weeklyPicks[currentWeek][i];
                 if (!slot) {
@@ -3119,6 +3122,8 @@ function updatePicksFromSheets(sheetsPicks) {
                     existingPickIndex = i;
                     console.log('Found truly empty slot at', i, 'for player', sheetsPick.playerName);
                     break;
+                } else {
+                    console.log('Slot', i, 'is not empty, contains:', slot.playerName);
                 }
             }
         }
