@@ -2214,20 +2214,26 @@ lockPicks();
 }
 
 function lockPicks() {
-lockedWeeks[currentWeek] = true;
-console.log('Locking week', currentWeek, 'lockedWeeks:', lockedWeeks);
-var lockBtn = document.getElementById('lockBtn');
-lockBtn.innerHTML = '🔓 Unlock Week ' + currentWeek;
-lockBtn.style.background = '#10b981';
+    // Prompt for password when locking
+    var password = prompt('Enter password to lock Week ' + currentWeek + ' picks:');
+    if (password === lockPassword) {
+        lockedWeeks[currentWeek] = true;
+        console.log('Locking week', currentWeek, 'lockedWeeks:', lockedWeeks);
+        var lockBtn = document.getElementById('lockBtn');
+        lockBtn.innerHTML = '🔓 Unlock Week ' + currentWeek;
+        lockBtn.style.background = '#10b981';
 
-// Apply lock styling to picks tab content
-var picksContent = document.getElementById('picks');
-picksContent.classList.add('picks-locked');
+        // Apply lock styling to picks tab content
+        var picksContent = document.getElementById('picks');
+        picksContent.classList.add('picks-locked');
 
-// Save to Firebase
-saveToFirebase();
+        // Save to Firebase
+        saveToFirebase();
 
-showNotification('Week ' + currentWeek + ' picks locked', 'info');
+        showNotification('Week ' + currentWeek + ' picks locked', 'info');
+    } else if (password !== null) {
+        showNotification('Incorrect password', 'error');
+    }
 }
 
 function unlockPicks() {
