@@ -2869,6 +2869,8 @@ function parseCSVData(csvText) {
         var columns = parseCSVLine(line);
         if (columns.length < 3) continue; // Need at least player name, pick, and odds
         
+        console.log('CSV columns for line', i, ':', columns);
+        
         var playerName = columns[0] ? columns[0].trim() : '';
         
         // Only process picks for valid players
@@ -2882,7 +2884,23 @@ function parseCSVData(csvText) {
         var gameAbbreviation = columns[6] ? columns[6].trim().toUpperCase() : '';
         var gameName = '';
         
+        // Check all columns to find where game data is stored
+        console.log('All columns:', columns);
+        for (var colIndex = 0; colIndex < Math.min(columns.length, 10); colIndex++) {
+            if (columns[colIndex] && (columns[colIndex].includes(' VS ') || columns[colIndex].includes(' vs ') || columns[colIndex].includes(' @ '))) {
+                console.log('Found game data in column', colIndex, ':', columns[colIndex]);
+                // Use this column instead of column 6
+                if (!gameAbbreviation) {
+                    gameAbbreviation = columns[colIndex].trim().toUpperCase();
+                    console.log('Using column', colIndex, 'for game abbreviation:', gameAbbreviation);
+                }
+                break;
+            }
+        }
+        
         console.log('Processing game abbreviation:', gameAbbreviation);
+        console.log('Column 6 (G) content:', columns[6]);
+        console.log('Total columns:', columns.length);
         
         if (gameAbbreviation && teamAbbreviations[gameAbbreviation]) {
             gameName = teamAbbreviations[gameAbbreviation];
