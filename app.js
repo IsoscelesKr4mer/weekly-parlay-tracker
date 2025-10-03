@@ -3084,12 +3084,15 @@ function updatePicksFromSheets(sheetsPicks) {
     var addedCount = 0;
     
     sheetsPicks.forEach(function(sheetsPick, index) {
+        console.log('Processing sheet pick for player:', sheetsPick.playerName, 'at array index:', index);
+        
         // Find existing pick by player name or create new one
         var existingPickIndex = -1;
         for (var i = 0; i < weeklyPicks[currentWeek].length; i++) {
             var existingPick = weeklyPicks[currentWeek][i];
             if (existingPick && existingPick.playerName === sheetsPick.playerName) {
                 existingPickIndex = i;
+                console.log('Found existing pick at slot', i, 'for player', sheetsPick.playerName);
                 break;
             }
         }
@@ -3122,14 +3125,29 @@ function updatePicksFromSheets(sheetsPicks) {
                 logAuditEntry(currentWeek, 'Updated pick from Google Sheets', sheetsPick.playerName + ': ' + sheetsPick.pick);
             }
         } else {
-            // Add new pick
-            while (weeklyPicks[currentWeek].length <= index) {
+            // Add new pick - find the first available slot
+            var nextSlotIndex = -1;
+            for (var i = 0; i < weeklyPicks[currentWeek].length; i++) {
+                if (!weeklyPicks[currentWeek][i]) {
+                    nextSlotIndex = i;
+                    break;
+                }
+            }
+            
+            if (nextSlotIndex === -1) {
+                // No empty slots, add to the end
+                nextSlotIndex = weeklyPicks[currentWeek].length;
+            }
+            
+            // Ensure array is long enough
+            while (weeklyPicks[currentWeek].length <= nextSlotIndex) {
                 weeklyPicks[currentWeek].push(null);
             }
             
-            weeklyPicks[currentWeek][index] = sheetsPick;
+            weeklyPicks[currentWeek][nextSlotIndex] = sheetsPick;
             addedCount++;
             logAuditEntry(currentWeek, 'Added pick from Google Sheets', sheetsPick.playerName + ': ' + sheetsPick.pick);
+            console.log('Added new pick for', sheetsPick.playerName, 'at slot', nextSlotIndex);
         }
     });
     
