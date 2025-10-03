@@ -1344,8 +1344,14 @@ if (Array.isArray(data)) {
                 }
             }
         }
+        
+        // Pad array to numberOfLegs if needed
+        while (weekArray.length < numberOfLegs) {
+            weekArray.push(null);
+        }
+        
         weeklyPicks[currentWeek] = weekArray;
-        console.log('Converted week', currentWeek, 'to array:', weekArray);
+        console.log('Converted week', currentWeek, 'to array with', weekArray.length, 'slots:', weekArray);
     }
 } else {
     console.log('Data is object, converting to array structure');
