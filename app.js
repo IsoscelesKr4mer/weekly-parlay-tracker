@@ -3251,12 +3251,12 @@ function updatePicksFromSheets(sheetsPicks) {
                     
                     weeklyPicks[currentWeek][i] = {
                         playerName: existingPick.playerName,
-                        pick: '',
-                        odds: '',
-                        game: '',
-                        timeSlot: '',
+                        pick: 'No pick',
+                        odds: 'No odds',
+                        game: 'No game',
+                        timeSlot: 'No time slot',
                         timestamp: Date.now(),
-                        isEditing: true  // Set to editable state
+                        isEditing: false  // Set to submitted state to avoid Cancel button
                     };
                     clearedCount++;
                     logAuditEntry(currentWeek, 'Cleared pick (removed from spreadsheet)', existingPick.playerName);
