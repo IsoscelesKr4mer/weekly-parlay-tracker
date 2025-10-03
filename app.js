@@ -2716,12 +2716,38 @@ function isValidPlayerName(playerName, validPlayers) {
 }
 
 function findGameByAbbreviation(abbreviation) {
-    // First try to find the team name from abbreviation
+    // Handle "TEAM1 VS TEAM2" format
+    if (abbreviation.includes(' VS ') || abbreviation.includes(' vs ') || abbreviation.includes(' @ ')) {
+        var parts = abbreviation.split(/ VS | vs | @ /i);
+        if (parts.length === 2) {
+            var team1 = parts[0].trim().toUpperCase();
+            var team2 = parts[1].trim().toUpperCase();
+            
+            // Get available games for current week
+            var gameSelect = document.getElementById('game' + 0);
+            if (!gameSelect) return abbreviation;
+            
+            var options = gameSelect.options;
+            for (var i = 0; i < options.length; i++) {
+                var gameName = options[i].value;
+                if (gameName) {
+                    // Check if both team abbreviations are in the game name
+                    var gameUpper = gameName.toUpperCase();
+                    if ((teamAbbreviations[team1] && gameUpper.includes(teamAbbreviations[team1].toUpperCase())) ||
+                        (teamAbbreviations[team2] && gameUpper.includes(teamAbbreviations[team2].toUpperCase()))) {
+                        return gameName;
+                    }
+                }
+            }
+        }
+    }
+    
+    // Handle single team abbreviation
     if (teamAbbreviations[abbreviation]) {
         var teamName = teamAbbreviations[abbreviation];
         
         // Get available games for current week
-        var gameSelect = document.getElementById('game' + 0); // Use first game select as reference
+        var gameSelect = document.getElementById('game' + 0);
         if (!gameSelect) return teamName;
         
         var options = gameSelect.options;
