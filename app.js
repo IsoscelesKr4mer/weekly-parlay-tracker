@@ -2872,7 +2872,7 @@ function parseCSVData(csvText) {
             game: gameName,
             timeSlot: '', // Will be auto-selected by updateTimeSlotFromGame
             timestamp: Date.now(),
-            isEditing: true  // Set to true so time slot dropdown is rendered
+            isEditing: false  // Start as read-only, will be set to true temporarily during sync
         };
         
         console.log('Created pick object:', pick);
@@ -3082,12 +3082,30 @@ function updatePicksFromSheets(sheetsPicks) {
     });
     
     if (updatedCount > 0 || addedCount > 0) {
+        // Temporarily set picks to editing mode for time slot auto-selection
+        var picks = weeklyPicks[currentWeek] || [];
+        picks.forEach(function(pick, index) {
+            if (pick && pick.game) {
+                pick.isEditing = true;
+            }
+        });
+        
         saveToFirebase();
         renderAllPicks();
         
         // Update time slot dropdowns for synced picks after DOM is ready
         setTimeout(function() {
             updateTimeSlotDropdownsFromSync();
+            
+            // Set picks back to read-only mode after time slot selection
+            picks.forEach(function(pick, index) {
+                if (pick) {
+                    pick.isEditing = false;
+                }
+            });
+            
+            // Re-render to show read-only view
+            renderAllPicks();
         }, 100);
         
         updateCalculations();
