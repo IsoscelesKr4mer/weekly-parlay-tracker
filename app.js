@@ -1304,9 +1304,16 @@ if (!database) return;
 // Load weekly picks
 database.ref('weeklyPicks').on('value', function(snapshot) {
 // Skip if we're currently saving to prevent race condition
-if (isSavingToFirebase) return;
+if (isSavingToFirebase) {
+    console.log('Skipping Firebase load - currently saving');
+    return;
+}
 
 var data = snapshot.val();
+console.log('=== FIREBASE LOAD DEBUG ===');
+console.log('Loaded data from Firebase:', data);
+console.log('Current week data from Firebase:', data ? data[currentWeek] : 'No data');
+
 if (data) {
 weeklyPicks = data;
 renderAllPicks();
