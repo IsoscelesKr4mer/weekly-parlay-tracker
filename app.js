@@ -3130,7 +3130,9 @@ function updatePicksFromSheets(sheetsPicks) {
     }
     
     // Only pre-populate slots for players that have valid picks in the spreadsheet
+    console.log('=== NEW PRE-POPULATION LOGIC ===');
     var validPlayerNames = sheetsPicks.map(function(pick) { return pick.playerName.toLowerCase().trim(); });
+    console.log('Valid player names from sheets:', validPlayerNames);
     
     for (var i = 0; i < Math.min(playerNames.length, numberOfLegs); i++) {
         var currentPlayerName = playerNames[i].toLowerCase().trim();
