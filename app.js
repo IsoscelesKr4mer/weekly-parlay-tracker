@@ -3133,21 +3133,9 @@ function updatePicksFromSheets(sheetsPicks) {
             }
         }
         
-        // If no matching player found, find the first empty slot
+        // If no matching player found, skip this pick - don't create new slots
         if (existingPickIndex === -1) {
-            console.log('Player', sheetsPick.playerName, 'not found in existing slots - looking for empty slot');
-            for (var i = 0; i < weeklyPicks[currentWeek].length; i++) {
-                if (!weeklyPicks[currentWeek][i]) {
-                    existingPickIndex = i;
-                    console.log('Found empty slot at', i, 'for player', sheetsPick.playerName);
-                    break;
-                }
-            }
-        }
-        
-        // If still no slot found, skip this pick
-        if (existingPickIndex === -1) {
-            console.log('No available slot for', sheetsPick.playerName, '- skipping');
+            console.log('Player', sheetsPick.playerName, 'not found in existing slots - skipping (player not on website)');
             return;
         }
         
