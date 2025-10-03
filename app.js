@@ -522,7 +522,7 @@ function fixSGPData(week) {
     
     // Group picks by game
     weeklyPicks[week].forEach(function(pick, index) {
-        if (pick && pick.game && pick.game !== 'No game') {
+        if (pick && pick.game && pick.game !== 'No game' && pick.pick && pick.pick !== 'No pick' && pick.odds && pick.odds !== 'No odds') {
             if (!gameGroups[pick.game]) {
                 gameGroups[pick.game] = [];
             }
@@ -2053,7 +2053,7 @@ var picks = weeklyPicks[currentWeek] || [];
 var gameGroups = {};
 
 picks.forEach(function(pick) {
-if (pick && pick.game && pick.game !== 'No game') {
+if (pick && pick.game && pick.game !== 'No game' && pick.pick && pick.pick !== 'No pick' && pick.odds && pick.odds !== 'No odds') {
 if (!gameGroups[pick.game]) {
 gameGroups[pick.game] = [];
 }
