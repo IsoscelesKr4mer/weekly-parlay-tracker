@@ -769,6 +769,15 @@ var isSavingToFirebase = false; // Flag to prevent Firebase listener from overri
 var betAmounts = {}; // Store bet amounts per week
 var lockedWeeks = {}; // Track which weeks are locked
 var lockPassword = "BigDumperis110%sexy"; // Password to unlock picks
+
+// Google Sheets sync configuration
+var sheetsConfig = {
+    spreadsheetId: '', // Will be set by user
+    currentWeekGid: '', // GID for the "CURRENT WEEK" sheet
+    weekGids: {}, // Store GIDs for each week (Week 1, Week 2, etc.)
+    syncInterval: null, // Store interval ID for auto-sync
+    autoSyncEnabled: false
+};
 function getCurrentNFLWeek() {
     // 2025 NFL Season started September 4, 2025 (Week 1) at 8:20 PM EST
     // NFL weeks run Tuesday to Monday
@@ -2265,12 +2274,300 @@ lockBtn.style.background = '#ef4444';
 }
 
 function updatePicksLockState() {
-var picksContent = document.getElementById('picks');
-if (lockedWeeks[currentWeek]) {
-picksContent.classList.add('picks-locked');
-} else {
-picksContent.classList.remove('picks-locked');
+    var picksContent = document.getElementById('picks');
+    if (lockedWeeks[currentWeek]) {
+        picksContent.classList.add('picks-locked');
+    } else {
+        picksContent.classList.remove('picks-locked');
+    }
 }
+
+// Google Sheets Sync Functions
+function configureSheetsSync() {
+    var spreadsheetUrl = prompt('Enter your Google Spreadsheet URL:');
+    if (!spreadsheetUrl) return;
+    
+    // Extract spreadsheet ID from URL
+    var match = spreadsheetUrl.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+    if (!match) {
+        showNotification('Invalid Google Spreadsheet URL', 'error');
+        return;
+    }
+    
+    sheetsConfig.spreadsheetId = match[1];
+    
+    // Get current week GID
+    var currentWeekGid = prompt('Enter the GID for the "CURRENT WEEK" sheet (found in the sheet URL):');
+    if (!currentWeekGid) return;
+    
+    sheetsConfig.currentWeekGid = currentWeekGid;
+    
+    // Ask if user wants to configure week GIDs
+    if (confirm('Do you want to configure GIDs for individual weeks (Week 1, Week 2, etc.)?\n\nThis allows syncing from specific week sheets instead of just "CURRENT WEEK".')) {
+        configureWeekGids();
+    }
+    
+    // Ask about auto-sync
+    if (confirm('Enable automatic syncing every 5 minutes?')) {
+        enableAutoSync();
+    }
+    
+    updateSyncStatus();
+    showNotification('Google Sheets sync configured!', 'success');
+    console.log('Sheets config:', sheetsConfig);
+}
+
+function configureWeekGids() {
+    var weekGids = {};
+    
+    // Configure GIDs for weeks 1-18
+    for (var week = 1; week <= 18; week++) {
+        var gid = prompt('Enter GID for Week ' + week + ' sheet (or leave blank to skip):');
+        if (gid && gid.trim()) {
+            weekGids[week] = gid.trim();
+        }
+    }
+    
+    sheetsConfig.weekGids = weekGids;
+    console.log('Week GIDs configured:', weekGids);
+}
+
+function enableAutoSync() {
+    if (sheetsConfig.syncInterval) {
+        clearInterval(sheetsConfig.syncInterval);
+    }
+    
+    sheetsConfig.autoSyncEnabled = true;
+    sheetsConfig.syncInterval = setInterval(syncFromSheets, 5 * 60 * 1000); // 5 minutes
+    
+    updateSyncStatus();
+    showNotification('Auto-sync enabled (every 5 minutes)', 'info');
+}
+
+function disableAutoSync() {
+    if (sheetsConfig.syncInterval) {
+        clearInterval(sheetsConfig.syncInterval);
+        sheetsConfig.syncInterval = null;
+    }
+    
+    sheetsConfig.autoSyncEnabled = false;
+    updateSyncStatus();
+    showNotification('Auto-sync disabled', 'info');
+}
+
+function updateSyncStatus() {
+    var syncStatus = document.getElementById('syncStatus');
+    var syncStatusText = document.getElementById('syncStatusText');
+    
+    if (sheetsConfig.spreadsheetId) {
+        syncStatus.style.display = 'block';
+        if (sheetsConfig.autoSyncEnabled) {
+            syncStatusText.textContent = 'Auto-sync: ON (every 5 min)';
+            syncStatusText.style.color = '#10b981';
+        } else {
+            syncStatusText.textContent = 'Auto-sync: OFF';
+            syncStatusText.style.color = '#666';
+        }
+    } else {
+        syncStatus.style.display = 'none';
+    }
+}
+
+function syncFromSheets() {
+    if (!sheetsConfig.spreadsheetId) {
+        showNotification('Google Sheets not configured', 'error');
+        return;
+    }
+    
+    // Determine which GID to use
+    var targetGid = sheetsConfig.weekGids[currentWeek] || sheetsConfig.currentWeekGid;
+    
+    if (!targetGid) {
+        showNotification('No GID configured for current week', 'error');
+        return;
+    }
+    
+    // Build CSV export URL
+    var csvUrl = 'https://docs.google.com/spreadsheets/d/' + sheetsConfig.spreadsheetId + '/export?format=csv&gid=' + targetGid;
+    
+    console.log('Syncing from Sheets URL:', csvUrl);
+    
+    fetch(csvUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch spreadsheet data');
+            }
+            return response.text();
+        })
+        .then(csvText => {
+            var picks = parseCSVData(csvText);
+            if (picks.length > 0) {
+                updatePicksFromSheets(picks);
+                showNotification('Synced ' + picks.length + ' picks from Google Sheets', 'success');
+            } else {
+                showNotification('No valid picks found in spreadsheet', 'info');
+            }
+        })
+        .catch(error => {
+            console.error('Sheets sync error:', error);
+            showNotification('Failed to sync from Google Sheets: ' + error.message, 'error');
+        });
+}
+
+function parseCSVData(csvText) {
+    var lines = csvText.split('\n');
+    var picks = [];
+    
+    // Skip empty lines and find header row
+    var headerRow = -1;
+    for (var i = 0; i < lines.length; i++) {
+        if (lines[i].trim() && lines[i].toLowerCase().includes('player') || lines[i].toLowerCase().includes('name')) {
+            headerRow = i;
+            break;
+        }
+    }
+    
+    if (headerRow === -1) {
+        console.log('No header row found, using first non-empty row');
+        headerRow = 0;
+    }
+    
+    // Parse data rows
+    for (var i = headerRow + 1; i < lines.length; i++) {
+        var line = lines[i].trim();
+        if (!line) continue;
+        
+        var columns = parseCSVLine(line);
+        if (columns.length < 3) continue; // Need at least player name, pick, and odds
+        
+        var pick = {
+            playerName: columns[0] ? columns[0].trim() : '',
+            pick: columns[1] ? columns[1].trim() : '',
+            odds: columns[2] ? columns[2].trim() : '',
+            game: columns[3] ? columns[3].trim() : '',
+            timeSlot: columns[4] ? columns[4].trim() : '',
+            timestamp: Date.now(),
+            isEditing: false
+        };
+        
+        // Only add if we have essential data
+        if (pick.playerName && pick.pick && pick.odds) {
+            picks.push(pick);
+        }
+    }
+    
+    console.log('Parsed picks from CSV:', picks);
+    return picks;
+}
+
+function parseCSVLine(line) {
+    var columns = [];
+    var current = '';
+    var inQuotes = false;
+    
+    for (var i = 0; i < line.length; i++) {
+        var char = line[i];
+        
+        if (char === '"') {
+            inQuotes = !inQuotes;
+        } else if (char === ',' && !inQuotes) {
+            columns.push(current);
+            current = '';
+        } else {
+            current += char;
+        }
+    }
+    
+    columns.push(current);
+    return columns;
+}
+
+function updatePicksFromSheets(sheetsPicks) {
+    if (!weeklyPicks[currentWeek]) {
+        weeklyPicks[currentWeek] = [];
+    }
+    
+    var updatedCount = 0;
+    var addedCount = 0;
+    
+    sheetsPicks.forEach(function(sheetsPick, index) {
+        // Find existing pick by player name or create new one
+        var existingPickIndex = -1;
+        for (var i = 0; i < weeklyPicks[currentWeek].length; i++) {
+            var existingPick = weeklyPicks[currentWeek][i];
+            if (existingPick && existingPick.playerName === sheetsPick.playerName) {
+                existingPickIndex = i;
+                break;
+            }
+        }
+        
+        if (existingPickIndex >= 0) {
+            // Update existing pick
+            var existingPick = weeklyPicks[currentWeek][existingPickIndex];
+            var hasChanges = false;
+            
+            if (existingPick.pick !== sheetsPick.pick) {
+                existingPick.pick = sheetsPick.pick;
+                hasChanges = true;
+            }
+            if (existingPick.odds !== sheetsPick.odds) {
+                existingPick.odds = sheetsPick.odds;
+                hasChanges = true;
+            }
+            if (existingPick.game !== sheetsPick.game) {
+                existingPick.game = sheetsPick.game;
+                hasChanges = true;
+            }
+            if (existingPick.timeSlot !== sheetsPick.timeSlot) {
+                existingPick.timeSlot = sheetsPick.timeSlot;
+                hasChanges = true;
+            }
+            
+            if (hasChanges) {
+                existingPick.timestamp = Date.now();
+                updatedCount++;
+                logAuditEntry(currentWeek, 'Updated pick from Google Sheets', sheetsPick.playerName + ': ' + sheetsPick.pick);
+            }
+        } else {
+            // Add new pick
+            while (weeklyPicks[currentWeek].length <= index) {
+                weeklyPicks[currentWeek].push(null);
+            }
+            
+            weeklyPicks[currentWeek][index] = sheetsPick;
+            addedCount++;
+            logAuditEntry(currentWeek, 'Added pick from Google Sheets', sheetsPick.playerName + ': ' + sheetsPick.pick);
+        }
+    });
+    
+    if (updatedCount > 0 || addedCount > 0) {
+        saveToFirebase();
+        renderAllPicks();
+        updateCalculations();
+        updateParlayStatus();
+        
+        var message = '';
+        if (addedCount > 0) message += 'Added ' + addedCount + ' picks. ';
+        if (updatedCount > 0) message += 'Updated ' + updatedCount + ' picks.';
+        showNotification(message, 'success');
+    }
+}
+
+function toggleAutoSync() {
+    if (sheetsConfig.autoSyncEnabled) {
+        disableAutoSync();
+    } else {
+        if (!sheetsConfig.spreadsheetId) {
+            showNotification('Please configure Google Sheets sync first', 'error');
+            return;
+        }
+        enableAutoSync();
+    }
+}
+
+function hideAdminDropdown() {
+    var menu = document.getElementById('adminMenu');
+    menu.style.display = 'none';
 }
 
 function updateBetCalculations() {

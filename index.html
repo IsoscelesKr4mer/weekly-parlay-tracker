@@ -15,6 +15,9 @@
                 <button id="lockBtn" onclick="togglePicksLock()" style="background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; margin-top: 10px;">
                     🔒 Lock Week 1
                 </button>
+                <div id="syncStatus" style="margin-top: 8px; font-size: 12px; color: #666; display: none;">
+                    <span id="syncStatusText">Auto-sync: OFF</span>
+                </div>
             </div>
         </div>
         
@@ -105,6 +108,9 @@
                             <button class="admin-btn" onclick="showAuditLog(currentWeek); hideAdminDropdown();">📊 Audit Log</button>
                             <button class="admin-btn" onclick="debugWeek4Data(); hideAdminDropdown();">🐛 Debug Week 4</button>
                             <button class="admin-btn" onclick="fixSGPData(currentWeek); hideAdminDropdown();">🔧 Fix SGP Data</button>
+                            <button class="admin-btn" onclick="configureSheetsSync(); hideAdminDropdown();">📊 Configure Sheets Sync</button>
+                            <button class="admin-btn" onclick="syncFromSheets(); hideAdminDropdown();">🔄 Sync from Sheets</button>
+                            <button class="admin-btn" onclick="toggleAutoSync(); hideAdminDropdown();">⏰ Toggle Auto-Sync</button>
                         </div>
                     </div>
                 </div>
