@@ -3089,7 +3089,21 @@ function updatePicksFromSheets(sheetsPicks) {
         weeklyPicks[currentWeek].push(null);
     }
     
-    // Don't pre-populate slots - only process actual picks from spreadsheet
+    // Pre-populate empty slots with player names for sync to work
+    for (var i = 0; i < Math.min(playerNames.length, numberOfLegs); i++) {
+        if (!weeklyPicks[currentWeek][i]) {
+            weeklyPicks[currentWeek][i] = {
+                playerName: playerNames[i],
+                pick: '',
+                odds: '',
+                game: '',
+                timeSlot: '',
+                timestamp: Date.now(),
+                isEditing: false
+            };
+            console.log('Pre-populated slot', i, 'with player:', playerNames[i]);
+        }
+    }
     
     console.log('updatePicksFromSheets called with', sheetsPicks.length, 'picks');
     console.log('Current week:', currentWeek);
