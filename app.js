@@ -3083,8 +3083,16 @@ function updatePicksFromSheets(sheetsPicks) {
         weeklyPicks[currentWeek] = [];
     }
     
+    // Ensure we have enough slots for the numberOfLegs
+    var numberOfLegs = parseInt(document.getElementById('numberOfLegs').value) || 20;
+    while (weeklyPicks[currentWeek].length < numberOfLegs) {
+        weeklyPicks[currentWeek].push(null);
+    }
+    
     console.log('updatePicksFromSheets called with', sheetsPicks.length, 'picks');
-    console.log('Current weeklyPicks array length:', weeklyPicks[currentWeek] ? weeklyPicks[currentWeek].length : 0);
+    console.log('Current week:', currentWeek);
+    console.log('Number of legs:', numberOfLegs);
+    console.log('Current weeklyPicks array length:', weeklyPicks[currentWeek].length);
     console.log('Current weeklyPicks array:', weeklyPicks[currentWeek]);
     console.log('Sheets picks:', sheetsPicks);
     
@@ -3094,7 +3102,7 @@ function updatePicksFromSheets(sheetsPicks) {
     sheetsPicks.forEach(function(sheetsPick, index) {
         console.log('Processing sheet pick for player:', sheetsPick.playerName, 'at array index:', index);
         
-        // Find existing pick by player name - look more carefully for any existing slot with this player
+        // Find existing slot with matching player name
         var existingPickIndex = -1;
         for (var i = 0; i < weeklyPicks[currentWeek].length; i++) {
             var existingPick = weeklyPicks[currentWeek][i];
@@ -3104,7 +3112,7 @@ function updatePicksFromSheets(sheetsPicks) {
                 console.log('Checking slot', i, ':', existingPick.playerName, '(comparing', existingName, 'vs', sheetName, ')');
                 if (existingName === sheetName) {
                     existingPickIndex = i;
-                    console.log('Found existing pick at slot', i, 'for player', sheetsPick.playerName);
+                    console.log('Found existing slot at', i, 'for player', sheetsPick.playerName);
                     break;
                 }
             } else {
@@ -3112,78 +3120,37 @@ function updatePicksFromSheets(sheetsPicks) {
             }
         }
         
-        // Only look for truly empty slots (null/undefined), NOT slots with player names
+        // If no matching player found, this means the player doesn't exist on the website yet
         if (existingPickIndex === -1) {
-            console.log('No existing pick found for', sheetsPick.playerName, '- looking for empty slots');
-            for (var i = 0; i < weeklyPicks[currentWeek].length; i++) {
-                var slot = weeklyPicks[currentWeek][i];
-                if (!slot) {
-                    // Found a truly empty slot (null)
-                    existingPickIndex = i;
-                    console.log('Found truly empty slot at', i, 'for player', sheetsPick.playerName);
-                    break;
-                } else {
-                    console.log('Slot', i, 'is not empty, contains:', slot.playerName);
-                }
-            }
+            console.log('Player', sheetsPick.playerName, 'not found in existing slots - skipping (not a valid player for this week)');
+            return; // Skip this pick - player doesn't exist on website
         }
         
-        if (existingPickIndex >= 0) {
-            // Only update if slot is truly empty or matches the same player
-            var oldPick = weeklyPicks[currentWeek][existingPickIndex];
-            var canUpdate = !oldPick || oldPick.playerName.trim().toLowerCase() === sheetsPick.playerName.trim().toLowerCase();
-            
-            if (canUpdate) {
-                var hasExistingData = oldPick && oldPick.playerName;
-                
-                // Use the new data from sheets, but preserve timestamp if updating
-                var newPick = {
-                    playerName: sheetsPick.playerName,
-                    pick: sheetsPick.pick,
-                    odds: sheetsPick.odds,
-                    game: sheetsPick.game,
-                    timeSlot: sheetsPick.timeSlot,
-                    timestamp: (oldPick && oldPick.timestamp) ? oldPick.timestamp : Date.now(),
-                    isEditing: false  // Start as read-only
-                };
-                
-                weeklyPicks[currentWeek][existingPickIndex] = newPick;
-                
-                if (hasExistingData) {
-                    updatedCount++;
-                    logAuditEntry(currentWeek, 'Updated pick from Google Sheets', sheetsPick.playerName + ': ' + sheetsPick.pick);
-                    console.log('Updated existing pick for', sheetsPick.playerName, 'at slot', existingPickIndex);
-                } else {
-                    addedCount++;
-                    logAuditEntry(currentWeek, 'Added pick from Google Sheets', sheetsPick.playerName + ': ' + sheetsPick.pick);
-                    console.log('Filled empty slot for', sheetsPick.playerName, 'at slot', existingPickIndex);
-                }
-            } else {
-                console.log('Skipping', sheetsPick.playerName, '- slot', existingPickIndex, 'already occupied by', oldPick.playerName);
-            }
+        // Update the existing slot with the synced data
+        var oldPick = weeklyPicks[currentWeek][existingPickIndex];
+        var hasExistingData = oldPick && oldPick.pick;
+        
+        // Use the new data from sheets, but preserve timestamp if updating
+        var newPick = {
+            playerName: sheetsPick.playerName,
+            pick: sheetsPick.pick,
+            odds: sheetsPick.odds,
+            game: sheetsPick.game,
+            timeSlot: sheetsPick.timeSlot,
+            timestamp: (oldPick && oldPick.timestamp) ? oldPick.timestamp : Date.now(),
+            isEditing: false  // Start as read-only
+        };
+        
+        weeklyPicks[currentWeek][existingPickIndex] = newPick;
+        
+        if (hasExistingData) {
+            updatedCount++;
+            logAuditEntry(currentWeek, 'Updated pick from Google Sheets', sheetsPick.playerName + ': ' + sheetsPick.pick);
+            console.log('Updated existing pick for', sheetsPick.playerName, 'at slot', existingPickIndex);
         } else {
-            // No existing slot found, check if we can add within numberOfLegs
-            var numberOfLegs = parseInt(document.getElementById('numberOfLegs').value) || 20;
-            
-            if (weeklyPicks[currentWeek].length < numberOfLegs) {
-                // We can add one more within the leg limit
-                var newPick = {
-                    playerName: sheetsPick.playerName,
-                    pick: sheetsPick.pick,
-                    odds: sheetsPick.odds,
-                    game: sheetsPick.game,
-                    timeSlot: sheetsPick.timeSlot,
-                    timestamp: Date.now(),
-                    isEditing: false
-                };
-                
-                weeklyPicks[currentWeek].push(newPick);
-                addedCount++;
-                logAuditEntry(currentWeek, 'Added pick from Google Sheets', sheetsPick.playerName + ': ' + sheetsPick.pick);
-                console.log('Added new pick for', sheetsPick.playerName, 'at end of array (slot', weeklyPicks[currentWeek].length - 1, ')');
-            } else {
-                console.log('Skipping pick for', sheetsPick.playerName, '- no available slots (at', numberOfLegs, 'leg limit)');
-            }
+            addedCount++;
+            logAuditEntry(currentWeek, 'Added pick from Google Sheets', sheetsPick.playerName + ': ' + sheetsPick.pick);
+            console.log('Filled empty slot for', sheetsPick.playerName, 'at slot', existingPickIndex);
         }
     });
     
