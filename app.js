@@ -2857,11 +2857,15 @@ function parseCSVData(csvText) {
         var gameAbbreviation = columns[6] ? columns[6].trim().toUpperCase() : '';
         var gameName = '';
         
+        console.log('Processing game abbreviation:', gameAbbreviation);
+        
         if (gameAbbreviation && teamAbbreviations[gameAbbreviation]) {
             gameName = teamAbbreviations[gameAbbreviation];
+            console.log('Found single team match:', gameName);
         } else if (gameAbbreviation) {
             // If abbreviation not found, try to find a game that contains the abbreviation
             gameName = findGameByAbbreviation(gameAbbreviation);
+            console.log('Game name from findGameByAbbreviation:', gameName);
         }
         
         // Don't set timeSlot here - let the manual logic handle it after DOM is rendered
@@ -2956,10 +2960,15 @@ function findGameByAbbreviation(abbreviation) {
             for (var i = 0; i < options.length; i++) {
                 var gameName = options[i].value;
                 if (gameName) {
-                    // Check if both team abbreviations are in the game name
+                    // Check if both team full names are in the game name
                     var gameUpper = gameName.toUpperCase();
-                    if ((teamAbbreviations[team1] && gameUpper.includes(teamAbbreviations[team1].toUpperCase())) ||
-                        (teamAbbreviations[team2] && gameUpper.includes(teamAbbreviations[team2].toUpperCase()))) {
+                    var team1FullName = teamAbbreviations[team1] ? teamAbbreviations[team1].toUpperCase() : '';
+                    var team2FullName = teamAbbreviations[team2] ? teamAbbreviations[team2].toUpperCase() : '';
+                    
+                    // Both teams must be present in the game name (order doesn't matter)
+                    if (team1FullName && team2FullName && 
+                        gameUpper.includes(team1FullName) && gameUpper.includes(team2FullName)) {
+                        console.log('Found game match:', gameName, 'for abbreviations:', team1, 'vs', team2);
                         return gameName;
                     }
                 }
