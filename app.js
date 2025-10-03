@@ -3129,9 +3129,15 @@ function updatePicksFromSheets(sheetsPicks) {
         weeklyPicks[currentWeek].push(null);
     }
     
-    // Pre-populate empty slots with player names for sync to work
+    // Only pre-populate slots for players that have valid picks in the spreadsheet
+    var validPlayerNames = sheetsPicks.map(function(pick) { return pick.playerName.toLowerCase().trim(); });
+    
     for (var i = 0; i < Math.min(playerNames.length, numberOfLegs); i++) {
-        if (!weeklyPicks[currentWeek][i]) {
+        var currentPlayerName = playerNames[i].toLowerCase().trim();
+        var hasValidPick = validPlayerNames.includes(currentPlayerName);
+        
+        // Only pre-populate if this player has a valid pick in the spreadsheet
+        if (!weeklyPicks[currentWeek][i] && hasValidPick) {
             weeklyPicks[currentWeek][i] = {
                 playerName: playerNames[i],
                 pick: 'No pick',
@@ -3141,7 +3147,10 @@ function updatePicksFromSheets(sheetsPicks) {
                 timestamp: Date.now(),
                 isEditing: false
             };
-            console.log('Pre-populated slot', i, 'with player:', playerNames[i]);
+            console.log('Pre-populated slot', i, 'with player:', playerNames[i], '(has valid spreadsheet pick)');
+        } else if (!weeklyPicks[currentWeek][i]) {
+            // Keep as null for players without valid picks
+            console.log('Leaving slot', i, 'empty for player:', playerNames[i], '(no valid spreadsheet pick)');
         }
     }
     
