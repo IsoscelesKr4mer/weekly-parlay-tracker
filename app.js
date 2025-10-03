@@ -3089,21 +3089,7 @@ function updatePicksFromSheets(sheetsPicks) {
         weeklyPicks[currentWeek].push(null);
     }
     
-    // Pre-populate empty slots with player names if they don't exist
-    for (var i = 0; i < Math.min(playerNames.length, numberOfLegs); i++) {
-        if (!weeklyPicks[currentWeek][i]) {
-            weeklyPicks[currentWeek][i] = {
-                playerName: playerNames[i],
-                pick: 'No pick',
-                odds: 'No odds',
-                game: 'No game',
-                timeSlot: 'No time slot',
-                timestamp: Date.now(),
-                isEditing: false
-            };
-            console.log('Pre-populated slot', i, 'with player:', playerNames[i]);
-        }
-    }
+    // Don't pre-populate slots - only process actual picks from spreadsheet
     
     console.log('updatePicksFromSheets called with', sheetsPicks.length, 'picks');
     console.log('Current week:', currentWeek);
@@ -3133,7 +3119,7 @@ function updatePicksFromSheets(sheetsPicks) {
         var existingPickIndex = -1;
         for (var i = 0; i < weeklyPicks[currentWeek].length; i++) {
             var existingPick = weeklyPicks[currentWeek][i];
-            if (existingPick) {
+            if (existingPick && existingPick.playerName) {
                 var existingName = existingPick.playerName.trim().toLowerCase();
                 var sheetName = sheetsPick.playerName.trim().toLowerCase();
                 console.log('Checking slot', i, ':', existingPick.playerName, '(comparing', existingName, 'vs', sheetName, ')');
@@ -3143,14 +3129,26 @@ function updatePicksFromSheets(sheetsPicks) {
                     break;
                 }
             } else {
-                console.log('Checking slot', i, ': null');
+                console.log('Checking slot', i, ': null or no player name');
             }
         }
         
-        // If no matching player found, this means the player doesn't exist on the website yet
+        // If no matching player found, find the first empty slot
         if (existingPickIndex === -1) {
-            console.log('Player', sheetsPick.playerName, 'not found in existing slots - skipping (not a valid player for this week)');
-            return; // Skip this pick - player doesn't exist on website
+            console.log('Player', sheetsPick.playerName, 'not found in existing slots - looking for empty slot');
+            for (var i = 0; i < weeklyPicks[currentWeek].length; i++) {
+                if (!weeklyPicks[currentWeek][i]) {
+                    existingPickIndex = i;
+                    console.log('Found empty slot at', i, 'for player', sheetsPick.playerName);
+                    break;
+                }
+            }
+        }
+        
+        // If still no slot found, skip this pick
+        if (existingPickIndex === -1) {
+            console.log('No available slot for', sheetsPick.playerName, '- skipping');
+            return;
         }
         
         // Update the existing slot with the synced data
@@ -3184,34 +3182,10 @@ function updatePicksFromSheets(sheetsPicks) {
         }
     });
     
-    // Now clear picks for players who are not in the spreadsheet
-    var clearedCount = 0;
-    for (var i = 0; i < weeklyPicks[currentWeek].length; i++) {
-        var existingPick = weeklyPicks[currentWeek][i];
-        if (existingPick && existingPick.playerName) {
-            var existingName = existingPick.playerName.trim().toLowerCase();
-            var hasPickInSheets = playersWithSheetPicks[existingName];
-            
-            if (!hasPickInSheets && existingPick.pick && existingPick.pick !== 'No pick') {
-                // Player exists on website but not in spreadsheet - clear their pick
-                console.log('Clearing pick for', existingPick.playerName, '- not found in spreadsheet');
-                weeklyPicks[currentWeek][i] = {
-                    playerName: existingPick.playerName,
-                    pick: 'No pick',
-                    odds: 'No odds',
-                    game: 'No game',
-                    timeSlot: 'No time slot',
-                    timestamp: Date.now(),
-                    isEditing: false
-                };
-                clearedCount++;
-                logAuditEntry(currentWeek, 'Cleared pick (removed from spreadsheet)', existingPick.playerName);
-            }
-        }
-    }
+    // Don't clear picks - only sync actual picks from spreadsheet
     
-    if (updatedCount > 0 || addedCount > 0 || clearedCount > 0) {
-        console.log('Sync completed - Updated:', updatedCount, 'Added:', addedCount, 'Cleared:', clearedCount);
+    if (updatedCount > 0 || addedCount > 0) {
+        console.log('Sync completed - Updated:', updatedCount, 'Added:', addedCount);
         console.log('Final weeklyPicks array length:', weeklyPicks[currentWeek].length);
         
         saveToFirebase();
@@ -3222,7 +3196,6 @@ function updatePicksFromSheets(sheetsPicks) {
         var message = '';
         if (addedCount > 0) message += 'Added ' + addedCount + ' picks. ';
         if (updatedCount > 0) message += 'Updated ' + updatedCount + ' picks. ';
-        if (clearedCount > 0) message += 'Cleared ' + clearedCount + ' picks.';
         showNotification(message, 'success');
     }
 }
