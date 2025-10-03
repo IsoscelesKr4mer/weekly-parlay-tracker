@@ -2389,8 +2389,8 @@ function showSheetsConfigModal() {
                 <div style="margin-top: 12px; padding: 12px; background: #f0f9ff; border-radius: 6px; border-left: 4px solid #0ea5e9;">
                     <div style="font-size: 12px; color: #666; font-weight: 500; margin-bottom: 4px;">📋 Expected Spreadsheet Format:</div>
                     <div style="font-size: 11px; color: #666; line-height: 1.4;">
-                        <strong>Columns:</strong> Player Name | Pick | Odds | Game (Team Abbreviation) | Time Slot<br>
-                        <strong>Examples:</strong> Michael Dixon | Chiefs -3.5 | -110 | KC | 1:00 PM<br>
+                        <strong>Columns:</strong> A: Player Name | B: Pick | C: Odds | D: [Other] | E: [Other] | F: [Other] | G: Game (Team Abbreviation) | H: Time Slot<br>
+                        <strong>Examples:</strong> Michael Dixon | Chiefs -3.5 | -110 | [other data] | [other data] | [other data] | KC | 1:00 PM<br>
                         <strong>Team Abbreviations:</strong> KC, GB, NE, SF, etc. (see full list in console)
                     </div>
                 </div>
@@ -2631,8 +2631,8 @@ function parseCSVData(csvText) {
             continue;
         }
         
-        // Process game abbreviation
-        var gameAbbreviation = columns[3] ? columns[3].trim().toUpperCase() : '';
+        // Process game abbreviation from column G (index 6)
+        var gameAbbreviation = columns[6] ? columns[6].trim().toUpperCase() : '';
         var gameName = '';
         
         if (gameAbbreviation && teamAbbreviations[gameAbbreviation]) {
