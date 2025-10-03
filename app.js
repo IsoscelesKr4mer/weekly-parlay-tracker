@@ -3129,7 +3129,21 @@ function updatePicksFromSheets(sheetsPicks) {
         weeklyPicks[currentWeek].push(null);
     }
     
-    // Don't pre-populate - only process actual picks from spreadsheet
+    // Pre-populate empty slots with player names for sync to work
+    for (var i = 0; i < Math.min(playerNames.length, numberOfLegs); i++) {
+        if (!weeklyPicks[currentWeek][i]) {
+            weeklyPicks[currentWeek][i] = {
+                playerName: playerNames[i],
+                pick: 'No pick',
+                odds: 'No odds',
+                game: 'No game',
+                timeSlot: 'No time slot',
+                timestamp: Date.now(),
+                isEditing: false
+            };
+            console.log('Pre-populated slot', i, 'with player:', playerNames[i]);
+        }
+    }
     
     console.log('updatePicksFromSheets called with', sheetsPicks.length, 'picks');
     console.log('Current week:', currentWeek);
@@ -3173,21 +3187,9 @@ function updatePicksFromSheets(sheetsPicks) {
             }
         }
         
-        // If no matching player found, find the first empty slot
+        // If no matching player found, skip this pick - don't create new slots
         if (existingPickIndex === -1) {
-            console.log('Player', sheetsPick.playerName, 'not found in existing slots - looking for empty slot');
-            for (var i = 0; i < weeklyPicks[currentWeek].length; i++) {
-                if (!weeklyPicks[currentWeek][i]) {
-                    existingPickIndex = i;
-                    console.log('Found empty slot at', i, 'for player', sheetsPick.playerName);
-                    break;
-                }
-            }
-        }
-        
-        // If still no slot found, skip this pick
-        if (existingPickIndex === -1) {
-            console.log('No available slot for', sheetsPick.playerName, '- skipping');
+            console.log('Player', sheetsPick.playerName, 'not found in existing slots - skipping (player not on website)');
             return;
         }
         
