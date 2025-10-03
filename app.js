@@ -415,7 +415,9 @@ function debugWeek4Data() {
     });
     
     // Test both calculation methods
-    var activePicks = week4Picks.filter(function(p) { return p && p.result !== 'draw'; });
+    var activePicks = week4Picks.filter(function(p) { 
+    return p && p.result !== 'draw' && p.pick && p.pick !== 'No pick' && p.odds && p.odds !== 'No odds'; 
+});
     console.log('Active picks:', activePicks.length);
     
     // Method 1: updateBetCalculations logic
@@ -2268,6 +2270,11 @@ notification.parentNode.removeChild(notification);
 }
 
 function americanToDecimal(american) {
+// Handle invalid odds values
+if (!american || american === 'No odds' || american === '' || isNaN(parseFloat(american.replace('+', '')))) {
+    return 1; // Return 1:1 odds for invalid values
+}
+
 var odds = parseFloat(american.replace('+', ''));
 if (odds > 0) {
 return (odds / 100) + 1;
@@ -3127,10 +3134,10 @@ function updatePicksFromSheets(sheetsPicks) {
         if (!weeklyPicks[currentWeek][i]) {
             weeklyPicks[currentWeek][i] = {
                 playerName: playerNames[i],
-                pick: '',
-                odds: '',
-                game: '',
-                timeSlot: '',
+                pick: 'No pick',
+                odds: 'No odds',
+                game: 'No game',
+                timeSlot: 'No time slot',
                 timestamp: Date.now(),
                 isEditing: false
             };
@@ -3228,15 +3235,15 @@ function updatePicksFromSheets(sheetsPicks) {
             if (!hasPickInSheets && existingPick.pick && existingPick.pick !== '') {
                 // Player exists on website but not in spreadsheet - clear their pick
                 console.log('Clearing pick for', existingPick.playerName, '- not found in spreadsheet');
-                weeklyPicks[currentWeek][i] = {
-                    playerName: existingPick.playerName,
-                    pick: '',
-                    odds: '',
-                    game: '',
-                    timeSlot: '',
-                    timestamp: Date.now(),
-                    isEditing: false
-                };
+            weeklyPicks[currentWeek][i] = {
+                playerName: existingPick.playerName,
+                pick: 'No pick',
+                odds: 'No odds',
+                game: 'No game',
+                timeSlot: 'No time slot',
+                timestamp: Date.now(),
+                isEditing: false
+            };
                 clearedCount++;
                 logAuditEntry(currentWeek, 'Cleared pick (removed from spreadsheet)', existingPick.playerName);
             }
@@ -3326,7 +3333,9 @@ var betAmount = betAmounts[currentWeek] || 24;
 document.getElementById('betAmount').value = betAmount;
 
 var picks = weeklyPicks[currentWeek] || [];
-var activePicks = picks.filter(function(p) { return p && p.result !== 'draw'; });
+var activePicks = picks.filter(function(p) { 
+    return p && p.result !== 'draw' && p.pick && p.pick !== 'No pick' && p.odds && p.odds !== 'No odds'; 
+});
 
 if (activePicks.length === 0) {
 document.getElementById('totalOddsDisplay').textContent = '+0';
@@ -3389,7 +3398,9 @@ var betAmount = betAmounts[currentWeek] || 24;
             document.getElementById('summaryBetAmountCard').textContent = formatCurrency(betAmount);
 
 var picks = weeklyPicks[currentWeek] || [];
-var activePicks = picks.filter(function(p) { return p && p.result !== 'draw'; });
+var activePicks = picks.filter(function(p) { 
+    return p && p.result !== 'draw' && p.pick && p.pick !== 'No pick' && p.odds && p.odds !== 'No odds'; 
+});
 
 if (activePicks.length === 0) {
 document.getElementById('summaryTotalOdds').textContent = '+0';
@@ -3447,7 +3458,9 @@ updateBetCalculations();
 var picks = weeklyPicks[currentWeek] || [];
 var betAmount = parseFloat(document.getElementById('betAmount') ? document.getElementById('betAmount').value : 24) || 24;
 
-var activePicks = picks.filter(function(p) { return p && p.result !== 'draw'; });
+var activePicks = picks.filter(function(p) { 
+    return p && p.result !== 'draw' && p.pick && p.pick !== 'No pick' && p.odds && p.odds !== 'No odds'; 
+});
 
 var totalOdds = 1;
 var gameGroups = {};
@@ -3515,7 +3528,7 @@ if (!statusElement || !iconElement || !textElement) return;
 
 // Filter out null picks and draws (voided picks)
 var activePicks = picks.filter(function(pick) {
-return pick && pick.result !== 'draw';
+return pick && pick.result !== 'draw' && pick.pick && pick.pick !== 'No pick' && pick.odds && pick.odds !== 'No odds';
 });
 
 // Check if any pick has lost (result === false)
