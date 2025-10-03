@@ -3094,10 +3094,10 @@ function updatePicksFromSheets(sheetsPicks) {
         if (!weeklyPicks[currentWeek][i]) {
             weeklyPicks[currentWeek][i] = {
                 playerName: playerNames[i],
-                pick: '',
-                odds: '',
-                game: '',
-                timeSlot: '',
+                pick: 'No pick',
+                odds: 'No odds',
+                game: 'No game',
+                timeSlot: 'No time slot',
                 timestamp: Date.now(),
                 isEditing: false
             };
@@ -3197,10 +3197,10 @@ function updatePicksFromSheets(sheetsPicks) {
                 console.log('Clearing pick for', existingPick.playerName, '- not found in spreadsheet');
                 weeklyPicks[currentWeek][i] = {
                     playerName: existingPick.playerName,
-                    pick: '',
-                    odds: '',
-                    game: '',
-                    timeSlot: '',
+                    pick: 'No pick',
+                    odds: 'No odds',
+                    game: 'No game',
+                    timeSlot: 'No time slot',
                     timestamp: Date.now(),
                     isEditing: false
                 };
