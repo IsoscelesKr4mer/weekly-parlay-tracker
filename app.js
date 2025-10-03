@@ -2284,8 +2284,97 @@ function updatePicksLockState() {
 
 // Google Sheets Sync Functions
 function configureSheetsSync() {
-    var spreadsheetUrl = prompt('Enter your Google Spreadsheet URL:');
-    if (!spreadsheetUrl) return;
+    showSheetsConfigModal();
+}
+
+function showSheetsConfigModal() {
+    // Create modal HTML
+    var modalHtml = `
+        <div id="sheetsConfigModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; display: flex; align-items: center; justify-content: center;">
+            <div style="background: white; border-radius: 12px; padding: 24px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.3);">
+                <h2 style="margin: 0 0 20px 0; color: #333; font-size: 20px;">📊 Configure Google Sheets Sync</h2>
+                
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; font-weight: 500; color: #374151; margin-bottom: 6px;">Google Spreadsheet URL:</label>
+                    <input type="url" id="spreadsheetUrlInput" placeholder="https://docs.google.com/spreadsheets/d/..." 
+                           style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;"
+                           value="${sheetsConfig.spreadsheetId ? 'https://docs.google.com/spreadsheets/d/' + sheetsConfig.spreadsheetId : ''}">
+                    <div style="font-size: 12px; color: #666; margin-top: 4px;">Copy the full URL from your browser when viewing the spreadsheet</div>
+                </div>
+                
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; font-weight: 500; color: #374151; margin-bottom: 6px;">CURRENT WEEK Sheet GID:</label>
+                    <input type="text" id="currentWeekGidInput" placeholder="1234567890" 
+                           style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;"
+                           value="${sheetsConfig.currentWeekGid || ''}">
+                    <div style="font-size: 12px; color: #666; margin-top: 4px;">Find this in the sheet URL: .../edit#gid=1234567890</div>
+                </div>
+                
+                <div style="margin-bottom: 16px;">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" id="enableAutoSyncCheckbox" ${sheetsConfig.autoSyncEnabled ? 'checked' : ''}>
+                        <span style="font-weight: 500; color: #374151;">Enable auto-sync (every 5 minutes)</span>
+                    </label>
+                </div>
+                
+                <div style="display: flex; gap: 12px; margin-top: 24px;">
+                    <button onclick="saveSheetsConfig()" style="flex: 1; background: #3b82f6; color: white; border: none; padding: 12px; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer;">
+                        💾 Save Configuration
+                    </button>
+                    <button onclick="closeSheetsConfigModal()" style="flex: 1; background: #6b7280; color: white; border: none; padding: 12px; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer;">
+                        ❌ Cancel
+                    </button>
+                </div>
+                
+                <div style="margin-top: 16px; padding: 12px; background: #f8fafc; border-radius: 6px; border-left: 4px solid #3b82f6;">
+                    <div style="font-size: 12px; color: #666; font-weight: 500; margin-bottom: 4px;">💡 How to find the GID:</div>
+                    <div style="font-size: 11px; color: #666; line-height: 1.4;">
+                        1. Open your spreadsheet in Google Sheets<br>
+                        2. Click on the "CURRENT WEEK" tab<br>
+                        3. Look at the URL in your browser<br>
+                        4. Find the number after "gid=" (e.g., gid=1234567890)<br>
+                        5. Copy that number into the GID field above
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Add modal to page
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    
+    // Add event listeners
+    var modal = document.getElementById('sheetsConfigModal');
+    
+    // Close on background click
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            closeSheetsConfigModal();
+        }
+    });
+    
+    // Close on Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && document.getElementById('sheetsConfigModal')) {
+            closeSheetsConfigModal();
+        }
+    });
+    
+    // Focus on first input
+    setTimeout(() => {
+        document.getElementById('spreadsheetUrlInput').focus();
+    }, 100);
+}
+
+function saveSheetsConfig() {
+    var spreadsheetUrl = document.getElementById('spreadsheetUrlInput').value.trim();
+    var currentWeekGid = document.getElementById('currentWeekGidInput').value.trim();
+    var enableAutoSync = document.getElementById('enableAutoSyncCheckbox').checked;
+    
+    if (!spreadsheetUrl) {
+        showNotification('Please enter the Google Spreadsheet URL', 'error');
+        return;
+    }
     
     // Extract spreadsheet ID from URL
     var match = spreadsheetUrl.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
@@ -2296,9 +2385,10 @@ function configureSheetsSync() {
     
     sheetsConfig.spreadsheetId = match[1];
     
-    // Get current week GID
-    var currentWeekGid = prompt('Enter the GID for the "CURRENT WEEK" sheet (found in the sheet URL):');
-    if (!currentWeekGid) return;
+    if (!currentWeekGid) {
+        showNotification('Please enter the CURRENT WEEK sheet GID', 'error');
+        return;
+    }
     
     sheetsConfig.currentWeekGid = currentWeekGid;
     
@@ -2307,14 +2397,24 @@ function configureSheetsSync() {
         configureWeekGids();
     }
     
-    // Ask about auto-sync
-    if (confirm('Enable automatic syncing every 5 minutes?')) {
+    // Handle auto-sync
+    if (enableAutoSync) {
         enableAutoSync();
+    } else {
+        disableAutoSync();
     }
     
+    closeSheetsConfigModal();
     updateSyncStatus();
     showNotification('Google Sheets sync configured!', 'success');
     console.log('Sheets config:', sheetsConfig);
+}
+
+function closeSheetsConfigModal() {
+    var modal = document.getElementById('sheetsConfigModal');
+    if (modal) {
+        modal.remove();
+    }
 }
 
 function configureWeekGids() {
