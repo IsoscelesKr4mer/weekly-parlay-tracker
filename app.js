@@ -3155,7 +3155,7 @@ function updatePicksFromSheets(sheetsPicks) {
         
         // Update the existing slot with the synced data
         var oldPick = weeklyPicks[currentWeek][existingPickIndex];
-        var hasExistingData = oldPick && oldPick.pick;
+        var hasExistingData = oldPick && oldPick.pick && oldPick.pick !== 'No pick';
         
         // Get the correct time slot for this game
         var correctTimeSlot = getTimeSlotFromGame(sheetsPick.game);
@@ -3192,7 +3192,7 @@ function updatePicksFromSheets(sheetsPicks) {
             var existingName = existingPick.playerName.trim().toLowerCase();
             var hasPickInSheets = playersWithSheetPicks[existingName];
             
-            if (!hasPickInSheets && existingPick.pick) {
+            if (!hasPickInSheets && existingPick.pick && existingPick.pick !== 'No pick') {
                 // Player exists on website but not in spreadsheet - clear their pick
                 console.log('Clearing pick for', existingPick.playerName, '- not found in spreadsheet');
                 weeklyPicks[currentWeek][i] = {
