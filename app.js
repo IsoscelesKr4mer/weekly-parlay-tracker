@@ -3235,9 +3235,38 @@ function updatePicksFromSheets(sheetsPicks) {
         }
     });
     
-    // Don't clear picks - only sync actual picks from spreadsheet
+    // Clear picks for players who are no longer in the spreadsheet
+    var clearedCount = 0;
+    for (var i = 0; i < weeklyPicks[currentWeek].length; i++) {
+        var existingPick = weeklyPicks[currentWeek][i];
+        if (existingPick && existingPick.playerName) {
+            var existingName = existingPick.playerName.trim().toLowerCase();
+            var hasPickInSheets = playersWithSheetPicks[existingName];
+            
+            // If this player is not in the spreadsheet, clear their pick
+            if (!hasPickInSheets) {
+                // Only clear if it's not a placeholder pick
+                if (existingPick.pick && existingPick.pick !== 'No pick' && existingPick.pick !== '' && 
+                    existingPick.odds && existingPick.odds !== 'No odds' && existingPick.odds !== '') {
+                    
+                    weeklyPicks[currentWeek][i] = {
+                        playerName: existingPick.playerName,
+                        pick: 'No pick',
+                        odds: 'No odds',
+                        game: 'No game',
+                        timeSlot: 'No time slot',
+                        timestamp: Date.now(),
+                        isEditing: false
+                    };
+                    clearedCount++;
+                    logAuditEntry(currentWeek, 'Cleared pick (removed from spreadsheet)', existingPick.playerName);
+                    console.log('Cleared pick for', existingPick.playerName, 'at slot', i, '(removed from spreadsheet)');
+                }
+            }
+        }
+    }
     
-    if (updatedCount > 0 || addedCount > 0) {
+    if (updatedCount > 0 || addedCount > 0 || clearedCount > 0) {
         console.log('Sync completed - Updated:', updatedCount, 'Added:', addedCount);
         console.log('Final weeklyPicks array length:', weeklyPicks[currentWeek].length);
         
@@ -3249,6 +3278,7 @@ function updatePicksFromSheets(sheetsPicks) {
         var message = '';
         if (addedCount > 0) message += 'Added ' + addedCount + ' picks. ';
         if (updatedCount > 0) message += 'Updated ' + updatedCount + ' picks. ';
+        if (clearedCount > 0) message += 'Cleared ' + clearedCount + ' picks. ';
         showNotification(message, 'success');
     }
 }
