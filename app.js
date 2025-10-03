@@ -424,7 +424,7 @@ function debugWeek4Data() {
     var processedGames1 = {};
     
     activePicks.forEach(function(pick) {
-        if (pick.game) {
+        if (pick.game && pick.game !== 'No game') {
             if (!gameGroups1[pick.game]) {
                 gameGroups1[pick.game] = [];
             }
@@ -453,7 +453,7 @@ function debugWeek4Data() {
     var processedGames2 = {};
     
     activePicks.forEach(function(pick) {
-        if (pick.game) {
+        if (pick.game && pick.game !== 'No game') {
             gamePickCounts2[pick.game] = (gamePickCounts2[pick.game] || 0) + 1;
         }
     });
@@ -520,7 +520,7 @@ function fixSGPData(week) {
     
     // Group picks by game
     weeklyPicks[week].forEach(function(pick, index) {
-        if (pick && pick.game) {
+        if (pick && pick.game && pick.game !== 'No game') {
             if (!gameGroups[pick.game]) {
                 gameGroups[pick.game] = [];
             }
@@ -2018,7 +2018,7 @@ var picks = weeklyPicks[currentWeek] || [];
 var gameGroups = {};
 
 picks.forEach(function(pick) {
-if (pick && pick.game) {
+if (pick && pick.game && pick.game !== 'No game') {
 if (!gameGroups[pick.game]) {
 gameGroups[pick.game] = [];
 }
@@ -3307,7 +3307,7 @@ var processedGames = {};
 
 // Count active picks per game
 activePicks.forEach(function(pick) {
-if (pick.game) {
+if (pick.game && pick.game !== 'No game') {
 if (!gameGroups[pick.game]) {
 gameGroups[pick.game] = [];
 }
@@ -3370,7 +3370,7 @@ var processedGames = {};
 
 // Count active picks per game
 activePicks.forEach(function(pick) {
-if (pick.game) {
+if (pick.game && pick.game !== 'No game') {
 if (!gameGroups[pick.game]) {
 gameGroups[pick.game] = [];
 }
@@ -3423,7 +3423,7 @@ var processedGames = {};
 // First, count active picks per game
 var gamePickCounts = {};
 activePicks.forEach(function(pick) {
-if (pick.game) {
+if (pick.game && pick.game !== 'No game') {
 gamePickCounts[pick.game] = (gamePickCounts[pick.game] || 0) + 1;
 }
 });
@@ -3550,7 +3550,7 @@ var individualPicks = [];
 picks.forEach(function(pick) {
 if (!pick) return;
 
-if (pick.game) {
+if (pick.game && pick.game !== 'No game') {
 if (!gameGroups[pick.game]) {
 gameGroups[pick.game] = [];
 }
