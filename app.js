@@ -1312,15 +1312,43 @@ if (isSavingToFirebase) {
 var data = snapshot.val();
 console.log('=== FIREBASE LOAD DEBUG ===');
 console.log('Loaded data from Firebase:', data);
+console.log('Data is null/undefined?', data === null || data === undefined);
+console.log('Current week:', currentWeek);
 console.log('Current week data from Firebase:', data ? data[currentWeek] : 'No data');
 console.log('Current week data type:', typeof (data ? data[currentWeek] : 'No data'));
 console.log('Is current week data an array?', Array.isArray(data ? data[currentWeek] : null));
 
 if (data) {
+console.log('=== CONVERSION DEBUG ===');
+console.log('Entering conversion block - data exists');
+console.log('Data is array?', Array.isArray(data));
+console.log('Data type:', typeof data);
+console.log('Current week data type:', typeof data[currentWeek]);
+console.log('Current week data is array?', Array.isArray(data[currentWeek]));
+
 // Convert Firebase data to proper array structure if needed
 if (Array.isArray(data)) {
+    console.log('Data is already array, using as-is');
     weeklyPicks = data;
+    
+    // Check if current week needs conversion
+    if (data[currentWeek] && typeof data[currentWeek] === 'object' && !Array.isArray(data[currentWeek])) {
+        console.log('Converting current week from object to array');
+        var weekData = data[currentWeek];
+        var weekArray = [];
+        for (var key in weekData) {
+            if (weekData.hasOwnProperty(key)) {
+                var index = parseInt(key);
+                if (!isNaN(index)) {
+                    weekArray[index] = weekData[key];
+                }
+            }
+        }
+        weeklyPicks[currentWeek] = weekArray;
+        console.log('Converted week', currentWeek, 'to array:', weekArray);
+    }
 } else {
+    console.log('Data is object, converting to array structure');
     // Convert object structure to array structure
     weeklyPicks = [];
     for (var week in data) {
@@ -1347,6 +1375,10 @@ if (Array.isArray(data)) {
         }
     }
 }
+
+console.log('Final weeklyPicks structure:', weeklyPicks);
+console.log('Final current week data:', weeklyPicks[currentWeek]);
+console.log('Final current week is array?', Array.isArray(weeklyPicks[currentWeek]));
 
 renderAllPicks();
 updateCalculations();
