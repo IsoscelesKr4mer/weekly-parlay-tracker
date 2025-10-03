@@ -3096,11 +3096,17 @@ function updatePicksFromSheets(sheetsPicks) {
         var existingPickIndex = -1;
         for (var i = 0; i < weeklyPicks[currentWeek].length; i++) {
             var existingPick = weeklyPicks[currentWeek][i];
-            console.log('Checking slot', i, ':', existingPick ? existingPick.playerName : 'null');
-            if (existingPick && existingPick.playerName === sheetsPick.playerName) {
-                existingPickIndex = i;
-                console.log('Found existing pick at slot', i, 'for player', sheetsPick.playerName);
-                break;
+            if (existingPick) {
+                var existingName = existingPick.playerName.trim().toLowerCase();
+                var sheetName = sheetsPick.playerName.trim().toLowerCase();
+                console.log('Checking slot', i, ':', existingPick.playerName, '(comparing', existingName, 'vs', sheetName, ')');
+                if (existingName === sheetName) {
+                    existingPickIndex = i;
+                    console.log('Found existing pick at slot', i, 'for player', sheetsPick.playerName);
+                    break;
+                }
+            } else {
+                console.log('Checking slot', i, ': null');
             }
         }
         
@@ -3120,7 +3126,7 @@ function updatePicksFromSheets(sheetsPicks) {
         if (existingPickIndex >= 0) {
             // Only update if slot is truly empty or matches the same player
             var oldPick = weeklyPicks[currentWeek][existingPickIndex];
-            var canUpdate = !oldPick || oldPick.playerName === sheetsPick.playerName;
+            var canUpdate = !oldPick || oldPick.playerName.trim().toLowerCase() === sheetsPick.playerName.trim().toLowerCase();
             
             if (canUpdate) {
                 var hasExistingData = oldPick && oldPick.playerName;
