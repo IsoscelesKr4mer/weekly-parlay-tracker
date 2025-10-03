@@ -3146,7 +3146,10 @@ function updatePicksFromSheets(sheetsPicks) {
                 odds: 'TBD',
                 game: 'TBD',
                 timeSlot: 'TBD',
+                result: null,
                 timestamp: Date.now(),
+                isSGP: false,
+                sgpOdds: '',  // Empty string instead of null to satisfy Firebase rules
                 isEditing: false
             };
             console.log('Pre-populated slot', i, 'with player:', playerNames[i], '(has valid spreadsheet pick)');
@@ -3255,7 +3258,10 @@ function updatePicksFromSheets(sheetsPicks) {
                         odds: 'TBD',
                         game: 'TBD',
                         timeSlot: 'TBD',
+                        result: null,
                         timestamp: Date.now(),
+                        isSGP: false,
+                        sgpOdds: '',  // Empty string instead of null to satisfy Firebase rules
                         isEditing: false  // Set to submitted state to avoid Cancel button
                     };
                     clearedCount++;
