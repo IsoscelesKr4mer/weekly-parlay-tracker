@@ -778,6 +778,42 @@ var sheetsConfig = {
     syncInterval: null, // Store interval ID for auto-sync
     autoSyncEnabled: false
 };
+
+// Team abbreviation mapping for Google Sheets sync
+var teamAbbreviations = {
+    'ARI': 'Arizona Cardinals',
+    'ATL': 'Atlanta Falcons',
+    'BAL': 'Baltimore Ravens',
+    'BUF': 'Buffalo Bills',
+    'CAR': 'Carolina Panthers',
+    'CHI': 'Chicago Bears',
+    'CIN': 'Cincinnati Bengals',
+    'CLE': 'Cleveland Browns',
+    'DAL': 'Dallas Cowboys',
+    'DEN': 'Denver Broncos',
+    'DET': 'Detroit Lions',
+    'GB': 'Green Bay Packers',
+    'HOU': 'Houston Texans',
+    'IND': 'Indianapolis Colts',
+    'JAX': 'Jacksonville Jaguars',
+    'KC': 'Kansas City Chiefs',
+    'LV': 'Las Vegas Raiders',
+    'LAC': 'Los Angeles Chargers',
+    'LAR': 'Los Angeles Rams',
+    'MIA': 'Miami Dolphins',
+    'MIN': 'Minnesota Vikings',
+    'NE': 'New England Patriots',
+    'NO': 'New Orleans Saints',
+    'NYG': 'New York Giants',
+    'NYJ': 'New York Jets',
+    'PHI': 'Philadelphia Eagles',
+    'PIT': 'Pittsburgh Steelers',
+    'SF': 'San Francisco 49ers',
+    'SEA': 'Seattle Seahawks',
+    'TB': 'Tampa Bay Buccaneers',
+    'TEN': 'Tennessee Titans',
+    'WAS': 'Washington Commanders'
+};
 function getCurrentNFLWeek() {
     // 2025 NFL Season started September 4, 2025 (Week 1) at 8:20 PM EST
     // NFL weeks run Tuesday to Monday
@@ -2331,6 +2367,14 @@ function showSheetsConfigModal() {
                     </button>
                 </div>
                 
+                ${sheetsConfig.spreadsheetId ? `
+                <div style="margin-top: 16px; text-align: center;">
+                    <button onclick="removeSheetsSyncFromModal()" style="background: #dc2626; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer;">
+                        🗑️ Remove Sync Configuration
+                    </button>
+                </div>
+                ` : ''}
+                
                 <div style="margin-top: 16px; padding: 12px; background: #f8fafc; border-radius: 6px; border-left: 4px solid #3b82f6;">
                     <div style="font-size: 12px; color: #666; font-weight: 500; margin-bottom: 4px;">💡 How to find the GID:</div>
                     <div style="font-size: 11px; color: #666; line-height: 1.4;">
@@ -2339,6 +2383,25 @@ function showSheetsConfigModal() {
                         3. Look at the URL in your browser<br>
                         4. Find the number after "gid=" (e.g., gid=1234567890)<br>
                         5. Copy that number into the GID field above
+                    </div>
+                </div>
+                
+                <div style="margin-top: 12px; padding: 12px; background: #f0f9ff; border-radius: 6px; border-left: 4px solid #0ea5e9;">
+                    <div style="font-size: 12px; color: #666; font-weight: 500; margin-bottom: 4px;">📋 Expected Spreadsheet Format:</div>
+                    <div style="font-size: 11px; color: #666; line-height: 1.4;">
+                        <strong>Columns:</strong> Player Name | Pick | Odds | Game (Team Abbreviation) | Time Slot<br>
+                        <strong>Examples:</strong> Michael Dixon | Chiefs -3.5 | -110 | KC | 1:00 PM<br>
+                        <strong>Team Abbreviations:</strong> KC, GB, NE, SF, etc. (see full list in console)
+                    </div>
+                </div>
+                
+                <div style="margin-top: 12px; padding: 12px; background: #fef3c7; border-radius: 6px; border-left: 4px solid #f59e0b;">
+                    <div style="font-size: 12px; color: #666; font-weight: 500; margin-bottom: 4px;">👥 Valid Player Names:</div>
+                    <div style="font-size: 11px; color: #666; line-height: 1.4;">
+                        Only picks for these players will be imported:<br>
+                        <span id="validPlayersList" style="font-family: monospace; background: #f3f4f6; padding: 2px 4px; border-radius: 3px;">
+                            ${getValidPlayerNames().join(', ')}
+                        </span>
                     </div>
                 </div>
             </div>
@@ -2413,6 +2476,7 @@ function saveSheetsConfig() {
     updateSyncStatus();
     showNotification('Google Sheets sync configured!', 'success');
     console.log('Sheets config:', sheetsConfig);
+    console.log('Available team abbreviations:', Object.keys(teamAbbreviations).sort());
 }
 
 function closeSheetsConfigModal() {
@@ -2505,12 +2569,23 @@ function syncFromSheets() {
             return response.text();
         })
         .then(csvText => {
-            var picks = parseCSVData(csvText);
+            var result = parseCSVData(csvText);
+            var picks = result.picks || result; // Handle both old and new return format
+            var skippedCount = result.skippedCount || 0;
+            
             if (picks.length > 0) {
                 updatePicksFromSheets(picks);
-                showNotification('Synced ' + picks.length + ' picks from Google Sheets', 'success');
+                var message = 'Synced ' + picks.length + ' picks from Google Sheets';
+                if (skippedCount > 0) {
+                    message += ' (' + skippedCount + ' invalid players skipped)';
+                }
+                showNotification(message, 'success');
             } else {
-                showNotification('No valid picks found in spreadsheet', 'info');
+                var message = 'No valid picks found in spreadsheet';
+                if (skippedCount > 0) {
+                    message += ' (' + skippedCount + ' invalid players skipped)';
+                }
+                showNotification(message, 'info');
             }
         })
         .catch(error => {
@@ -2522,6 +2597,8 @@ function syncFromSheets() {
 function parseCSVData(csvText) {
     var lines = csvText.split('\n');
     var picks = [];
+    var skippedCount = 0;
+    var validPlayers = getValidPlayerNames();
     
     // Skip empty lines and find header row
     var headerRow = -1;
@@ -2545,11 +2622,31 @@ function parseCSVData(csvText) {
         var columns = parseCSVLine(line);
         if (columns.length < 3) continue; // Need at least player name, pick, and odds
         
+        var playerName = columns[0] ? columns[0].trim() : '';
+        
+        // Only process picks for valid players
+        if (!isValidPlayerName(playerName, validPlayers)) {
+            console.log('Skipping pick for invalid player:', playerName);
+            skippedCount++;
+            continue;
+        }
+        
+        // Process game abbreviation
+        var gameAbbreviation = columns[3] ? columns[3].trim().toUpperCase() : '';
+        var gameName = '';
+        
+        if (gameAbbreviation && teamAbbreviations[gameAbbreviation]) {
+            gameName = teamAbbreviations[gameAbbreviation];
+        } else if (gameAbbreviation) {
+            // If abbreviation not found, try to find a game that contains the abbreviation
+            gameName = findGameByAbbreviation(gameAbbreviation);
+        }
+        
         var pick = {
-            playerName: columns[0] ? columns[0].trim() : '',
+            playerName: playerName,
             pick: columns[1] ? columns[1].trim() : '',
             odds: columns[2] ? columns[2].trim() : '',
-            game: columns[3] ? columns[3].trim() : '',
+            game: gameName,
             timeSlot: columns[4] ? columns[4].trim() : '',
             timestamp: Date.now(),
             isEditing: false
@@ -2562,7 +2659,95 @@ function parseCSVData(csvText) {
     }
     
     console.log('Parsed picks from CSV:', picks);
-    return picks;
+    console.log('Skipped invalid players:', skippedCount);
+    
+    return {
+        picks: picks,
+        skippedCount: skippedCount
+    };
+}
+
+function getValidPlayerNames() {
+    var validPlayers = [];
+    
+    // Add predefined player names
+    validPlayers = validPlayers.concat(playerNames);
+    
+    // Add any existing player names from current week picks
+    if (weeklyPicks[currentWeek]) {
+        weeklyPicks[currentWeek].forEach(function(pick) {
+            if (pick && pick.playerName && validPlayers.indexOf(pick.playerName) === -1) {
+                validPlayers.push(pick.playerName);
+            }
+        });
+    }
+    
+    // Add any existing player names from other weeks
+    for (var week in weeklyPicks) {
+        if (weeklyPicks[week]) {
+            weeklyPicks[week].forEach(function(pick) {
+                if (pick && pick.playerName && validPlayers.indexOf(pick.playerName) === -1) {
+                    validPlayers.push(pick.playerName);
+                }
+            });
+        }
+    }
+    
+    console.log('Valid player names:', validPlayers);
+    return validPlayers;
+}
+
+function isValidPlayerName(playerName, validPlayers) {
+    if (!playerName) return false;
+    
+    // Check exact match first
+    if (validPlayers.indexOf(playerName) !== -1) {
+        return true;
+    }
+    
+    // Check case-insensitive match
+    for (var i = 0; i < validPlayers.length; i++) {
+        if (validPlayers[i].toLowerCase() === playerName.toLowerCase()) {
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+function findGameByAbbreviation(abbreviation) {
+    // First try to find the team name from abbreviation
+    if (teamAbbreviations[abbreviation]) {
+        var teamName = teamAbbreviations[abbreviation];
+        
+        // Get available games for current week
+        var gameSelect = document.getElementById('game' + 0); // Use first game select as reference
+        if (!gameSelect) return teamName;
+        
+        var options = gameSelect.options;
+        for (var i = 0; i < options.length; i++) {
+            var gameName = options[i].value;
+            if (gameName && gameName.includes(teamName)) {
+                return gameName;
+            }
+        }
+    }
+    
+    // If not found, try partial matching in game names
+    var gameSelect = document.getElementById('game' + 0);
+    if (!gameSelect) return abbreviation;
+    
+    var options = gameSelect.options;
+    for (var i = 0; i < options.length; i++) {
+        var gameName = options[i].value;
+        if (gameName && gameName.toUpperCase().includes(abbreviation)) {
+            return gameName;
+        }
+    }
+    
+    // If still not found, return the abbreviation as-is
+    console.log('Game not found for abbreviation:', abbreviation);
+    return abbreviation;
 }
 
 function parseCSVLine(line) {
@@ -2673,6 +2858,42 @@ function toggleAutoSync() {
 function hideAdminDropdown() {
     var menu = document.getElementById('adminMenu');
     menu.style.display = 'none';
+}
+
+function removeSheetsSync() {
+    if (!sheetsConfig.spreadsheetId) {
+        showNotification('No Google Sheets sync configured', 'info');
+        return;
+    }
+    
+    if (confirm('Are you sure you want to remove Google Sheets sync?\n\nThis will:\n• Clear all sync configuration\n• Disable auto-sync\n• Remove sync status indicator\n\nYou can reconfigure it later if needed.')) {
+        performRemoveSync();
+    }
+}
+
+function removeSheetsSyncFromModal() {
+    if (confirm('Are you sure you want to remove Google Sheets sync?\n\nThis will:\n• Clear all sync configuration\n• Disable auto-sync\n• Remove sync status indicator\n\nYou can reconfigure it later if needed.')) {
+        performRemoveSync();
+        closeSheetsConfigModal();
+    }
+}
+
+function performRemoveSync() {
+    // Disable auto-sync first
+    disableAutoSync();
+    
+    // Clear configuration
+    sheetsConfig.spreadsheetId = '';
+    sheetsConfig.currentWeekGid = '';
+    sheetsConfig.weekGids = {};
+    sheetsConfig.syncInterval = null;
+    sheetsConfig.autoSyncEnabled = false;
+    
+    // Update UI
+    updateSyncStatus();
+    
+    showNotification('Google Sheets sync removed successfully', 'success');
+    console.log('Sheets sync removed. Configuration cleared:', sheetsConfig);
 }
 
 function updateBetCalculations() {
