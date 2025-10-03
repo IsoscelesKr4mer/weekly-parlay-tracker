@@ -2964,8 +2964,8 @@ function parseCSVData(csvText) {
         
         console.log('Created pick object:', pick);
         
-        // Only add if we have essential data and game info
-        if (pick.playerName && pick.pick && pick.odds && gameName) {
+        // Only add if we have essential data and game info (not empty strings)
+        if (pick.playerName && pick.pick && pick.pick !== '' && pick.odds && pick.odds !== '' && gameName) {
             picks.push(pick);
             console.log('Added valid pick for', pick.playerName);
         } else {
