@@ -416,7 +416,7 @@ function debugWeek4Data() {
     
     // Test both calculation methods
     var activePicks = week4Picks.filter(function(p) { 
-    return p && p.result !== 'draw' && p.pick && p.pick !== 'No pick' && p.odds && p.odds !== 'No odds'; 
+    return p && p.result !== 'draw' && p.pick && p.pick !== 'No pick' && p.pick !== '' && p.odds && p.odds !== 'No odds' && p.odds !== ''; 
 });
     console.log('Active picks:', activePicks.length);
     
@@ -522,7 +522,7 @@ function fixSGPData(week) {
     
     // Group picks by game
     weeklyPicks[week].forEach(function(pick, index) {
-        if (pick && pick.game && pick.game !== 'No game' && pick.pick && pick.pick !== 'No pick' && pick.odds && pick.odds !== 'No odds') {
+        if (pick && pick.game && pick.game !== 'No game' && pick.pick && pick.pick !== 'No pick' && pick.pick !== '' && pick.odds && pick.odds !== 'No odds' && pick.odds !== '') {
             if (!gameGroups[pick.game]) {
                 gameGroups[pick.game] = [];
             }
@@ -2053,7 +2053,7 @@ var picks = weeklyPicks[currentWeek] || [];
 var gameGroups = {};
 
 picks.forEach(function(pick) {
-if (pick && pick.game && pick.game !== 'No game' && pick.pick && pick.pick !== 'No pick' && pick.odds && pick.odds !== 'No odds') {
+if (pick && pick.game && pick.game !== 'No game' && pick.pick && pick.pick !== 'No pick' && pick.pick !== '' && pick.odds && pick.odds !== 'No odds' && pick.odds !== '') {
 if (!gameGroups[pick.game]) {
 gameGroups[pick.game] = [];
 }
@@ -3309,7 +3309,7 @@ document.getElementById('betAmount').value = betAmount;
 
 var picks = weeklyPicks[currentWeek] || [];
 var activePicks = picks.filter(function(p) { 
-    return p && p.result !== 'draw' && p.pick && p.pick !== 'No pick' && p.odds && p.odds !== 'No odds'; 
+    return p && p.result !== 'draw' && p.pick && p.pick !== 'No pick' && p.pick !== '' && p.odds && p.odds !== 'No odds' && p.odds !== ''; 
 });
 
 if (activePicks.length === 0) {
@@ -3374,7 +3374,7 @@ var betAmount = betAmounts[currentWeek] || 24;
 
 var picks = weeklyPicks[currentWeek] || [];
 var activePicks = picks.filter(function(p) { 
-    return p && p.result !== 'draw' && p.pick && p.pick !== 'No pick' && p.odds && p.odds !== 'No odds'; 
+    return p && p.result !== 'draw' && p.pick && p.pick !== 'No pick' && p.pick !== '' && p.odds && p.odds !== 'No odds' && p.odds !== ''; 
 });
 
 if (activePicks.length === 0) {
@@ -3434,7 +3434,7 @@ var picks = weeklyPicks[currentWeek] || [];
 var betAmount = parseFloat(document.getElementById('betAmount') ? document.getElementById('betAmount').value : 24) || 24;
 
 var activePicks = picks.filter(function(p) { 
-    return p && p.result !== 'draw' && p.pick && p.pick !== 'No pick' && p.odds && p.odds !== 'No odds'; 
+    return p && p.result !== 'draw' && p.pick && p.pick !== 'No pick' && p.pick !== '' && p.odds && p.odds !== 'No odds' && p.odds !== ''; 
 });
 
 var totalOdds = 1;
@@ -3503,7 +3503,7 @@ if (!statusElement || !iconElement || !textElement) return;
 
 // Filter out null picks and draws (voided picks)
 var activePicks = picks.filter(function(pick) {
-return pick && pick.result !== 'draw' && pick.pick && pick.pick !== 'No pick' && pick.odds && pick.odds !== 'No odds';
+return pick && pick.result !== 'draw' && pick.pick && pick.pick !== 'No pick' && pick.pick !== '' && pick.odds && pick.odds !== 'No odds' && pick.odds !== '';
 });
 
 // Check if any pick has lost (result === false)
