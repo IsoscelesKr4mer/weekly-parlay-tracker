@@ -1239,6 +1239,7 @@ loadDataFromFirebase();
 loadBetAmountsFromFirebase();
 loadAuditLogFromFirebase();
 loadDraftsFromFirebase();
+loadSyncSettings();
 } else {
 console.log('Firebase not available - using local storage only');
 }
@@ -2179,6 +2180,19 @@ return g.matchup === gameName;
 return game ? game.time : '';
 }
 
+function updateTimeSlotDropdownsFromSync() {
+// Update time slot dropdowns for all picks that have games but no time slot selected
+var picks = weeklyPicks[currentWeek] || [];
+picks.forEach(function(pick, index) {
+    if (pick && pick.game && pick.timeSlot) {
+        var timeSlotSelect = document.getElementById('timeSlot' + index);
+        if (timeSlotSelect && timeSlotSelect.value !== pick.timeSlot) {
+            timeSlotSelect.value = pick.timeSlot;
+        }
+    }
+});
+}
+
 function generateGameOptions(selectedGame) {
 var schedule = nflSchedule[currentNFLWeek] || [];
 return schedule.map(function(game) {
@@ -2481,6 +2495,9 @@ function saveSheetsConfig() {
         disableAutoSync();
     }
     
+    // Save sync settings to localStorage and Firebase
+    saveSyncSettings();
+    
     closeSheetsConfigModal();
     updateSyncStatus();
     showNotification('Google Sheets sync configured!', 'success');
@@ -2497,17 +2514,134 @@ function closeSheetsConfigModal() {
 
 function configureWeekGids() {
     var weekGids = {};
+    var skipAll = false;
+    var currentWeek = 1;
     
-    // Configure GIDs for weeks 1-18
-    for (var week = 1; week <= 18; week++) {
-        var gid = prompt('Enter GID for Week ' + week + ' sheet (or leave blank to skip):');
-        if (gid && gid.trim()) {
-            weekGids[week] = gid.trim();
+    function processNextWeek() {
+        if (currentWeek > 18 || skipAll) {
+            // Finished configuration
+            sheetsConfig.weekGids = weekGids;
+            saveSyncSettings();
+            console.log('Week GIDs configured:', weekGids);
+            return;
         }
+        
+        var message = 'Enter GID for Week ' + currentWeek + ' sheet:\n\n';
+        message += '• Enter GID to configure this week\n';
+        message += '• Click "Skip" to skip this week\n';
+        message += '• Click "Skip All" to skip remaining weeks\n';
+        message += '• Click "Cancel" to stop configuration';
+        
+        showWeekGidPrompt(message).then(function(result) {
+            if (result.action === 'cancel') {
+                // User cancelled - finish with current progress
+                sheetsConfig.weekGids = weekGids;
+                saveSyncSettings();
+                console.log('Week GIDs configuration cancelled. Configured:', weekGids);
+                return;
+            } else if (result.action === 'skipAll') {
+                skipAll = true; // Skip remaining weeks
+            } else if (result.action === 'enter' && result.gid && result.gid.trim()) {
+                weekGids[currentWeek] = result.gid.trim();
+            }
+            // If action is 'skip', just continue to next week
+            
+            currentWeek++;
+            processNextWeek(); // Process next week
+        });
     }
     
-    sheetsConfig.weekGids = weekGids;
-    console.log('Week GIDs configured:', weekGids);
+    processNextWeek(); // Start the process
+}
+
+function showWeekGidPrompt(message) {
+    // Create a custom modal for better UX than prompt()
+    var modalHtml = `
+        <div id="weekGidModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10001; display: flex; align-items: center; justify-content: center;">
+            <div style="background: white; border-radius: 12px; padding: 24px; max-width: 400px; width: 90%; box-shadow: 0 10px 25px rgba(0,0,0,0.3);">
+                <h3 style="margin: 0 0 16px 0; color: #333; font-size: 18px;">📋 Configure Week GID</h3>
+                <div style="margin-bottom: 20px; color: #666; line-height: 1.5; font-size: 14px;">
+                    ${message.replace(/\n/g, '<br>')}
+                </div>
+                <div style="margin-bottom: 16px;">
+                    <input type="text" id="weekGidInput" placeholder="Enter GID (e.g., 1234567890)" 
+                           style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;">
+                </div>
+                <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                    <button id="skipAllBtn" style="background: #6b7280; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 14px; cursor: pointer;">
+                        Skip All
+                    </button>
+                    <button id="skipBtn" style="background: #f59e0b; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 14px; cursor: pointer;">
+                        Skip
+                    </button>
+                    <button id="cancelBtn" style="background: #dc2626; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 14px; cursor: pointer;">
+                        Cancel
+                    </button>
+                    <button id="enterBtn" style="background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 14px; cursor: pointer;">
+                        Enter
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    
+    var modal = document.getElementById('weekGidModal');
+    var input = document.getElementById('weekGidInput');
+    var result = { action: 'cancel', gid: '' };
+    
+    // Focus input
+    input.focus();
+    
+    // Handle Enter key
+    input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            result.action = 'enter';
+            result.gid = input.value;
+            modal.remove();
+        }
+    });
+    
+    // Button click handlers
+    document.getElementById('enterBtn').addEventListener('click', function() {
+        result.action = 'enter';
+        result.gid = input.value;
+        modal.remove();
+    });
+    
+    document.getElementById('skipBtn').addEventListener('click', function() {
+        result.action = 'skip';
+        modal.remove();
+    });
+    
+    document.getElementById('skipAllBtn').addEventListener('click', function() {
+        result.action = 'skipAll';
+        modal.remove();
+    });
+    
+    document.getElementById('cancelBtn').addEventListener('click', function() {
+        result.action = 'cancel';
+        modal.remove();
+    });
+    
+    // Close on background click
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            result.action = 'cancel';
+            modal.remove();
+        }
+    });
+    
+    // Return a promise-like object that resolves when modal is closed
+    return new Promise(function(resolve) {
+        var checkClosed = setInterval(function() {
+            if (!document.getElementById('weekGidModal')) {
+                clearInterval(checkClosed);
+                resolve(result);
+            }
+        }, 100);
+    });
 }
 
 function enableAutoSync() {
@@ -2548,6 +2682,77 @@ function updateSyncStatus() {
         }
     } else {
         syncStatus.style.display = 'none';
+    }
+}
+
+function saveSyncSettings() {
+    // Save to localStorage
+    localStorage.setItem('sheetsSyncConfig', JSON.stringify({
+        spreadsheetId: sheetsConfig.spreadsheetId,
+        currentWeekGid: sheetsConfig.currentWeekGid,
+        weekGids: sheetsConfig.weekGids,
+        autoSyncEnabled: sheetsConfig.autoSyncEnabled
+    }));
+    
+    // Save to Firebase
+    if (database) {
+        database.ref('sheetsSyncConfig').set({
+            spreadsheetId: sheetsConfig.spreadsheetId,
+            currentWeekGid: sheetsConfig.currentWeekGid,
+            weekGids: sheetsConfig.weekGids,
+            autoSyncEnabled: sheetsConfig.autoSyncEnabled
+        });
+    }
+    
+    console.log('Sync settings saved to localStorage and Firebase');
+}
+
+function loadSyncSettings() {
+    // Try to load from localStorage first (faster)
+    var savedConfig = localStorage.getItem('sheetsSyncConfig');
+    if (savedConfig) {
+        try {
+            var config = JSON.parse(savedConfig);
+            sheetsConfig.spreadsheetId = config.spreadsheetId || '';
+            sheetsConfig.currentWeekGid = config.currentWeekGid || '';
+            sheetsConfig.weekGids = config.weekGids || {};
+            
+            // Restore auto-sync if it was enabled
+            if (config.autoSyncEnabled) {
+                enableAutoSync();
+            }
+            
+            console.log('Sync settings loaded from localStorage:', config);
+            updateSyncStatus();
+            return;
+        } catch (e) {
+            console.error('Error loading sync settings from localStorage:', e);
+        }
+    }
+    
+    // Fallback to Firebase
+    if (database) {
+        database.ref('sheetsSyncConfig').once('value').then(function(snapshot) {
+            var config = snapshot.val();
+            if (config) {
+                sheetsConfig.spreadsheetId = config.spreadsheetId || '';
+                sheetsConfig.currentWeekGid = config.currentWeekGid || '';
+                sheetsConfig.weekGids = config.weekGids || {};
+                
+                // Restore auto-sync if it was enabled
+                if (config.autoSyncEnabled) {
+                    enableAutoSync();
+                }
+                
+                // Save to localStorage for future loads
+                localStorage.setItem('sheetsSyncConfig', JSON.stringify(config));
+                
+                console.log('Sync settings loaded from Firebase:', config);
+                updateSyncStatus();
+            }
+        }).catch(function(error) {
+            console.error('Error loading sync settings from Firebase:', error);
+        });
     }
 }
 
@@ -2874,6 +3079,10 @@ function updatePicksFromSheets(sheetsPicks) {
     if (updatedCount > 0 || addedCount > 0) {
         saveToFirebase();
         renderAllPicks();
+        
+        // Update time slot dropdowns for synced picks
+        updateTimeSlotDropdownsFromSync();
+        
         updateCalculations();
         updateParlayStatus();
         
@@ -2929,6 +3138,12 @@ function performRemoveSync() {
     sheetsConfig.weekGids = {};
     sheetsConfig.syncInterval = null;
     sheetsConfig.autoSyncEnabled = false;
+    
+    // Remove from localStorage and Firebase
+    localStorage.removeItem('sheetsSyncConfig');
+    if (database) {
+        database.ref('sheetsSyncConfig').remove();
+    }
     
     // Update UI
     updateSyncStatus();
