@@ -567,6 +567,39 @@ function fixSGPData(week) {
     }
 }
 
+function recalculateOdds(week) {
+    if (!weeklyPicks[week]) {
+        showNotification('No data found for Week ' + week, 'error');
+        return;
+    }
+    
+    console.log('Recalculating odds for Week', week);
+    
+    // Reset all SGP flags and odds
+    weeklyPicks[week].forEach(function(pick) {
+        if (pick) {
+            pick.isSGP = false;
+            pick.sgpOdds = null;
+        }
+    });
+    
+    // Save the reset data
+    saveToFirebase();
+    
+    // Re-run SGP detection
+    checkForSGPs();
+    
+    // Recalculate all odds
+    updateCalculations();
+    updateParlayStatus();
+    
+    // Re-render to show updated data
+    renderAllPicks();
+    
+    showNotification('✓ Odds recalculated successfully!', 'success');
+    console.log('Odds recalculation completed for Week', week);
+}
+
 // Admin dropdown functions
 function toggleAdminDropdown() {
     var menu = document.getElementById('adminMenu');
