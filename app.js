@@ -2170,6 +2170,15 @@ timeSlotSelect.value = game.time;
 }
 }
 
+function getTimeSlotFromGame(gameName) {
+if (!gameName) return '';
+var schedule = nflSchedule[currentNFLWeek] || [];
+var game = schedule.find(function(g) {
+return g.matchup === gameName;
+});
+return game ? game.time : '';
+}
+
 function generateGameOptions(selectedGame) {
 var schedule = nflSchedule[currentNFLWeek] || [];
 return schedule.map(function(game) {
@@ -2642,12 +2651,18 @@ function parseCSVData(csvText) {
             gameName = findGameByAbbreviation(gameAbbreviation);
         }
         
+        // Auto-determine time slot from game if not provided
+        var timeSlot = columns[4] ? columns[4].trim() : '';
+        if (!timeSlot && gameName) {
+            timeSlot = getTimeSlotFromGame(gameName);
+        }
+        
         var pick = {
             playerName: playerName,
             pick: columns[1] ? columns[1].trim() : '',
             odds: columns[2] ? columns[2].trim() : '',
             game: gameName,
-            timeSlot: columns[4] ? columns[4].trim() : '',
+            timeSlot: timeSlot,
             timestamp: Date.now(),
             isEditing: false
         };
