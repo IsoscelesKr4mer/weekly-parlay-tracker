@@ -2924,9 +2924,12 @@ function parseCSVData(csvText) {
         
         console.log('Created pick object:', pick);
         
-        // Only add if we have essential data
-        if (pick.playerName && pick.pick && pick.odds) {
+        // Only add if we have essential data and game info
+        if (pick.playerName && pick.pick && pick.odds && gameName) {
             picks.push(pick);
+            console.log('Added valid pick for', pick.playerName);
+        } else {
+            console.log('Skipped invalid pick:', pick.playerName, 'Pick:', pick.pick, 'Odds:', pick.odds, 'Game:', gameName);
         }
     }
     
@@ -3080,6 +3083,9 @@ function updatePicksFromSheets(sheetsPicks) {
         weeklyPicks[currentWeek] = [];
     }
     
+    console.log('updatePicksFromSheets called with', sheetsPicks.length, 'picks');
+    console.log('Current weeklyPicks array length:', weeklyPicks[currentWeek] ? weeklyPicks[currentWeek].length : 0);
+    
     var updatedCount = 0;
     var addedCount = 0;
     
@@ -3139,25 +3145,35 @@ function updatePicksFromSheets(sheetsPicks) {
                 console.log('Filled empty slot for', sheetsPick.playerName, 'at slot', existingPickIndex);
             }
         } else {
-            // No existing slot found, add to the end (should rarely happen now)
-            var newPick = {
-                playerName: sheetsPick.playerName,
-                pick: sheetsPick.pick,
-                odds: sheetsPick.odds,
-                game: sheetsPick.game,
-                timeSlot: sheetsPick.timeSlot,
-                timestamp: Date.now(),
-                isEditing: false
-            };
+            // No existing slot found, check if we can add within numberOfLegs
+            var numberOfLegs = parseInt(document.getElementById('numberOfLegs').value) || 20;
             
-            weeklyPicks[currentWeek].push(newPick);
-            addedCount++;
-            logAuditEntry(currentWeek, 'Added pick from Google Sheets', sheetsPick.playerName + ': ' + sheetsPick.pick);
-            console.log('Added new pick for', sheetsPick.playerName, 'at end of array');
+            if (weeklyPicks[currentWeek].length < numberOfLegs) {
+                // We can add one more within the leg limit
+                var newPick = {
+                    playerName: sheetsPick.playerName,
+                    pick: sheetsPick.pick,
+                    odds: sheetsPick.odds,
+                    game: sheetsPick.game,
+                    timeSlot: sheetsPick.timeSlot,
+                    timestamp: Date.now(),
+                    isEditing: false
+                };
+                
+                weeklyPicks[currentWeek].push(newPick);
+                addedCount++;
+                logAuditEntry(currentWeek, 'Added pick from Google Sheets', sheetsPick.playerName + ': ' + sheetsPick.pick);
+                console.log('Added new pick for', sheetsPick.playerName, 'at end of array (slot', weeklyPicks[currentWeek].length - 1, ')');
+            } else {
+                console.log('Skipping pick for', sheetsPick.playerName, '- no available slots (at', numberOfLegs, 'leg limit)');
+            }
         }
     });
     
     if (updatedCount > 0 || addedCount > 0) {
+        console.log('Sync completed - Updated:', updatedCount, 'Added:', addedCount);
+        console.log('Final weeklyPicks array length:', weeklyPicks[currentWeek].length);
+        
         saveToFirebase();
         renderAllPicks();
         
