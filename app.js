@@ -3157,13 +3157,16 @@ function updatePicksFromSheets(sheetsPicks) {
         var oldPick = weeklyPicks[currentWeek][existingPickIndex];
         var hasExistingData = oldPick && oldPick.pick;
         
+        // Get the correct time slot for this game
+        var correctTimeSlot = getTimeSlotFromGame(sheetsPick.game);
+        
         // Use the new data from sheets, but preserve timestamp if updating
         var newPick = {
             playerName: sheetsPick.playerName,
             pick: sheetsPick.pick,
             odds: sheetsPick.odds,
             game: sheetsPick.game,
-            timeSlot: sheetsPick.timeSlot,
+            timeSlot: correctTimeSlot,
             timestamp: (oldPick && oldPick.timestamp) ? oldPick.timestamp : Date.now(),
             isEditing: false  // Start as read-only
         };
@@ -3213,12 +3216,6 @@ function updatePicksFromSheets(sheetsPicks) {
         
         saveToFirebase();
         renderAllPicks();
-        
-        // Update time slot dropdowns for synced picks after DOM is ready
-        setTimeout(function() {
-            updateTimeSlotDropdownsFromSync();
-        }, 100);
-        
         updateCalculations();
         updateParlayStatus();
         
