@@ -1313,6 +1313,8 @@ var data = snapshot.val();
 console.log('=== FIREBASE LOAD DEBUG ===');
 console.log('Loaded data from Firebase:', data);
 console.log('Current week data from Firebase:', data ? data[currentWeek] : 'No data');
+console.log('Current week data type:', typeof (data ? data[currentWeek] : 'No data'));
+console.log('Is current week data an array?', Array.isArray(data ? data[currentWeek] : null));
 
 if (data) {
 weeklyPicks = data;
