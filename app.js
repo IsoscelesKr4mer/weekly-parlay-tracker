@@ -1352,16 +1352,33 @@ try {
 // Set flag to prevent Firebase listener from overriding our save
 isSavingToFirebase = true;
 
+// Debug: Log what we're trying to save
+console.log('=== FIREBASE SAVE DEBUG ===');
+console.log('weeklyPicks to save:', weeklyPicks);
+console.log('Current week data:', weeklyPicks[currentWeek]);
+
 // Save weekly picks
-database.ref('weeklyPicks').set(weeklyPicks);
+database.ref('weeklyPicks').set(weeklyPicks).then(function() {
+    console.log('weeklyPicks saved successfully');
+}).catch(function(error) {
+    console.error('Error saving weeklyPicks:', error);
+});
 
 // Save locked weeks
 console.log('Saving lockedWeeks to Firebase:', lockedWeeks);
-database.ref('lockedWeeks').set(lockedWeeks);
+database.ref('lockedWeeks').set(lockedWeeks).then(function() {
+    console.log('lockedWeeks saved successfully');
+}).catch(function(error) {
+    console.error('Error saving lockedWeeks:', error);
+});
 
 // Update leaderboard data
 updateLeaderboardData();
-database.ref('leaderboardData').set(leaderboardData);
+database.ref('leaderboardData').set(leaderboardData).then(function() {
+    console.log('leaderboardData saved successfully');
+}).catch(function(error) {
+    console.error('Error saving leaderboardData:', error);
+});
 
 console.log('Data saved to Firebase');
 
