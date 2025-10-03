@@ -1317,7 +1317,22 @@ console.log('Current week data type:', typeof (data ? data[currentWeek] : 'No da
 console.log('Is current week data an array?', Array.isArray(data ? data[currentWeek] : null));
 
 if (data) {
-weeklyPicks = data;
+// Convert Firebase data to proper array structure if needed
+if (Array.isArray(data)) {
+    weeklyPicks = data;
+} else {
+    // Convert object structure to array structure
+    weeklyPicks = [];
+    for (var week in data) {
+        if (data.hasOwnProperty(week)) {
+            var weekNum = parseInt(week);
+            if (!isNaN(weekNum)) {
+                weeklyPicks[weekNum] = data[week];
+            }
+        }
+    }
+}
+
 renderAllPicks();
 updateCalculations();
 updateParlayStatus();
