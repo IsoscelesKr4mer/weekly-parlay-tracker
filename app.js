@@ -801,6 +801,7 @@ function formatCurrency(num) {
 var weeklyPicks = {};
 var leaderboardData = {};
 var isSavingToFirebase = false; // Flag to prevent Firebase listener from overriding our saves
+var lastSyncTime = null; // Timestamp of last sync to prevent listener overwriting
 var betAmounts = {}; // Store bet amounts per week
 var lockedWeeks = {}; // Track which weeks are locked
 var lockPassword = "BigDumperis110%sexy"; // Password to unlock picks
@@ -1306,6 +1307,13 @@ database.ref('weeklyPicks').on('value', function(snapshot) {
 // Skip if we're currently saving to prevent race condition
 if (isSavingToFirebase) {
     console.log('Skipping Firebase load - currently saving');
+    return;
+}
+
+// Skip if we just synced recently (within last 5 seconds)
+var now = Date.now();
+if (lastSyncTime && (now - lastSyncTime) < 5000) {
+    console.log('Skipping Firebase load - recent sync detected');
     return;
 }
 
@@ -3374,6 +3382,9 @@ function updatePicksFromSheets(sheetsPicks) {
         renderAllPicks();
         updateCalculations();
         updateParlayStatus();
+        
+        // Set sync timestamp to prevent Firebase listener from overwriting
+        lastSyncTime = Date.now();
         
         var message = '';
         if (addedCount > 0) message += 'Added ' + addedCount + ' picks. ';
