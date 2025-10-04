@@ -3348,15 +3348,15 @@ function updatePicksFromSheets(sheetsPicks) {
                     
                     weeklyPicks[currentWeek][i] = {
                         playerName: existingPick.playerName,
-                        pick: 'TBD',
-                        odds: 'TBD',
-                        game: 'TBD',
-                        timeSlot: 'TBD',
+                        pick: '',
+                        odds: '',
+                        game: '',
+                        timeSlot: '',
                         result: null,
                         timestamp: Date.now(),
                         isSGP: false,
                         sgpOdds: '',  // Empty string instead of null to satisfy Firebase rules
-                        isEditing: false  // Set to submitted state to avoid Cancel button
+                        isEditing: true  // Set to editing state to make it editable again
                     };
                     clearedCount++;
                     logAuditEntry(currentWeek, 'Cleared pick (removed from spreadsheet)', existingPick.playerName);
