@@ -1772,7 +1772,7 @@ function createPickSlot(index, pick) {
 var div = document.createElement('div');
 var className = 'pick-slot';
 if (pick) {
-if (pick.playerName && pick.pick && pick.odds) className += ' filled';
+if (pick.playerName && pick.pick && pick.pick !== '' && pick.odds && pick.odds !== '') className += ' filled';
 if (pick.result === true) className += ' win';
 else if (pick.result === false) className += ' loss';
 else if (pick.result === 'draw') className += ' draw';
@@ -1781,7 +1781,7 @@ div.className = className;
 
 // Determine result status and styling
 var resultClass, resultText;
-var isSubmitted = pick && pick.playerName && pick.pick && pick.odds;
+var isSubmitted = pick && pick.playerName && pick.pick && pick.pick !== '' && pick.odds && pick.odds !== '';
 var isEditing = pick && pick.isEditing;
 
 if (pick && pick.result === true) {
@@ -3356,7 +3356,7 @@ function updatePicksFromSheets(sheetsPicks) {
                         timestamp: Date.now(),
                         isSGP: false,
                         sgpOdds: '',  // Empty string instead of null to satisfy Firebase rules
-                        isEditing: true  // Set to editing state to make it editable again
+                        isEditing: false  // Set to non-editing state to avoid Cancel button
                     };
                     clearedCount++;
                     logAuditEntry(currentWeek, 'Cleared pick (removed from spreadsheet)', existingPick.playerName);
